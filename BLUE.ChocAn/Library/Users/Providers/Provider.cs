@@ -10,7 +10,7 @@ namespace BLUE.ChocAn.Library.Users.Providers
     {
         #region Public Properties
 
-        public override string Username { get { return "Provider"; } }
+        public override string Username { get { return "provider"; } }
         public override UserRole CurrentRole { get { return UserRole.Provider; } }
 
         #endregion

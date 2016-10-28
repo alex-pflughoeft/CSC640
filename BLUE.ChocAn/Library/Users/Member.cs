@@ -7,7 +7,7 @@ namespace BLUE.ChocAn.Library.Users
     {
         #region Public Properties
 
-        public override string Username { get { return "Member"; } }
+        public override string Username { get { return "member"; } }
         public MemberStatusEnum MemberStatus { get; set; }
         public int CardNumber { get; set; }
         public bool CardValidated { get; private set; }

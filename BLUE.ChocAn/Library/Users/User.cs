@@ -49,12 +49,14 @@ namespace BLUE.ChocAn.Library.Users
 
     public enum UserRole
     {
-        Guest, // Essentially a role for public commands
+        All,
+        Guest , // Essentially a role for public commands
         Member,
         Provider,
         Operator,
         Manager,
         Super, // The override role
-        Debug,
+        AllLoggedIn,
+        None
     }
 }

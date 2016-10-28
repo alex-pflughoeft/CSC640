@@ -18,7 +18,7 @@ namespace BLUE.ChocAn.Library.Users.Operators
 
         #region Public Properties
 
-        public override string Username { get { return "Operator"; } }
+        public override string Username { get { return "operator"; } }
         public override UserRole CurrentRole { get { return UserRole.Operator; } }
 
         #endregion

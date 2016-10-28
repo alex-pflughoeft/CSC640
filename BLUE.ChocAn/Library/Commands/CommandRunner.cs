@@ -32,10 +32,26 @@ namespace BLUE.ChocAn.Library.Commands
 
         public string RunMethodByName(string command, object[] parameters = null)
         {
-            Type thisType = this.GetType();
-            MethodInfo theMethod = thisType.GetMethod(command);
-            var result = theMethod.Invoke(this, parameters);
-            return result.ToString();
+            UserRole roleRequired = this.GetRoleRequired(command);
+
+            if (roleRequired != UserRole.None)
+            {
+                if (this._callbackTerminal.CurrentUser.CurrentRole != UserRole.Super)
+                {
+                    if (roleRequired == UserRole.All || this._callbackTerminal.CurrentUser.CurrentRole == roleRequired)
+                    {
+                        return this.RunMethod(command, parameters);
+                    }
+                    else
+                    {
+                        return this.InsufficientPrivilegeMessage();
+                    }
+                }
+
+                return this.RunMethod(command, parameters);
+            }
+
+            return string.Format("Command \'{0}\' was not found.", command);
         }
 
         #endregion
@@ -43,6 +59,7 @@ namespace BLUE.ChocAn.Library.Commands
         #region Public Console Commands
 
         [Display(Description = "Command Name: addmember\nDescription: Adds a member to the system.")]
+        [RoleRequired(Role = UserRole.Operator)]
         public string addmember()
         {
             if (this._callbackTerminal.CurrentUser is IOperator)
@@ -103,6 +120,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: billchoc\nParameters: billchoc <date of service (dd/mm/yyyy)> <service code>\nDescription: Bills Chocoholics Anonymous with the service.")]
+        [RoleRequired(Role = UserRole.Provider)]
         public string billchoc(string dateOfService, string serviceCode)
         {
             if (this._callbackTerminal.CurrentUser is IProvider)
@@ -115,6 +133,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description="Command Name: clear\nDescription: Clears the screen.")]
+        [RoleRequired(Role = UserRole.All)]
         public string clear()
         {
             Console.Clear();
@@ -122,6 +141,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: credits\nDescription: Prints the credits for the project.")]
+        [RoleRequired(Role = UserRole.All)]
         public string credits()
         {
             // TODO: Print the credits of the program and copyright information
@@ -129,6 +149,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: deletemember\nParameters: deletemember <member number>\nDescription: Deletes a member from the system.")]
+        [RoleRequired(Role = UserRole.Operator)]
         public string deletemember(int memberNumber = -1)
         {
             if (this._callbackTerminal.CurrentUser is IOperator)
@@ -150,12 +171,14 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: echo\nParameters: echo <message>\nDescription: Prints the message.")]
+        [RoleRequired(Role = UserRole.All)]
         public string echo(string message)
         {
             return message + "\n";
         }
 
         [Display(Description = "Command Name: enterim\nParameters: enterim <seconds until enter>\nDescription: Enters interactive mode with an optional time period until enter.")]
+        [RoleRequired(Role = UserRole.Manager)]
         public string enterim(int secondsUntilEnter = -1)
         {
             if (this._callbackTerminal.CurrentUser is IManager)
@@ -179,6 +202,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: exitim\nParameters: exitim <seconds until exit>\nDescription: Exits interactive mode with an optional time period until exit.")]
+        [RoleRequired(Role = UserRole.Manager)]
         public string exitim(int secondsUntilExit = -1)
         {
             // TODO: Validate the member card to be used.
@@ -186,6 +210,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: genreport\nParameters: genreport <report name> <email=y/n>\nDescription: Generates the specified report on screen and optionally emails it to you.")]
+        [RoleRequired(Role = UserRole.Manager)]
         public string genreport(string reportName = "")
         {
             if (this._callbackTerminal.CurrentUser is IManager)
@@ -222,6 +247,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: history\nDescription: Show the historical list of commands.")]
+        [RoleRequired(Role = UserRole.All)]
         public string history()
         {
             this._callbackTerminal.PrintHistory();
@@ -230,6 +256,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: help\nParameters: help <command name>\nDescription: Show the information for the command.")]
+        [RoleRequired(Role = UserRole.All)]
         public string help(string command = "No Data")
         {
             var result = string.Empty;
@@ -252,6 +279,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: info\nDescription: Displays the information about the software.")]
+        [RoleRequired(Role = UserRole.All)]
         public string info()
         {
             var result = string.Empty;
@@ -266,6 +294,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: login\nParameters: login <username> <password>\nDescription: Logs the user into the application.")]
+        [RoleRequired(Role = UserRole.Guest)]
         public string login(string userName, string password = "")
         {
             User newUser;
@@ -307,20 +336,21 @@ namespace BLUE.ChocAn.Library.Commands
                 {
                     this._callbackTerminal.CurrentUser = newUser;
                     this._callbackTerminal.UpdateTerminalPrompt();
-                    return string.Format("Successful login for user \'{0}\'. Type 'help' to see the new available commands.\n", userName);
+                    return string.Format("Welcome \'{0}\'! Type 'help' to see the new available commands.\n", newUser.Username);
                 }
             }
             else
             {
                 this._callbackTerminal.CurrentUser = newUser;
                 this._callbackTerminal.UpdateTerminalPrompt();
-                return string.Format("Successful login for user \'{0}\'. Type 'help' to see the new available commands.\n", userName);
+                return string.Format("Welcome \'{0}\'! Type 'help' to see the new available commands.\n", newUser.Username);
             }
 
             return string.Format("Failed login for user \'{0}\'. Wrong Password.\n", userName);
         }
 
         [Display(Description = "Command Name: logout\nDescription: Logs the user out of the application.")]
+        [RoleRequired(Role = UserRole.AllLoggedIn)]
         public string logout()
         {
             if (this._callbackTerminal.CurrentUser.CurrentRole == UserRole.Guest)
@@ -342,6 +372,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: matrix\nParameters: matrix <password>\nDescription: See how deep the rabbit hole goes.")]
+        [RoleRequired(Role = UserRole.Super)]
         public string matrix(string password)
         {
             if (!string.IsNullOrEmpty(password))
@@ -415,9 +446,11 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: reboot\nDescription: Reboots the terminal.")]
+        [RoleRequired(Role = UserRole.All)]
         public string reboot()
         {
             this._callbackTerminal.CurrentUser = new User();
+            this._callbackTerminal.UpdateTerminalPrompt();
             clear();
             Console.WriteLine(info());
             Console.WriteLine(string.Format("Welcome {0}! Here are your list of commands:\n", this._callbackTerminal.CurrentUser.Username));
@@ -428,6 +461,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: shutdown\nDescription: Shuts down the terminal.")]
+        [RoleRequired(Role = UserRole.All)]
         public string shutdown()
         {
             Console.WriteLine("Are you sure you want to shutdown the terminal? (y/n)");
@@ -443,6 +477,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: validatecard\nParameters: validatecard <member card id>\nDescription: Validate a members card.")]
+        [RoleRequired(Role = UserRole.Provider)]
         public string validatecard(string cardId = "")
         {
             if (this._callbackTerminal.CurrentUser is IProvider)
@@ -463,6 +498,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: viewpend\nDescription: View the pending service charges.")]
+        [RoleRequired(Role = UserRole.Provider)]
         public string viewpend()
         {
             // TODO: Validate the member card to be used.
@@ -470,6 +506,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: viewpd\nDescription: View the provider dictionary.")]
+        [RoleRequired(Role = UserRole.Provider)]
         public string viewpd()
         {
             if (this._callbackTerminal.CurrentUser is IProvider)
@@ -482,6 +519,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: whoami\nDescription: Displays the curent user.")]
+        [RoleRequired(Role = UserRole.All)]
         public string whoami()
         {
             return this._callbackTerminal.CurrentUser.Username + "\n";
@@ -490,6 +528,14 @@ namespace BLUE.ChocAn.Library.Commands
         #endregion
 
         #region Private Methods
+
+        private string RunMethod(string command, object[] parameters = null)
+        {
+            Type thisType = this.GetType();
+            MethodInfo theMethod = thisType.GetMethod(command);
+            var result = theMethod.Invoke(this, parameters);
+            return result.ToString();
+        }
 
         private string GetCommandDescription(string command)
         {
@@ -506,11 +552,41 @@ namespace BLUE.ChocAn.Library.Commands
             }
         }
 
+        private UserRole GetRoleRequired(string command)
+        {
+            try
+            {
+                Type thisType = this.GetType();
+                MethodInfo theMethod = thisType.GetMethod(command);
+                var desc = theMethod.GetCustomAttributesData();
+                return (UserRole)desc[1].NamedArguments[0].TypedValue.Value;
+            }
+            catch
+            {
+                try
+                {
+                    Type thisType = this.GetType();
+                    MethodInfo theMethod = thisType.GetMethod(command);
+                    var desc = theMethod.GetCustomAttributesData();
+                    return (UserRole)desc[0].NamedArguments[0].TypedValue.Value;
+                }
+                catch
+                {
+                    return UserRole.None;
+                }
+            }
+        }
+
         private string InsufficientPrivilegeMessage()
         {
             return "You do not have sufficient privileges to perform this command!\n";
         }
 
         #endregion
+    }
+
+    public class RoleRequired : Attribute
+    {
+        public UserRole Role { get; set; }
     }
 }

@@ -30,7 +30,7 @@ namespace BLUE.ChocAn.Library.Users.Managers
 
         #region Public Properties
 
-        public override string Username { get { return "Manager"; } }
+        public override string Username { get { return "manager"; } }
         public override UserRole CurrentRole { get { return UserRole.Manager; } }
 
         #endregion

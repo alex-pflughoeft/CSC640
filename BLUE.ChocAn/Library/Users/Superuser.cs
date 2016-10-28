@@ -13,7 +13,7 @@ namespace BLUE.ChocAn.Library.Users
     {
         #region Public Properties
 
-        public override string Username { get { return "SuperUser"; }}
+        public override string Username { get { return "superuser"; }}
         public override UserRole CurrentRole { get { return UserRole.Super; } }
 
         #endregion

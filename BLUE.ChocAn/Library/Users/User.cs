@@ -10,7 +10,7 @@ namespace BLUE.ChocAn.Library.Users
     {
         protected string _userPassword;
 
-        public virtual string Username { get { return "Guest"; } }
+        public virtual string Username { get { return "guest"; } }
         public int UserNumber { get; set; }
         public string UserName { get; set; }
         public string UsertAddress { get; set; }
@@ -56,7 +56,6 @@ namespace BLUE.ChocAn.Library.Users
         Operator,
         Manager,
         Super, // The override role
-        AllLoggedIn,
         None
     }
 }

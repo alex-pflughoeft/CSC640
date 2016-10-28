@@ -119,17 +119,135 @@ namespace BLUE.ChocAn.Library.Commands
             return this.InsufficientPrivilegeMessage();
         }
 
+        [Display(Description = "Command Name: addprovider\nDescription: Adds a provider to the system.")]
+        [RoleRequired(Role = UserRole.Operator)]
+        public string addprovider()
+        {
+            // TODO: Under Construction
+
+            if (this._callbackTerminal.CurrentUser is IOperator)
+            {
+                string memberName;
+                string memberNumber;
+                string memberStreetAddress;
+                string memberCity;
+                string memberState;
+                string memberZip;
+                string memberEmail;
+
+                Console.WriteLine("Enter the Member Name:");
+                memberName = Console.ReadLine();
+                // TODO: Validate name
+
+                Console.WriteLine("Enter the Member Number:");
+                memberNumber = Console.ReadLine();
+                // TODO: Validate number
+
+                Console.WriteLine("Enter the Member Street Address:");
+                memberStreetAddress = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member City:");
+                memberCity = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member State:");
+                memberState = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member Zip:");
+                memberZip = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Email Address:");
+                memberEmail = Console.ReadLine();
+                // TODO: Validate
+
+                // Create the new member
+                Member thisMember = new Member();
+
+                thisMember.UserName = memberName;
+                thisMember.UserNumber = Convert.ToInt32(memberNumber);
+                thisMember.UserState = memberState;
+                thisMember.UserCity = memberCity;
+                thisMember.UserZipCode = memberZip;
+                thisMember.UserEmailAddress = memberEmail;
+
+                if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
+                {
+                    return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
+                }
+            }
+
+            return this.InsufficientPrivilegeMessage();
+        }
+
+        [Display(Description = "Command Name: addservice\nDescription: Adds a service to the system.")]
+        [RoleRequired(Role = UserRole.Provider)]
+        public string addservice()
+        {
+            // TODO: Under Construction
+
+            string memberName;
+            string memberNumber;
+            string memberStreetAddress;
+            string memberCity;
+            string memberState;
+            string memberZip;
+            string memberEmail;
+
+            Console.WriteLine("Enter the Member Name:");
+            memberName = Console.ReadLine();
+            // TODO: Validate name
+
+            Console.WriteLine("Enter the Member Number:");
+            memberNumber = Console.ReadLine();
+            // TODO: Validate number
+
+            Console.WriteLine("Enter the Member Street Address:");
+            memberStreetAddress = Console.ReadLine();
+            // TODO: Validate
+
+            Console.WriteLine("Enter the Member City:");
+            memberCity = Console.ReadLine();
+            // TODO: Validate
+
+            Console.WriteLine("Enter the Member State:");
+            memberState = Console.ReadLine();
+            // TODO: Validate
+
+            Console.WriteLine("Enter the Member Zip:");
+            memberZip = Console.ReadLine();
+            // TODO: Validate
+
+            Console.WriteLine("Enter the Email Address:");
+            memberEmail = Console.ReadLine();
+            // TODO: Validate
+
+            // Create the new member
+            Member thisMember = new Member();
+
+            thisMember.UserName = memberName;
+            thisMember.UserNumber = Convert.ToInt32(memberNumber);
+            thisMember.UserState = memberState;
+            thisMember.UserCity = memberCity;
+            thisMember.UserZipCode = memberZip;
+            thisMember.UserEmailAddress = memberEmail;
+
+            if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
+            {
+                return string.Format("Service \'{0}\' successfully added.\n", thisMember.UserName);
+            }
+
+            return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
+        }
+
         [Display(Description = "Command Name: billchoc\nParameters: billchoc <date of service (dd/mm/yyyy)> <service code>\nDescription: Bills Chocoholics Anonymous with the service.")]
         [RoleRequired(Role = UserRole.Provider)]
         public string billchoc(string dateOfService, string serviceCode)
         {
-            if (this._callbackTerminal.CurrentUser is IProvider)
-            {
-                ((IProvider)this._callbackTerminal.CurrentUser).BillChocAn();
-                return string.Empty;
-            }
-
-            return this.InsufficientPrivilegeMessage();
+            ((IProvider)this._callbackTerminal.CurrentUser).BillChocAn();
+            return string.Empty;
         }
 
         [Display(Description="Command Name: clear\nDescription: Clears the screen.")]
@@ -152,22 +270,42 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Operator)]
         public string deletemember(int memberNumber = -1)
         {
-            if (this._callbackTerminal.CurrentUser is IOperator)
-            {
-                if (memberNumber == -1)
-                {
-                    Console.WriteLine("Enter the member number:\n");
-                    string memberNumberString = Console.ReadLine();
-                    memberNumber = Convert.ToInt32(memberNumberString);
-                }
+            // TODO: Under construction
 
-                if (((IOperator)this._callbackTerminal.CurrentUser).DeleteMember(memberNumber))
-                {
-                    return string.Empty;
-                }
+            if (memberNumber == -1)
+            {
+                Console.WriteLine("Enter the member number:\n");
+                string memberNumberString = Console.ReadLine();
+                memberNumber = Convert.ToInt32(memberNumberString);
             }
 
-            return this.InsufficientPrivilegeMessage();
+            if (((IOperator)this._callbackTerminal.CurrentUser).DeleteMember(memberNumber))
+            {
+                return string.Empty;
+            }
+
+            return string.Empty;
+        }
+
+        [Display(Description = "Command Name: deleteprovider\nParameters: deleteprovider <provider number>\nDescription: Deletes a provider from the system.")]
+        [RoleRequired(Role = UserRole.Operator)]
+        public string deleteprovider(int providerNumber = -1)
+        {
+            // TODO: Under construction
+
+            if (providerNumber == -1)
+            {
+                Console.WriteLine("Enter the member number:\n");
+                string providerNumberString = Console.ReadLine();
+                providerNumber = Convert.ToInt32(providerNumberString);
+            }
+
+            if (((IOperator)this._callbackTerminal.CurrentUser).DeleteProvider(providerNumber))
+            {
+                return string.Empty;
+            }
+
+            return string.Empty;
         }
 
         [Display(Description = "Command Name: echo\nParameters: echo <message>\nDescription: Prints the message.")]
@@ -181,24 +319,16 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Manager)]
         public string enterim(int secondsUntilEnter = -1)
         {
-            if (this._callbackTerminal.CurrentUser is IManager)
+            // TODO: Under construction
+
+            if (secondsUntilEnter == -1)
             {
-                if (secondsUntilEnter == -1)
-                {
-                    Console.WriteLine("Enter the time until enter (s):\n");
-                    string memberNumberString = Console.ReadLine();
-                    secondsUntilEnter = Convert.ToInt32(memberNumberString);
-                }
-
-                return string.Empty;
-
-                //if (((IManager)this._callbackTerminal.CurrentUser).e(secondsUntilEnter))
-                //{
-                //    return string.Empty;
-                //}
+                Console.WriteLine("Enter the time until enter (s):\n");
+                string memberNumberString = Console.ReadLine();
+                secondsUntilEnter = Convert.ToInt32(memberNumberString);
             }
 
-            return this.InsufficientPrivilegeMessage();
+            return string.Empty;
         }
 
         [Display(Description = "Command Name: exitim\nParameters: exitim <seconds until exit>\nDescription: Exits interactive mode with an optional time period until exit.")]
@@ -213,37 +343,32 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Manager)]
         public string genreport(string reportName = "")
         {
-            if (this._callbackTerminal.CurrentUser is IManager)
+            if (reportName == "")
             {
-                if (reportName == "")
-                {
-                    Console.WriteLine("Which report would you like to run?\n");
-                    reportName = Console.ReadLine();
-                }
-
-                switch (reportName)
-                {
-                    case "1":
-                        ((IManager)this._callbackTerminal.CurrentUser).GenerateManagersSummary();
-                        break;
-                    case "2":
-                        ((IManager)this._callbackTerminal.CurrentUser).GenerateMemberReport();
-                        break;
-                    case "3":
-                        ((IManager)this._callbackTerminal.CurrentUser).GenerateProviderReport();
-                        break;
-                    case "4":
-                        ((IManager)this._callbackTerminal.CurrentUser).GenerateEFTRecord();
-                        break;
-                    case "5":
-                        ((IManager)this._callbackTerminal.CurrentUser).GenerateAllReports();
-                        break;
-                }
-
-                return string.Empty;
+                Console.WriteLine("Which report would you like to run?\n");
+                reportName = Console.ReadLine();
             }
 
-            return this.InsufficientPrivilegeMessage();
+            switch (reportName)
+            {
+                case "1":
+                    ((IManager)this._callbackTerminal.CurrentUser).GenerateManagersSummary();
+                    break;
+                case "2":
+                    ((IManager)this._callbackTerminal.CurrentUser).GenerateMemberReport();
+                    break;
+                case "3":
+                    ((IManager)this._callbackTerminal.CurrentUser).GenerateProviderReport();
+                    break;
+                case "4":
+                    ((IManager)this._callbackTerminal.CurrentUser).GenerateEFTRecord();
+                    break;
+                case "5":
+                    ((IManager)this._callbackTerminal.CurrentUser).GenerateAllReports();
+                    break;
+            }
+
+            return string.Empty;
         }
 
         [Display(Description = "Command Name: history\nDescription: Show the historical list of commands.")]
@@ -261,17 +386,49 @@ namespace BLUE.ChocAn.Library.Commands
         {
             var result = string.Empty;
 
-            result += "(Type help <command> to view the information about the command.)\n";
-
             if (command != "No Data")
             {
-                result = this.GetCommandDescription(command);
+                UserRole roleRequired = this.GetRoleRequired(command);
+
+                if (roleRequired != UserRole.None)
+                {
+                    if (this._callbackTerminal.CurrentUser.CurrentRole != UserRole.Super)
+                    {
+                        if (roleRequired == UserRole.All || this._callbackTerminal.CurrentUser.CurrentRole == roleRequired)
+                        {
+                            result += this.GetCommandDescription(command);
+                        }
+                    }
+                    else
+                    {
+                        result += this.GetCommandDescription(command);
+                    }
+                }
             }
             else
             {
+                result += "(Type help <command> to view the information about the command.)\n";
+
                 foreach (var key in this._callbackTerminal.CommandLibraries["CommandRunner"].Keys)
                 {
-                    result += "\n" + key.ToString();
+                    UserRole roleRequired = this.GetRoleRequired(key.ToString());
+
+                    if (roleRequired != UserRole.None)
+                    {
+                        if (this._callbackTerminal.CurrentUser.CurrentRole != UserRole.Super)
+                        {
+                            if (roleRequired == UserRole.All || this._callbackTerminal.CurrentUser.CurrentRole == roleRequired)
+                            {
+                                result += "\n" + key.ToString();
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            result += "\n" + key.ToString();
+                            continue;
+                        }
+                    }
                 }
             }
 
@@ -282,15 +439,7 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.All)]
         public string info()
         {
-            var result = string.Empty;
-
-            result += "\n**********************************************************************";
-            result += "\n*               Chocoholics Anonymous Terminal Program               *";
-            result += "\n*                               v1.0.0                               *";
-            result += "\n* Created By: Team Blue (Alex Pflughoeft, Brad Roberts, Sonia Akter) *";
-            result += "\n**********************************************************************";
-
-            return result + "\n";
+            return this._callbackTerminal.TerminalInfo();
         }
 
         [Display(Description = "Command Name: login\nParameters: login <username> <password>\nDescription: Logs the user into the application.")]
@@ -350,7 +499,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: logout\nDescription: Logs the user out of the application.")]
-        [RoleRequired(Role = UserRole.AllLoggedIn)]
+        [RoleRequired(Role = UserRole.All)]
         public string logout()
         {
             if (this._callbackTerminal.CurrentUser.CurrentRole == UserRole.Guest)
@@ -364,6 +513,7 @@ namespace BLUE.ChocAn.Library.Commands
             {
                 this._callbackTerminal.CurrentUser = new User();
                 this._callbackTerminal.UpdateTerminalPrompt();
+                this._callbackTerminal.ClearHistoricalQueue();
                 this.clear();
                 return string.Format("Logged Out.\n");
             }
@@ -476,25 +626,147 @@ namespace BLUE.ChocAn.Library.Commands
             return string.Empty;
         }
 
+        [Display(Description = "Command Name: updatemember\nDescription: Updates a member in the system.")]
+        [RoleRequired(Role = UserRole.Operator)]
+        public string updatemember()
+        {
+            // TODO: Under Construction
+
+            string memberName;
+            string memberNumber;
+            string memberStreetAddress;
+            string memberCity;
+            string memberState;
+            string memberZip;
+            string memberEmail;
+
+            Console.WriteLine("Enter the Member Name:");
+            memberName = Console.ReadLine();
+            // TODO: Validate name
+
+            Console.WriteLine("Enter the Member Number:");
+            memberNumber = Console.ReadLine();
+            // TODO: Validate number
+
+            Console.WriteLine("Enter the Member Street Address:");
+            memberStreetAddress = Console.ReadLine();
+            // TODO: Validate
+
+            Console.WriteLine("Enter the Member City:");
+            memberCity = Console.ReadLine();
+            // TODO: Validate
+
+            Console.WriteLine("Enter the Member State:");
+            memberState = Console.ReadLine();
+            // TODO: Validate
+
+            Console.WriteLine("Enter the Member Zip:");
+            memberZip = Console.ReadLine();
+            // TODO: Validate
+
+            Console.WriteLine("Enter the Email Address:");
+            memberEmail = Console.ReadLine();
+            // TODO: Validate
+
+            // Create the new member
+            Member thisMember = new Member();
+
+            thisMember.UserName = memberName;
+            thisMember.UserNumber = Convert.ToInt32(memberNumber);
+            thisMember.UserState = memberState;
+            thisMember.UserCity = memberCity;
+            thisMember.UserZipCode = memberZip;
+            thisMember.UserEmailAddress = memberEmail;
+
+            if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
+            {
+                return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
+            }
+
+            return string.Empty;
+        }
+
+        [Display(Description = "Command Name: updateprovider\nDescription: Updates a provider to the system.")]
+        [RoleRequired(Role = UserRole.Operator)]
+        public string updateprovider()
+        {
+            // TODO: Under Construction
+
+            if (this._callbackTerminal.CurrentUser is IOperator)
+            {
+                string memberName;
+                string memberNumber;
+                string memberStreetAddress;
+                string memberCity;
+                string memberState;
+                string memberZip;
+                string memberEmail;
+
+                Console.WriteLine("Enter the Member Name:");
+                memberName = Console.ReadLine();
+                // TODO: Validate name
+
+                Console.WriteLine("Enter the Member Number:");
+                memberNumber = Console.ReadLine();
+                // TODO: Validate number
+
+                Console.WriteLine("Enter the Member Street Address:");
+                memberStreetAddress = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member City:");
+                memberCity = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member State:");
+                memberState = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member Zip:");
+                memberZip = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Email Address:");
+                memberEmail = Console.ReadLine();
+                // TODO: Validate
+
+                // Create the new member
+                Member thisMember = new Member();
+
+                thisMember.UserName = memberName;
+                thisMember.UserNumber = Convert.ToInt32(memberNumber);
+                thisMember.UserState = memberState;
+                thisMember.UserCity = memberCity;
+                thisMember.UserZipCode = memberZip;
+                thisMember.UserEmailAddress = memberEmail;
+
+                if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
+                {
+                    return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
+                }
+            }
+
+            return this.InsufficientPrivilegeMessage();
+        }
+
         [Display(Description = "Command Name: validatecard\nParameters: validatecard <member card id>\nDescription: Validate a members card.")]
         [RoleRequired(Role = UserRole.Provider)]
         public string validatecard(string cardId = "")
         {
-            if (this._callbackTerminal.CurrentUser is IProvider)
-            {
-                if (cardId == "")
-                {
-                    Console.WriteLine("Please slide card, or type in the member number.");
-                    cardId = Console.ReadLine();
-                }
+            // TODO: Under construction
 
-                if (((IProvider)this._callbackTerminal.CurrentUser).ValidateMemberCard(Convert.ToInt32(cardId)))
-                {
-                    return string.Empty;
-                }            
+            if (cardId == "")
+            {
+                Console.WriteLine("Please slide card, or type in the member number.");
+                cardId = Console.ReadLine();
             }
 
-            return this.InsufficientPrivilegeMessage();
+            if (((IProvider)this._callbackTerminal.CurrentUser).ValidateMemberCard(Convert.ToInt32(cardId)))
+            {
+                return string.Empty;
+            }
+
+            return string.Empty;
         }
 
         [Display(Description = "Command Name: viewpend\nDescription: View the pending service charges.")]
@@ -509,13 +781,9 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string viewpd()
         {
-            if (this._callbackTerminal.CurrentUser is IProvider)
-            {
-                ((IProvider)this._callbackTerminal.CurrentUser).ViewProviderDictionary();
-                return string.Empty;
-            }
-
-            return this.InsufficientPrivilegeMessage();
+            // TODO: Under construction
+            ((IProvider)this._callbackTerminal.CurrentUser).ViewProviderDictionary();
+            return string.Empty;
         }
 
         [Display(Description = "Command Name: whoami\nDescription: Displays the curent user.")]
@@ -543,8 +811,8 @@ namespace BLUE.ChocAn.Library.Commands
             {
                 Type thisType = this.GetType();
                 MethodInfo theMethod = thisType.GetMethod(command);
-                var desc = theMethod.GetCustomAttributesData();
-                return desc[0].NamedArguments[0].TypedValue.Value.ToString();
+                var desc = theMethod.GetCustomAttribute<DisplayAttribute>();
+                return desc.Description;
             }
             catch
             {
@@ -558,22 +826,12 @@ namespace BLUE.ChocAn.Library.Commands
             {
                 Type thisType = this.GetType();
                 MethodInfo theMethod = thisType.GetMethod(command);
-                var desc = theMethod.GetCustomAttributesData();
-                return (UserRole)desc[1].NamedArguments[0].TypedValue.Value;
+                var desc = theMethod.GetCustomAttribute<RoleRequired>();
+                return desc.Role;
             }
             catch
             {
-                try
-                {
-                    Type thisType = this.GetType();
-                    MethodInfo theMethod = thisType.GetMethod(command);
-                    var desc = theMethod.GetCustomAttributesData();
-                    return (UserRole)desc[0].NamedArguments[0].TypedValue.Value;
-                }
-                catch
-                {
-                    return UserRole.None;
-                }
+                return UserRole.None;
             }
         }
 

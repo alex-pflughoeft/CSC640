@@ -123,6 +123,24 @@ namespace BLUE.ChocAn.Library
             }
         }
 
+        public void ClearHistoricalQueue()
+        {
+            this.HistoricalQueue.Clear();
+        }
+
+        public string TerminalInfo()
+        {
+            var result = string.Empty;
+
+            result += "\n**********************************************************************";
+            result += "\n*               Chocoholics Anonymous Terminal Program               *";
+            result += "\n*                               v1.0.0                               *";
+            result += "\n* Created By: Team Blue (Alex Pflughoeft, Brad Roberts, Sonia Akter) *";
+            result += "\n**********************************************************************";
+
+            return result + "\n";
+        }
+
         #endregion
 
         #region Private Methods

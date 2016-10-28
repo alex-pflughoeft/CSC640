@@ -25,7 +25,7 @@ namespace BLUE.ChocAn.Library.Communication
 
         #region Public Methods
 
-        public bool SendEmail(string from, string to, string subject, string message, List<Attachment> report)
+        public bool SendEmail(string from, string to, string subject, string message)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace BLUE.ChocAn.Library.Communication
             return true;
         }
 
-        public bool SendToMultiple(string from, List<MailAddress> to, string subject, string message, List<Attachment> report)
+        public bool SendToMultiple(string from, List<MailAddress> to, string subject, string message)
         {
             try
             {

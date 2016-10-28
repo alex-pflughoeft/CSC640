@@ -47,9 +47,55 @@ namespace BLUE.ChocAn.Library.Commands
         {
             if (this._callbackTerminal.CurrentUser is IOperator)
             {
-                if(((IOperator)this._callbackTerminal.CurrentUser).AddMember())
+                string memberName;
+                string memberNumber;
+                string memberStreetAddress;
+                string memberCity;
+                string memberState;
+                string memberZip;
+                string memberEmail;
+
+                Console.WriteLine("Enter the Member Name:");
+                memberName = Console.ReadLine();
+                // TODO: Validate name
+
+                Console.WriteLine("Enter the Member Number:");
+                memberNumber = Console.ReadLine();
+                // TODO: Validate number
+
+                Console.WriteLine("Enter the Member Street Address:");
+                memberStreetAddress = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member City:");
+                memberCity = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member State:");
+                memberState = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member Zip:");
+                memberZip = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Email Address:");
+                memberEmail = Console.ReadLine();
+                // TODO: Validate
+
+                // Create the new member
+                Member thisMember = new Member();
+
+                thisMember.UserName = memberName;
+                thisMember.UserNumber = Convert.ToInt32(memberNumber);
+                thisMember.UserState = memberState;
+                thisMember.UserCity = memberCity;
+                thisMember.UserZipCode = memberZip;
+                thisMember.UserEmailAddress = memberEmail;
+
+                if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
                 {
-                    return string.Empty;
+                    return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
             }
 
@@ -59,8 +105,13 @@ namespace BLUE.ChocAn.Library.Commands
         [Display(Description = "Command Name: billchoc\nParameters: billchoc <date of service (dd/mm/yyyy)> <service code>\nDescription: Bills Chocoholics Anonymous with the service.")]
         public string billchoc(string dateOfService, string serviceCode)
         {
-            // TODO: Validate the member card to be used.
-            return string.Format("TODO: Bill ChocAn\n");
+            if (this._callbackTerminal.CurrentUser is IProvider)
+            {
+                ((IProvider)this._callbackTerminal.CurrentUser).BillChocAn();
+                return string.Empty;
+            }
+
+            return this.InsufficientPrivilegeMessage();
         }
 
         [Display(Description="Command Name: clear\nDescription: Clears the screen.")]
@@ -80,8 +131,22 @@ namespace BLUE.ChocAn.Library.Commands
         [Display(Description = "Command Name: deletemember\nParameters: deletemember <member number>\nDescription: Deletes a member from the system.")]
         public string deletemember(int memberNumber = -1)
         {
-            // TODO: Validate the member card to be used.
-            return string.Format("Delete Member");
+            if (this._callbackTerminal.CurrentUser is IOperator)
+            {
+                if (memberNumber == -1)
+                {
+                    Console.WriteLine("Enter the member number:\n");
+                    string memberNumberString = Console.ReadLine();
+                    memberNumber = Convert.ToInt32(memberNumberString);
+                }
+
+                if (((IOperator)this._callbackTerminal.CurrentUser).DeleteMember(memberNumber))
+                {
+                    return string.Empty;
+                }
+            }
+
+            return this.InsufficientPrivilegeMessage();
         }
 
         [Display(Description = "Command Name: echo\nParameters: echo <message>\nDescription: Prints the message.")]
@@ -93,8 +158,24 @@ namespace BLUE.ChocAn.Library.Commands
         [Display(Description = "Command Name: enterim\nParameters: enterim <seconds until enter>\nDescription: Enters interactive mode with an optional time period until enter.")]
         public string enterim(int secondsUntilEnter = -1)
         {
-            // TODO: Validate the member card to be used.
-            return string.Format("TODO: Validate Card\n");
+            if (this._callbackTerminal.CurrentUser is IManager)
+            {
+                if (secondsUntilEnter == -1)
+                {
+                    Console.WriteLine("Enter the time until enter (s):\n");
+                    string memberNumberString = Console.ReadLine();
+                    secondsUntilEnter = Convert.ToInt32(memberNumberString);
+                }
+
+                return string.Empty;
+
+                //if (((IManager)this._callbackTerminal.CurrentUser).e(secondsUntilEnter))
+                //{
+                //    return string.Empty;
+                //}
+            }
+
+            return this.InsufficientPrivilegeMessage();
         }
 
         [Display(Description = "Command Name: exitim\nParameters: exitim <seconds until exit>\nDescription: Exits interactive mode with an optional time period until exit.")]
@@ -105,10 +186,39 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: genreport\nParameters: genreport <report name> <email=y/n>\nDescription: Generates the specified report on screen and optionally emails it to you.")]
-        public string genreport(string reportName, bool email = false)
+        public string genreport(string reportName = "")
         {
-            // TODO: Validate the member card to be used.
-            return string.Format("TODO: Generate Report\n");
+            if (this._callbackTerminal.CurrentUser is IManager)
+            {
+                if (reportName == "")
+                {
+                    Console.WriteLine("Which report would you like to run?\n");
+                    reportName = Console.ReadLine();
+                }
+
+                switch (reportName)
+                {
+                    case "1":
+                        ((IManager)this._callbackTerminal.CurrentUser).GenerateManagersSummary();
+                        break;
+                    case "2":
+                        ((IManager)this._callbackTerminal.CurrentUser).GenerateMemberReport();
+                        break;
+                    case "3":
+                        ((IManager)this._callbackTerminal.CurrentUser).GenerateProviderReport();
+                        break;
+                    case "4":
+                        ((IManager)this._callbackTerminal.CurrentUser).GenerateEFTRecord();
+                        break;
+                    case "5":
+                        ((IManager)this._callbackTerminal.CurrentUser).GenerateAllReports();
+                        break;
+                }
+
+                return string.Empty;
+            }
+
+            return this.InsufficientPrivilegeMessage();
         }
 
         [Display(Description = "Command Name: history\nDescription: Show the historical list of commands.")]
@@ -196,12 +306,14 @@ namespace BLUE.ChocAn.Library.Commands
                 if (password == "password")
                 {
                     this._callbackTerminal.CurrentUser = newUser;
+                    this._callbackTerminal.UpdateTerminalPrompt();
                     return string.Format("Successful login for user \'{0}\'. Type 'help' to see the new available commands.\n", userName);
                 }
             }
             else
             {
                 this._callbackTerminal.CurrentUser = newUser;
+                this._callbackTerminal.UpdateTerminalPrompt();
                 return string.Format("Successful login for user \'{0}\'. Type 'help' to see the new available commands.\n", userName);
             }
 
@@ -221,6 +333,7 @@ namespace BLUE.ChocAn.Library.Commands
             if (Console.ReadLine().ToLower() == "y")
             {
                 this._callbackTerminal.CurrentUser = new User();
+                this._callbackTerminal.UpdateTerminalPrompt();
                 this.clear();
                 return string.Format("Logged Out.\n");
             }
@@ -359,8 +472,13 @@ namespace BLUE.ChocAn.Library.Commands
         [Display(Description = "Command Name: viewpd\nDescription: View the provider dictionary.")]
         public string viewpd()
         {
-            // TODO: View the provider dictionary
-            return string.Format("TODO: View Provider Dictionary\n");
+            if (this._callbackTerminal.CurrentUser is IProvider)
+            {
+                ((IProvider)this._callbackTerminal.CurrentUser).ViewProviderDictionary();
+                return string.Empty;
+            }
+
+            return this.InsufficientPrivilegeMessage();
         }
 
         [Display(Description = "Command Name: whoami\nDescription: Displays the curent user.")]

@@ -8,11 +8,26 @@ namespace BLUE.ChocAn.Library.Reports.Member_Reports
 {
     public class MemberReport : Report
     {
-        public override string GenerateReport(List<System.Net.Mail.MailAddress> emailAddressList = null)
+        public override string ReportString()
         {
             throw new NotImplementedException();
         }
 
         public override ReportType TypeOfReport { get { return ReportType.Member; } }
+
+        public override string ReportTitle
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override string ReportBody
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public override string ReportHTML()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

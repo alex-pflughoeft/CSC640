@@ -8,10 +8,10 @@ namespace BLUE.ChocAn.Library.Users.Managers
 {
     interface IManager
     {
-        void GenerateMemberReport();
-        void GenerateProviderReport();
-        void GenerateEFTRecord();
-        void GenerateManagersSummary();
-        void GenerateAllReports();
+        void GenerateMemberReport(bool sendEmail = false);
+        void GenerateProviderReport(bool sendEmail = false);
+        void GenerateEFTRecord(bool sendEmail = false);
+        void GenerateManagersSummary(bool sendEmail = false);
+        void GenerateAllReports(bool sendEmail = false);
     }
 }

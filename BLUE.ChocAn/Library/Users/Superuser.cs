@@ -11,12 +11,27 @@ namespace BLUE.ChocAn.Library.Users
 {
     public class Superuser : User, IProvider, IOperator, IManager
     {
-        public override string Username { get { return "Super User"; }}
+        #region Public Properties
+
+        public override string Username { get { return "SuperUser"; }}
         public override UserRole CurrentRole { get { return UserRole.Super; } }
+
+        #endregion
+
+        #region Constructors
+
+        public Superuser()
+        {
+        }
+
+        #endregion
+
+        #region Public Methods
 
         public bool ValidateMemberCard(Member member)
         {
-            throw new NotImplementedException();
+            member.ActivateCard();
+            return true;
         }
 
         public bool ValidateMemberCard(int memberCardNumber)
@@ -34,7 +49,7 @@ namespace BLUE.ChocAn.Library.Users
             throw new NotImplementedException();
         }
 
-        public bool AddMember()
+        public bool AddMember(Member member)
         {
             throw new NotImplementedException();
         }
@@ -59,7 +74,7 @@ namespace BLUE.ChocAn.Library.Users
             throw new NotImplementedException();
         }
 
-        public bool AddProvider()
+        public bool AddProvider(Provider provider)
         {
             throw new NotImplementedException();
         }
@@ -74,7 +89,7 @@ namespace BLUE.ChocAn.Library.Users
             throw new NotImplementedException();
         }
 
-        public bool UpdateProvider(Member provider)
+        public bool UpdateProvider(Provider provider)
         {
             throw new NotImplementedException();
         }
@@ -84,29 +99,31 @@ namespace BLUE.ChocAn.Library.Users
             throw new NotImplementedException();
         }
 
-        public void GenerateMemberReport()
+        public void GenerateMemberReport(bool sendEmail = false)
         {
             throw new NotImplementedException();
         }
 
-        public void GenerateProviderReport()
+        public void GenerateProviderReport(bool sendEmail = false)
         {
             throw new NotImplementedException();
         }
 
-        public void GenerateEFTRecord()
+        public void GenerateEFTRecord(bool sendEmail = false)
         {
             throw new NotImplementedException();
         }
 
-        public void GenerateManagersSummary()
+        public void GenerateManagersSummary(bool sendEmail = false)
         {
             throw new NotImplementedException();
         }
 
-        public void GenerateAllReports()
+        public void GenerateAllReports(bool sendEmail = false)
         {
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }

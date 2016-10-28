@@ -111,6 +111,18 @@ namespace BLUE.ChocAn.Library
             }
         }
 
+        public void UpdateTerminalPrompt()
+        {
+            if (this.CurrentUser.CurrentRole == UserRole.Guest)
+            {
+                this._readPrompt = "ChocAnon> ";
+            }
+            else
+            {
+                this._readPrompt = string.Format("ChocAnon.{0}> ", this.CurrentUser.Username);
+            }
+        }
+
         #endregion
 
         #region Private Methods

@@ -8,26 +8,39 @@ namespace BLUE.ChocAn.Library.Users.Providers
 {
     public class Provider : User, IProvider
     {
+        #region Public Properties
+
+        public override string Username { get { return "Provider"; } }
+        public override UserRole CurrentRole { get { return UserRole.Provider; } }
+
+        #endregion
+
+        #region Constructors
+
         public Provider()
         {
             // Default Constructor
         }
 
-        public override string Username { get { return "Provider"; } }
-        public override UserRole CurrentRole { get { return UserRole.Provider; } }
+        #endregion
+
+        #region Public Methods
 
         public bool ValidateMemberCard(Member member)
         {
-            // TODO: Validate the card here.
-            Console.WriteLine("Card Number \'{0}\' has been validated.\n", member.MemberNumber.ToString());
+            member.ActivateCard();
 
             return true;
         }
 
         public bool ValidateMemberCard(int memberCardNumber)
         {
-            // TODO: Validate the card here.
-            Console.WriteLine("Card Number \'{0}\' has been validated.\n", memberCardNumber.ToString());
+            // TODO: Get member corresponding to that card number
+            Member member = new Member();
+
+            member.ActivateCard();
+
+            Console.WriteLine("Card Number \'{0}\' has been validated for member \'{1}\'.\n", member.CardNumber.ToString(), member.UserName);
 
             return true;
         }
@@ -51,5 +64,7 @@ namespace BLUE.ChocAn.Library.Users.Providers
         {
             // TODO: Vied the provider dictionary
         }
+
+        #endregion
     }
 }

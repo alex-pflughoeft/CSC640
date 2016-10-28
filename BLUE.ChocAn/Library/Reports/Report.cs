@@ -8,16 +8,11 @@ namespace BLUE.ChocAn.Library.Reports
 {
     public abstract class Report
     {
-        public abstract string GenerateReport(List<MailAddress> emailAddressList = null);
+        public abstract string ReportTitle { get; }
+        public abstract string ReportBody { get; }
         public abstract ReportType TypeOfReport { get; }
-
-        public static Dictionary<ReportType, Report> ReportList = new Dictionary<ReportType, Report>()
-        {
-            { ReportType.ManagerSummary, new ManagerSummaryReport() },
-            { ReportType.EFTRecord, new EFTReport() },
-            { ReportType.Provider, new ProviderReport() },
-            { ReportType.Member, new MemberReport() }
-        };
+        public abstract string ReportString();
+        public abstract string ReportHTML();
     }
 
     public enum ReportType

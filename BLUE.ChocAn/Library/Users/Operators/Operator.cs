@@ -49,17 +49,41 @@ namespace BLUE.ChocAn.Library.Users.Operators
 
         public bool DeleteMember(Member member)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.DeleteUser(member.UserNumber);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool DeleteMember(int memberNumber)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.DeleteUser(memberNumber);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool UpdateMember(Member member)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.UpdateUser(member);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool UpdateMember(int memberNumber)
@@ -69,22 +93,54 @@ namespace BLUE.ChocAn.Library.Users.Operators
 
         public bool AddProvider(Provider provider)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.AddUser(provider);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool DeleteProvider(Provider provider)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.DeleteUser(provider.UserNumber);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool DeleteProvider(int providerNumber)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.DeleteUser(providerNumber);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool UpdateProvider(Provider provider)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.UpdateUser(provider);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool UpdateProvider(int providerNumber)

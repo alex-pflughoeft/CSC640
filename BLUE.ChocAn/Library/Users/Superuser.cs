@@ -1,4 +1,5 @@
-﻿using BLUE.ChocAn.Library.Users.Managers;
+﻿using BLUE.ChocAn.Library.Database;
+using BLUE.ChocAn.Library.Users.Managers;
 using BLUE.ChocAn.Library.Users.Operators;
 using BLUE.ChocAn.Library.Users.Providers;
 using System;
@@ -11,6 +12,12 @@ namespace BLUE.ChocAn.Library.Users
 {
     public class Superuser : User, IProvider, IOperator, IManager
     {
+        #region Private Variables
+
+        private DBConnection _dbConnection;
+
+        #endregion
+
         #region Public Properties
 
         public override string Username { get { return "superuser"; }}
@@ -22,6 +29,7 @@ namespace BLUE.ChocAn.Library.Users
 
         public Superuser()
         {
+            // Default constructor
         }
 
         #endregion
@@ -51,22 +59,54 @@ namespace BLUE.ChocAn.Library.Users
 
         public bool AddMember(Member member)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.AddUser(member);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool DeleteMember(Member member)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.DeleteUser(member.UserNumber);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool DeleteMember(int memberNumber)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.DeleteUser(memberNumber);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool UpdateMember(Member member)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.UpdateUser(member);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool UpdateMember(int memberNumber)
@@ -76,22 +116,54 @@ namespace BLUE.ChocAn.Library.Users
 
         public bool AddProvider(Provider provider)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.AddUser(provider);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool DeleteProvider(Provider provider)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.DeleteUser(provider.UserNumber);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool DeleteProvider(int providerNumber)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.DeleteUser(providerNumber);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool UpdateProvider(Provider provider)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbConnection.UpdateUser(provider);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool UpdateProvider(int providerNumber)
@@ -122,6 +194,11 @@ namespace BLUE.ChocAn.Library.Users
         public void GenerateAllReports(bool sendEmail = false)
         {
             throw new NotImplementedException();
+        }
+
+        public void ConfigureDBConnection(string serverName, string databaseName)
+        {
+            this._dbConnection = new DBConnection(serverName, databaseName, this.Username, this._userPassword);
         }
 
         #endregion

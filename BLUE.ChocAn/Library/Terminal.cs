@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace BLUE.ChocAn.Library
 {
@@ -26,6 +27,7 @@ namespace BLUE.ChocAn.Library
             this._commandNamespace = commandNameSpace;
             this.HistoricalQueue = new Queue<string>();
             this.CurrentUser = new User();
+            this.IsInteractiveMode = false;
 
             this._commandLibraries = new Dictionary<string, Dictionary<string, IEnumerable<ParameterInfo>>>();
 
@@ -61,6 +63,7 @@ namespace BLUE.ChocAn.Library
         public User CurrentUser { get; set; }
         public Queue<string> HistoricalQueue { get; private set; }
         public string TerminalName { get { return "ChocAn Terminal v1.0.0"; } }
+        public bool IsInteractiveMode { get; private set; }
 
         #endregion
 
@@ -141,9 +144,37 @@ namespace BLUE.ChocAn.Library
             return result + "\n";
         }
 
+        public void EnableInteractiveMode(int secondsUntilExit = -1)
+        {
+            this.IsInteractiveMode = true;
+
+            if (secondsUntilExit > 0)
+            {
+                this.DisableInteractiveMode(secondsUntilExit);
+            }
+        }
+
+        public void DisableInteractiveMode(int secondsUntilExit = -1)
+        {
+            if (secondsUntilExit == -1)
+            {
+                this.IsInteractiveMode = false;
+            }
+            else
+            {
+                var delayInterval = TimeSpan.FromMilliseconds(secondsUntilExit * 1000);
+                var runningTask = DoActionAfter(delayInterval, () => this.DisableInteractiveMode());
+            }
+        }
+
         #endregion
 
         #region Private Methods
+
+        private Task DoActionAfter(TimeSpan delay, Action action)
+        {
+            return Task.Delay(delay).ContinueWith(_ => action());
+        }
 
         private string Execute(ConsoleCommand command)
         {

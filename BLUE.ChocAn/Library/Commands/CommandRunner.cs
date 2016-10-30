@@ -62,7 +62,7 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Operator)]
         public string addmember()
         {
-            if (this._callbackTerminal.CurrentUser is IOperator)
+            if (this._callbackTerminal.IsInteractiveMode)
             {
                 string memberName;
                 string memberNumber;
@@ -116,16 +116,14 @@ namespace BLUE.ChocAn.Library.Commands
                 }
             }
 
-            return this.InsufficientPrivilegeMessage();
+            return "The terminal must be in interactive mode to run this command.\n";
         }
 
         [Display(Description = "Command Name: addprovider\nDescription: Adds a provider to the system.")]
         [RoleRequired(Role = UserRole.Operator)]
         public string addprovider()
         {
-            // TODO: Under Construction
-
-            if (this._callbackTerminal.CurrentUser is IOperator)
+            if (this._callbackTerminal.IsInteractiveMode)
             {
                 string memberName;
                 string memberNumber;
@@ -272,19 +270,24 @@ namespace BLUE.ChocAn.Library.Commands
         {
             // TODO: Under construction
 
-            if (memberNumber == -1)
+            if (this._callbackTerminal.IsInteractiveMode)
             {
-                Console.WriteLine("Enter the member number:\n");
-                string memberNumberString = Console.ReadLine();
-                memberNumber = Convert.ToInt32(memberNumberString);
-            }
+                if (memberNumber == -1)
+                {
+                    Console.WriteLine("Enter the member number:\n");
+                    string memberNumberString = Console.ReadLine();
+                    memberNumber = Convert.ToInt32(memberNumberString);
+                }
 
-            if (((IOperator)this._callbackTerminal.CurrentUser).DeleteMember(memberNumber))
-            {
+                if (((IOperator)this._callbackTerminal.CurrentUser).DeleteMember(memberNumber))
+                {
+                    return string.Empty;
+                }
+
                 return string.Empty;
             }
 
-            return string.Empty;
+            return "";
         }
 
         [Display(Description = "Command Name: deleteprovider\nParameters: deleteprovider <provider number>\nDescription: Deletes a provider from the system.")]
@@ -292,20 +295,24 @@ namespace BLUE.ChocAn.Library.Commands
         public string deleteprovider(int providerNumber = -1)
         {
             // TODO: Under construction
-
-            if (providerNumber == -1)
+            if (this._callbackTerminal.IsInteractiveMode)
             {
-                Console.WriteLine("Enter the member number:\n");
-                string providerNumberString = Console.ReadLine();
-                providerNumber = Convert.ToInt32(providerNumberString);
-            }
+                if (providerNumber == -1)
+                {
+                    Console.WriteLine("Enter the member number:\n");
+                    string providerNumberString = Console.ReadLine();
+                    providerNumber = Convert.ToInt32(providerNumberString);
+                }
 
-            if (((IOperator)this._callbackTerminal.CurrentUser).DeleteProvider(providerNumber))
-            {
+                if (((IOperator)this._callbackTerminal.CurrentUser).DeleteProvider(providerNumber))
+                {
+                    return string.Empty;
+                }
+
                 return string.Empty;
             }
 
-            return string.Empty;
+            return "";
         }
 
         [Display(Description = "Command Name: echo\nParameters: echo <message>\nDescription: Prints the message.")]
@@ -315,28 +322,47 @@ namespace BLUE.ChocAn.Library.Commands
             return message + "\n";
         }
 
-        [Display(Description = "Command Name: enterim\nParameters: enterim <seconds until enter>\nDescription: Enters interactive mode with an optional time period until enter.")]
+        [Display(Description = "Command Name: enterim\nParameters: enterim <seconds until enter>\nDescription: Enters interactive mode with an optional time period until exit.")]
         [RoleRequired(Role = UserRole.Manager)]
-        public string enterim(int secondsUntilEnter = -1)
+        public string enterim(int secondsUntilExit = -1)
         {
-            // TODO: Under construction
-
-            if (secondsUntilEnter == -1)
+            if (!this._callbackTerminal.IsInteractiveMode)
             {
-                Console.WriteLine("Enter the time until enter (s):\n");
-                string memberNumberString = Console.ReadLine();
-                secondsUntilEnter = Convert.ToInt32(memberNumberString);
+                if (secondsUntilExit == -1)
+                {
+                    Console.WriteLine("Would you like to set up a time to exit? (y/n)\n");
+                    string exit = Console.ReadLine();
+
+                    if (exit.ToLower() == "y")
+                    {
+                        Console.WriteLine("Enter the time until exit (s):\n");
+                        string memberNumberString = Console.ReadLine();
+                        secondsUntilExit = Convert.ToInt32(memberNumberString);
+                    }
+                }
+
+                this._callbackTerminal.EnableInteractiveMode(secondsUntilExit);
+
+                return string.Empty;
             }
 
-            return string.Empty;
+            // Already in interactive mode
+            return "";
         }
 
         [Display(Description = "Command Name: exitim\nParameters: exitim <seconds until exit>\nDescription: Exits interactive mode with an optional time period until exit.")]
         [RoleRequired(Role = UserRole.Manager)]
         public string exitim(int secondsUntilExit = -1)
         {
-            // TODO: Validate the member card to be used.
-            return string.Format("TODO: Exit Interactive Mode\n");
+            if (this._callbackTerminal.IsInteractiveMode)
+            {
+                this._callbackTerminal.DisableInteractiveMode(secondsUntilExit);
+                // TODO: Validate the member card to be used.
+                return string.Format("TODO: Exit Interactive Mode\n");
+            }
+
+            // Not in interactive mode
+            return "";
         }
 
         [Display(Description = "Command Name: genreport\nParameters: genreport <report name> <email=y/n>\nDescription: Generates the specified report on screen and optionally emails it to you.")]
@@ -631,68 +657,7 @@ namespace BLUE.ChocAn.Library.Commands
         public string updatemember()
         {
             // TODO: Under Construction
-
-            string memberName;
-            string memberNumber;
-            string memberStreetAddress;
-            string memberCity;
-            string memberState;
-            string memberZip;
-            string memberEmail;
-
-            Console.WriteLine("Enter the Member Name:");
-            memberName = Console.ReadLine();
-            // TODO: Validate name
-
-            Console.WriteLine("Enter the Member Number:");
-            memberNumber = Console.ReadLine();
-            // TODO: Validate number
-
-            Console.WriteLine("Enter the Member Street Address:");
-            memberStreetAddress = Console.ReadLine();
-            // TODO: Validate
-
-            Console.WriteLine("Enter the Member City:");
-            memberCity = Console.ReadLine();
-            // TODO: Validate
-
-            Console.WriteLine("Enter the Member State:");
-            memberState = Console.ReadLine();
-            // TODO: Validate
-
-            Console.WriteLine("Enter the Member Zip:");
-            memberZip = Console.ReadLine();
-            // TODO: Validate
-
-            Console.WriteLine("Enter the Email Address:");
-            memberEmail = Console.ReadLine();
-            // TODO: Validate
-
-            // Create the new member
-            Member thisMember = new Member();
-
-            thisMember.UserName = memberName;
-            thisMember.UserNumber = Convert.ToInt32(memberNumber);
-            thisMember.UserState = memberState;
-            thisMember.UserCity = memberCity;
-            thisMember.UserZipCode = memberZip;
-            thisMember.UserEmailAddress = memberEmail;
-
-            if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
-            {
-                return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
-            }
-
-            return string.Empty;
-        }
-
-        [Display(Description = "Command Name: updateprovider\nDescription: Updates a provider to the system.")]
-        [RoleRequired(Role = UserRole.Operator)]
-        public string updateprovider()
-        {
-            // TODO: Under Construction
-
-            if (this._callbackTerminal.CurrentUser is IOperator)
+            if (this._callbackTerminal.IsInteractiveMode)
             {
                 string memberName;
                 string memberNumber;
@@ -744,9 +709,78 @@ namespace BLUE.ChocAn.Library.Commands
                 {
                     return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
+
+                return string.Empty;
             }
 
-            return this.InsufficientPrivilegeMessage();
+            return "";
+        }
+
+        [Display(Description = "Command Name: updateprovider\nDescription: Updates a provider to the system.")]
+        [RoleRequired(Role = UserRole.Operator)]
+        public string updateprovider()
+        {
+            // TODO: Under Construction
+            if (this._callbackTerminal.IsInteractiveMode)
+            {
+                if (this._callbackTerminal.CurrentUser is IOperator)
+                {
+                    string memberName;
+                    string memberNumber;
+                    string memberStreetAddress;
+                    string memberCity;
+                    string memberState;
+                    string memberZip;
+                    string memberEmail;
+
+                    Console.WriteLine("Enter the Member Name:");
+                    memberName = Console.ReadLine();
+                    // TODO: Validate name
+
+                    Console.WriteLine("Enter the Member Number:");
+                    memberNumber = Console.ReadLine();
+                    // TODO: Validate number
+
+                    Console.WriteLine("Enter the Member Street Address:");
+                    memberStreetAddress = Console.ReadLine();
+                    // TODO: Validate
+
+                    Console.WriteLine("Enter the Member City:");
+                    memberCity = Console.ReadLine();
+                    // TODO: Validate
+
+                    Console.WriteLine("Enter the Member State:");
+                    memberState = Console.ReadLine();
+                    // TODO: Validate
+
+                    Console.WriteLine("Enter the Member Zip:");
+                    memberZip = Console.ReadLine();
+                    // TODO: Validate
+
+                    Console.WriteLine("Enter the Email Address:");
+                    memberEmail = Console.ReadLine();
+                    // TODO: Validate
+
+                    // Create the new member
+                    Member thisMember = new Member();
+
+                    thisMember.UserName = memberName;
+                    thisMember.UserNumber = Convert.ToInt32(memberNumber);
+                    thisMember.UserState = memberState;
+                    thisMember.UserCity = memberCity;
+                    thisMember.UserZipCode = memberZip;
+                    thisMember.UserEmailAddress = memberEmail;
+
+                    if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
+                    {
+                        return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
+                    }
+                }
+
+                return this.InsufficientPrivilegeMessage();
+            }
+
+            return "";
         }
 
         [Display(Description = "Command Name: validatecard\nParameters: validatecard <member card id>\nDescription: Validate a members card.")]

@@ -51,6 +51,11 @@ namespace BLUE.ChocAn.Library.Users
             this.CardValidated = false;
         }
 
+        public void ViewServices()
+        {
+            // TODO: Finish me!
+        }
+
         #endregion
     }
 

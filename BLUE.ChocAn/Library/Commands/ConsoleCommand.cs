@@ -19,11 +19,12 @@ namespace BLUE.ChocAn.Library.Commands
 
         public ConsoleCommand(string input)
         {
+            this._arguments = new List<string>();
             // Ugly regex to split string on spaces, but preserve quoted text intact:
-            var stringArray =
-                Regex.Split(input,
-                    "(?<=^[^\"]*(?:\"[^\"]*\"[^\"]*)*) (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-            _arguments = new List<string>();
+            var stringArray = Regex.Split(
+                                          input,
+                                          "(?<=^[^\"]*(?:\"[^\"]*\"[^\"]*)*) (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+
             for (int i = 0; i < stringArray.Length; i++)
             {
                 // The first element is always the command:
@@ -34,6 +35,7 @@ namespace BLUE.ChocAn.Library.Commands
                     // Set the default:
                     this.LibraryClassName = "CommandRunner";
                     string[] s = stringArray[0].Split('.');
+
                     if (s.Length == 2)
                     {
                         this.LibraryClassName = s[0];
@@ -56,7 +58,8 @@ namespace BLUE.ChocAn.Library.Commands
                         var quoted = captureQuotedText.Match(match.Captures[0].Value);
                         argument = quoted.Captures[0].Value;
                     }
-                    _arguments.Add(argument);
+
+                    this._arguments.Add(argument);
                 }
             }
         }
@@ -73,7 +76,7 @@ namespace BLUE.ChocAn.Library.Commands
         {
             get
             {
-                return _arguments;
+                return this._arguments;
             }
         }
 
@@ -83,7 +86,7 @@ namespace BLUE.ChocAn.Library.Commands
 
         public override string ToString()
         {
-            return Name;
+            return this.Name;
         }
 
         #endregion

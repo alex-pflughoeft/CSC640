@@ -10,6 +10,7 @@ namespace BLUE.ChocAn.Library.Reports.Manager_Reports
     {
         public override string ReportString()
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
@@ -17,16 +18,19 @@ namespace BLUE.ChocAn.Library.Reports.Manager_Reports
 
         public override string ReportTitle
         {
+            // TODO: Finish me
             get { throw new NotImplementedException(); }
         }
 
         public override string ReportBody
         {
+            // TODO: Finish me
             get { throw new NotImplementedException(); }
         }
 
         public override string ReportHTML()
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
     }

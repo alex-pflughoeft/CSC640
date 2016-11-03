@@ -8,18 +8,18 @@ namespace BLUE.ChocAn.Library.Other
 {
     public static class Matrix
     {
-        public static bool thistime = false;
+        private static bool _thistime = false;
 
         public static void MatrixStep(int width, int height, int[] y, int[] l)
         {
             int x;
-            thistime = !thistime;
+            _thistime = !_thistime;
 
             for (x = 0; x < width; ++x)
             {
                 if (x % 11 == 10)
                 {
-                    if (!thistime)
+                    if (!_thistime)
                         continue;
 
                     Console.ForegroundColor = ConsoleColor.White;

@@ -82,7 +82,7 @@ namespace BLUE.ChocAn.Library
                 {
                     this.HistoricalQueue.Enqueue(consoleInput);
                     var command = new ConsoleCommand(consoleInput);
-                    string result = Execute(command);
+                    string result = this.Execute(command);
                     this.WriteConsoleOutput(result);
                 }
                 catch (Exception e)
@@ -163,7 +163,7 @@ namespace BLUE.ChocAn.Library
             else
             {
                 var delayInterval = TimeSpan.FromMilliseconds(secondsUntilExit * 1000);
-                var runningTask = DoActionAfter(delayInterval, () => this.DisableInteractiveMode());
+                var runningTask = this.DoActionAfter(delayInterval, () => this.DisableInteractiveMode());
             }
         }
 
@@ -184,7 +184,7 @@ namespace BLUE.ChocAn.Library
             {
                 return string.Format("Command \'{0}\' does not exist\n", command.Name);
             }
-            var methodDictionary = _commandLibraries[command.LibraryClassName];
+            var methodDictionary = this._commandLibraries[command.LibraryClassName];
             if (!methodDictionary.ContainsKey(command.Name))
             {
                 return string.Format("Command \'{0}\' does not exist\n", command.Name);
@@ -250,7 +250,7 @@ namespace BLUE.ChocAn.Library
                     {
                         // Coming from the Console, all of our arguments are passed in as 
                         // strings. Coerce to the type to match the method paramter:
-                        value = ParseArgument(typeRequired, command.Arguments.ElementAt(i));
+                        value = this.ParseArgument(typeRequired, command.Arguments.ElementAt(i));
                         methodParameterValueList.RemoveAt(i);
                         methodParameterValueList.Insert(i, value);
                     }
@@ -258,7 +258,7 @@ namespace BLUE.ChocAn.Library
                     {
                         string argumentName = methodParam.Name;
                         string argumentTypeName = typeRequired.Name;
-                        string message = string.Format("" + "The value passed for argument '{0}' cannot be parsed to type '{1}'", argumentName, argumentTypeName);
+                        string message = string.Format("The value passed for argument '{0}' cannot be parsed to type '{1}'", argumentName, argumentTypeName);
                         throw new ArgumentException(message);
                     }
                 }

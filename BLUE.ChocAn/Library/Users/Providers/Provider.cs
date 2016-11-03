@@ -62,7 +62,7 @@ namespace BLUE.ChocAn.Library.Users.Providers
 
         public void ViewProviderDictionary()
         {
-            // TODO: Vied the provider dictionary
+            // TODO: View the provider dictionary
         }
 
         #endregion

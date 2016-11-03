@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BLUE.ChocAn.Library.Users.Managers
 {
-    interface IManager
+    internal interface IManager
     {
         void GenerateMemberReport(bool sendEmail = false);
         void GenerateProviderReport(bool sendEmail = false);

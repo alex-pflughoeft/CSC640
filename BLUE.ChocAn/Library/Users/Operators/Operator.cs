@@ -88,6 +88,7 @@ namespace BLUE.ChocAn.Library.Users.Operators
 
         public bool UpdateMember(int memberNumber)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
@@ -145,6 +146,7 @@ namespace BLUE.ChocAn.Library.Users.Operators
 
         public bool UpdateProvider(int providerNumber)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 

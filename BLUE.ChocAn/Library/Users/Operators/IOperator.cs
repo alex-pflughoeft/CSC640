@@ -3,7 +3,7 @@ using BLUE.ChocAn.Library.Users.Providers;
 
 namespace BLUE.ChocAn.Library.Users.Operators
 {
-    interface IOperator
+    internal interface IOperator
     {
         bool AddMember(Member member);
         bool DeleteMember(Member member);

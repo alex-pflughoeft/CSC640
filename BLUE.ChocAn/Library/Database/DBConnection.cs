@@ -65,7 +65,7 @@ namespace BLUE.ChocAn.Library.Database
 
         public Service GetService(int serviceId)
         {
-            // Get a service
+            // TODO: Get a service
             return new Service();
         }
 

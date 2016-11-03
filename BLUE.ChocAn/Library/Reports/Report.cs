@@ -6,15 +6,6 @@ using System.Net.Mail;
 
 namespace BLUE.ChocAn.Library.Reports
 {
-    public abstract class Report
-    {
-        public abstract string ReportTitle { get; }
-        public abstract string ReportBody { get; }
-        public abstract ReportType TypeOfReport { get; }
-        public abstract string ReportString();
-        public abstract string ReportHTML();
-    }
-
     public enum ReportType
     {
         ManagerSummary,
@@ -22,5 +13,14 @@ namespace BLUE.ChocAn.Library.Reports
         Provider,
         ProviderDictionary,
         EFTRecord
+    }
+
+    public abstract class Report
+    {
+        public abstract string ReportTitle { get; }
+        public abstract string ReportBody { get; }
+        public abstract ReportType TypeOfReport { get; }
+        public abstract string ReportString();
+        public abstract string ReportHTML();
     }
 }

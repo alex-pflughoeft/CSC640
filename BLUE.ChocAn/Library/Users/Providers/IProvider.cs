@@ -2,7 +2,7 @@
 
 namespace BLUE.ChocAn.Library.Users.Providers
 {
-    interface IProvider
+    internal interface IProvider
     {
         bool ValidateMemberCard(Member member);
         bool ValidateMemberCard(int memberCardNumber);

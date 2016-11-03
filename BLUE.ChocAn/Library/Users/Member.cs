@@ -3,6 +3,18 @@ using System.ComponentModel;
 
 namespace BLUE.ChocAn.Library.Users
 {
+    public enum MemberStatusEnum
+    {
+        [Description("Inactive")]
+        INACTIVE,
+
+        [Description("Active")]
+        ACTIVE,
+
+        [Description("Suspended")]
+        SUSPENDED
+    }
+
     public class Member : User
     {
         #region Public Properties
@@ -57,17 +69,5 @@ namespace BLUE.ChocAn.Library.Users
         }
 
         #endregion
-    }
-
-    public enum MemberStatusEnum
-    {
-        [Description("Inactive")]
-        INACTIVE,
-
-        [Description("Active")]
-        ACTIVE,
-
-        [Description("Suspended")]
-        SUSPENDED
     }
 }

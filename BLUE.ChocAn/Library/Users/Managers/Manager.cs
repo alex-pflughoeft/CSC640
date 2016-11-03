@@ -88,6 +88,7 @@ namespace BLUE.ChocAn.Library.Users.Managers
 
         public void GenerateAllReports(bool sendEmail = false)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 

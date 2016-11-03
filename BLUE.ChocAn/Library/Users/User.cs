@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 
 namespace BLUE.ChocAn.Library.Users
 {
+    public enum UserRole
+    {
+        All,
+        Guest, // Essentially a role for public commands
+        Member,
+        Provider,
+        Operator,
+        Manager,
+        Super, // The override role
+        None
+    }
+
     public class User
     {
         protected string _userPassword;
@@ -45,17 +57,5 @@ namespace BLUE.ChocAn.Library.Users
                 Console.WriteLine("Your new password has been set successfully!\n");
             }
         }
-    }
-
-    public enum UserRole
-    {
-        All,
-        Guest , // Essentially a role for public commands
-        Member,
-        Provider,
-        Operator,
-        Manager,
-        Super, // The override role
-        None
     }
 }

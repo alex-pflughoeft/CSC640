@@ -20,7 +20,7 @@ namespace BLUE.ChocAn.Library.Users
 
         #region Public Properties
 
-        public override string Username { get { return "superuser"; }}
+        public override string Username { get { return "superuser"; } }
         public override UserRole CurrentRole { get { return UserRole.Super; } }
 
         #endregion
@@ -44,16 +44,19 @@ namespace BLUE.ChocAn.Library.Users
 
         public bool ValidateMemberCard(int memberCardNumber)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
         public void BillChocAn()
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
         public void ViewProviderDictionary()
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
@@ -111,6 +114,7 @@ namespace BLUE.ChocAn.Library.Users
 
         public bool UpdateMember(int memberNumber)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
@@ -168,31 +172,37 @@ namespace BLUE.ChocAn.Library.Users
 
         public bool UpdateProvider(int providerNumber)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
         public void GenerateMemberReport(bool sendEmail = false)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
         public void GenerateProviderReport(bool sendEmail = false)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
         public void GenerateEFTRecord(bool sendEmail = false)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
         public void GenerateManagersSummary(bool sendEmail = false)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 
         public void GenerateAllReports(bool sendEmail = false)
         {
+            // TODO: Finish me
             throw new NotImplementedException();
         }
 

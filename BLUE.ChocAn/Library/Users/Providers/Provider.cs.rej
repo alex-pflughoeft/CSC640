@@ -1,0 +1,9 @@
+diff a/BLUE.ChocAn/Library/Users/Providers/Provider.cs b/BLUE.ChocAn/Library/Users/Providers/Provider.cs	(rejected hunks)
+@@ -20,6 +20,7 @@
+         public Provider()
+         {
+             // Default Constructor
++            // Brad was here; Brad's first push
+         }
+ 
+         #endregion

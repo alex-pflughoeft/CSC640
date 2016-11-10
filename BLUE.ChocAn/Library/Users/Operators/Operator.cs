@@ -13,7 +13,7 @@ namespace BLUE.ChocAn.Library.Users.Operators
         #region Private Variables
 
         private DBConnection _dbConnection;
-
+        //brad
         #endregion
 
         #region Public Properties

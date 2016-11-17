@@ -36,6 +36,7 @@ namespace BLUE.ChocAn.Library.Database
         public User GetUser(int userNumber)
         {
             // TODO: Get a specific user from the database
+            // my change
             return new User();
         }
 

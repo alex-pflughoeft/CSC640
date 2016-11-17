@@ -19,10 +19,11 @@ namespace BLUE.ChocAn.Library.Users
     {
         #region Public Properties
 
-        public override string Username { get { return "member"; } }
+        public override UserRole CurrentRole { get { return UserRole.Member; } }
         public MemberStatusEnum MemberStatus { get; set; }
         public int CardNumber { get; set; }
         public bool CardValidated { get; private set; }
+        public virtual string Username { get { return "member"; } }
 
         #endregion
 
@@ -49,18 +50,6 @@ namespace BLUE.ChocAn.Library.Users
                                   this.UserZipCode,
                                   this.UserEmailAddress,
                                   EnumUtilities.GetEnumDescription(this.MemberStatus));
-        }
-
-        public void ActivateCard()
-        {
-            this.MemberStatus = MemberStatusEnum.ACTIVE;
-            this.CardValidated = true;
-        }
-
-        public void SuspendCard()
-        {
-            this.MemberStatus = MemberStatusEnum.SUSPENDED;
-            this.CardValidated = false;
         }
 
         public void ViewServices()

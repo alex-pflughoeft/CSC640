@@ -28,7 +28,7 @@ namespace BLUE.ChocAn.Library.Users.Providers
 
         public bool ValidateMemberCard(Member member)
         {
-            member.ActivateCard();
+            member.MemberStatus = MemberStatusEnum.ACTIVE;
 
             return true;
         }
@@ -38,7 +38,7 @@ namespace BLUE.ChocAn.Library.Users.Providers
             // TODO: Get member corresponding to that card number
             Member member = new Member();
 
-            member.ActivateCard();
+            member.MemberStatus = MemberStatusEnum.ACTIVE;
 
             Console.WriteLine("Card Number \'{0}\' has been validated for member \'{1}\'.\n", member.CardNumber.ToString(), member.UserName);
 

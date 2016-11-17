@@ -32,23 +32,11 @@ namespace BLUE.ChocAn.Library.Users
 
         public bool ValidateMemberCard(Member member)
         {
-            member.ActivateCard();
+            member.MemberStatus = MemberStatusEnum.ACTIVE;
             return true;
         }
 
-        public bool ValidateMemberCard(int memberCardNumber)
-        {
-            // TODO: Finish me
-            throw new NotImplementedException();
-        }
-
         public void BillChocAn()
-        {
-            // TODO: Finish me
-            throw new NotImplementedException();
-        }
-
-        public void ViewProviderDictionary()
         {
             // TODO: Finish me
             throw new NotImplementedException();

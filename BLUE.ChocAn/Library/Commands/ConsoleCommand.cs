@@ -33,7 +33,7 @@ namespace BLUE.ChocAn.Library.Commands
                     this.Name = stringArray[i];
 
                     // Set the default:
-                    this.LibraryClassName = "CommandRunner";
+                    this.LibraryClassName = "CommandPresenter";
                     string[] s = stringArray[0].Split('.');
 
                     if (s.Length == 2)

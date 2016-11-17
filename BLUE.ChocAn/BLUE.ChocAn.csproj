@@ -42,7 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Library\Commands\CommandRunner.cs" />
+    <Compile Include="Library\Commands\CommandPresenter.cs" />
     <Compile Include="Library\Communication\EmailSender.cs" />
     <Compile Include="Library\Commands\ConsoleCommand.cs" />
     <Compile Include="Library\Database\DBConnection.cs" />
@@ -60,7 +60,7 @@
     <Compile Include="Library\Reports\Provider Reports\ProviderReport.cs" />
     <Compile Include="Library\Reports\Report.cs" />
     <Compile Include="Library\Service.cs" />
-    <Compile Include="Library\Terminal.cs" />
+    <Compile Include="Library\TerminalView.cs" />
     <Compile Include="Library\Users\Superuser.cs" />
     <Compile Include="Library\Users\User.cs" />
     <Compile Include="Library\Utils\EnumUtilities.cs" />

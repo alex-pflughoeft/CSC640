@@ -7,7 +7,7 @@ namespace BLUE.ChocAn
     {
         public static void Main(string[] args)
         {
-            Terminal terminal = new Terminal("ChocAnon> ", "BLUE.ChocAn.Library.Commands");
+            TerminalView terminal = new TerminalView("ChocAnon> ");
 
             Console.Title = terminal.TerminalName;
 

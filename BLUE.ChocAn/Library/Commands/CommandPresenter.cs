@@ -1,57 +1,169 @@
-﻿using BLUE.ChocAn.Library.Other;
+﻿using BLUE.ChocAn.Library.Database;
+using BLUE.ChocAn.Library.Other;
 using BLUE.ChocAn.Library.Users;
 using BLUE.ChocAn.Library.Users.Managers;
 using BLUE.ChocAn.Library.Users.Operators;
 using BLUE.ChocAn.Library.Users.Providers;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using WMPLib;
 
 namespace BLUE.ChocAn.Library.Commands
 {
-    public class CommandRunner
+    public class CommandPresenter
     {
         #region Private Variables
 
-        private Terminal _callbackTerminal;
+        private TerminalView _callbackTerminal;
+        private DBConnection _dbConnection;
+        private User _currentUser;
 
         #endregion
 
         #region Constructors
 
-        public CommandRunner(Terminal terminal)
+        public CommandPresenter(TerminalView terminal)
         {
             this._callbackTerminal = terminal;
+            this._currentUser = new User();
+            this.InitializaDbConnection();
+            this.CommandNamespace = "BLUE.ChocAn.Library.Commands";
+            this.InitializeCommandList();
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public Dictionary<string, Dictionary<string, IEnumerable<ParameterInfo>>> CommandLibraries { get; private set; }
+
+        public string CommandNamespace { get; private set; }
 
         #endregion
 
         #region Public Methods
 
-        public string RunMethodByName(string command, object[] parameters = null)
+        public string Execute(ConsoleCommand command)
         {
-            UserRole roleRequired = this.GetRoleRequired(command);
+            #region Validate the command name
 
-            if (roleRequired != UserRole.None)
+            if (!this.CommandLibraries.ContainsKey(command.LibraryClassName))
             {
-                if (this._callbackTerminal.CurrentUser.CurrentRole != UserRole.Super)
-                {
-                    if (roleRequired == UserRole.All || this._callbackTerminal.CurrentUser.CurrentRole == roleRequired)
-                    {
-                        return this.RunMethod(command, parameters);
-                    }
-                    else
-                    {
-                        return this.InsufficientPrivilegeMessage();
-                    }
-                }
-
-                return this.RunMethod(command, parameters);
+                return string.Format("Command \'{0}\' does not exist\n", command.Name);
+            }
+            var methodDictionary = this.CommandLibraries[command.LibraryClassName];
+            if (!methodDictionary.ContainsKey(command.Name))
+            {
+                return string.Format("Command \'{0}\' does not exist\n", command.Name);
             }
 
-            return string.Format("Command \'{0}\' was not found.", command);
+            #endregion
+
+            // Make sure the corret number of required arguments are provided:
+            var methodParameterValueList = new List<object>();
+            IEnumerable<ParameterInfo> paramInfoList = methodDictionary[command.Name].ToList();
+
+            // Validate proper # of required arguments provided. Some may be optional:
+            var requiredParams = paramInfoList.Where(p => p.IsOptional == false);
+            var optionalParams = paramInfoList.Where(p => p.IsOptional == true);
+            int requiredCount = requiredParams.Count();
+            int optionalCount = optionalParams.Count();
+            int providedCount = command.Arguments.Count();
+
+            if (requiredCount > providedCount)
+            {
+                return string.Format("Missing required argument. {0} required, {1} optional, {2} provided\n", requiredCount, optionalCount, providedCount);
+            }
+
+            // Make sure all arguments are coerced to the proper type, and that there is a 
+            // value for every emthod parameter. The InvokeMember method fails if the number 
+            // of arguments provided does not match the number of parameters in the 
+            // method signature, even if some are optional:
+            // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+            if (paramInfoList.Count() > 0)
+            {
+                // Populate the list with default values:
+                foreach (var param in paramInfoList)
+                {
+                    // This will either add a null object reference if the param is required 
+                    // by the method, or will set a default value for optional parameters. in 
+                    // any case, there will be a value or null for each method argument 
+                    // in the method signature:
+                    methodParameterValueList.Add(param.DefaultValue);
+                }
+
+                // Now walk through all the arguments passed from the console and assign 
+                // accordingly. Any optional arguments not provided have already been set to 
+                // the default specified by the method signature:
+                for (int i = 0; i < command.Arguments.Count(); i++)
+                {
+                    ParameterInfo methodParam = null;
+
+                    try
+                    {
+                        methodParam = paramInfoList.ElementAt(i);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("The command contains too many arguments. Type help <command> for argument information.\n");
+                        return string.Empty;
+                    }
+
+                    var typeRequired = methodParam.ParameterType;
+                    object value = null;
+
+                    try
+                    {
+                        // Coming from the Console, all of our arguments are passed in as 
+                        // strings. Coerce to the type to match the method paramter:
+                        value = this.ParseArgument(typeRequired, command.Arguments.ElementAt(i));
+                        methodParameterValueList.RemoveAt(i);
+                        methodParameterValueList.Insert(i, value);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        string argumentName = methodParam.Name;
+                        string argumentTypeName = typeRequired.Name;
+                        string message = string.Format("The value passed for argument '{0}' cannot be parsed to type '{1}'", argumentName, argumentTypeName);
+                        throw new ArgumentException(message);
+                    }
+                }
+            }
+
+            #region Invoke Method Using Reflection
+
+            Assembly current = typeof(Program).Assembly;
+
+            // Need the full Namespace for this:
+            Type commandLibaryClass =
+                current.GetType(this.CommandNamespace + "." + command.LibraryClassName);
+
+            object[] inputArgs = null;
+            if (methodParameterValueList.Count > 0)
+            {
+                inputArgs = methodParameterValueList.ToArray();
+            }
+
+            var typeInfo = commandLibaryClass;
+
+            // This will throw if the number of arguments provided does not match the number 
+            // required by the method signature, even if some are optional:
+            try
+            {
+                var result = this.RunMethodByName(command.Name, inputArgs);
+                return result.ToString();
+            }
+            catch (TargetInvocationException ex)
+            {
+                throw ex.InnerException;
+            }
+
+            #endregion
         }
 
         #endregion
@@ -62,122 +174,21 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Operator)]
         public string addmember()
         {
-            if (this._callbackTerminal.IsInteractiveMode)
-            {
-                string memberName;
-                string memberNumber;
-                string memberStreetAddress;
-                string memberCity;
-                string memberState;
-                string memberZip;
-                string memberEmail;
-
-                Console.WriteLine("Enter the Member Name:");
-                memberName = Console.ReadLine();
-                // TODO: Validate name
-
-                Console.WriteLine("Enter the Member Number:");
-                memberNumber = Console.ReadLine();
-                // TODO: Validate number
-
-                Console.WriteLine("Enter the Member Street Address:");
-                memberStreetAddress = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the Member City:");
-                memberCity = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the Member State:");
-                memberState = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the Member Zip:");
-                memberZip = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the Email Address:");
-                memberEmail = Console.ReadLine();
-                // TODO: Validate
-
-                // Create the new member
-                Member thisMember = new Member();
-
-                thisMember.UserName = memberName;
-                thisMember.UserNumber = Convert.ToInt32(memberNumber);
-                thisMember.UserState = memberState;
-                thisMember.UserCity = memberCity;
-                thisMember.UserZipCode = memberZip;
-                thisMember.UserEmailAddress = memberEmail;
-
-                if (this._callbackTerminal.GetDbConnection().AddUser(thisMember))
-                {
-                    return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
-                }
-            }
-
-            return "The terminal must be in interactive mode to run this command.\n";
+            return this.AddUser(new Member());
         }
 
         [Display(Description = "Command Name: addprovider\nDescription: Adds a provider to the system.")]
         [RoleRequired(Role = UserRole.Operator)]
         public string addprovider()
         {
-            if (this._callbackTerminal.IsInteractiveMode)
-            {
-                string memberName;
-                string memberNumber;
-                string memberStreetAddress;
-                string memberCity;
-                string memberState;
-                string memberZip;
-                string memberEmail;
+            return this.AddUser(new Provider());
+        }
 
-                Console.WriteLine("Enter the Member Name:");
-                memberName = Console.ReadLine();
-                // TODO: Validate name
-
-                Console.WriteLine("Enter the Member Number:");
-                memberNumber = Console.ReadLine();
-                // TODO: Validate number
-
-                Console.WriteLine("Enter the Member Street Address:");
-                memberStreetAddress = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the Member City:");
-                memberCity = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the Member State:");
-                memberState = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the Member Zip:");
-                memberZip = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the Email Address:");
-                memberEmail = Console.ReadLine();
-                // TODO: Validate
-
-                // Create the new member
-                Member thisMember = new Member();
-
-                thisMember.UserName = memberName;
-                thisMember.UserNumber = Convert.ToInt32(memberNumber);
-                thisMember.UserState = memberState;
-                thisMember.UserCity = memberCity;
-                thisMember.UserZipCode = memberZip;
-                thisMember.UserEmailAddress = memberEmail;
-
-                if (this._callbackTerminal.GetDbConnection().AddUser(thisMember))
-                {
-                    return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
-                }
-            }
-
-            return this.InsufficientPrivilegeMessage();
+        [Display(Description = "Command Name: addoperator\nDescription: Adds an operator to the system.")]
+        [RoleRequired(Role = UserRole.Super)]
+        public string addoperator()
+        {
+            return this.AddUser(new Operator());
         }
 
         [Display(Description = "Command Name: addservice\nDescription: Adds a service to the system.")]
@@ -192,7 +203,7 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string billchoc(string dateOfService, string serviceCode)
         {
-            ((IProvider)this._callbackTerminal.CurrentUser).BillChocAn();
+            ((IProvider)this._currentUser).BillChocAn();
             // TODO: Format return message
             return string.Empty;
         }
@@ -217,54 +228,21 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Operator)]
         public string deletemember(int memberNumber = -1)
         {
-            if (this._callbackTerminal.IsInteractiveMode)
-            {
-                if (memberNumber == -1)
-                {
-                    Console.WriteLine("Enter the member number:\n");
-                    string memberNumberString = Console.ReadLine();
-                    memberNumber = Convert.ToInt32(memberNumberString);
-                }
-
-                if (this._callbackTerminal.GetDbConnection().DeleteUser(memberNumber))
-                {
-                    // TODO: Format return message
-                    return string.Empty;
-                }
-
-                // TODO: Format return message
-                return string.Empty;
-            }
-
-            // TODO: Format return message
-            return string.Empty;
+            return this.DeleteUser(UserRole.Member, memberNumber);
         }
 
         [Display(Description = "Command Name: deleteprovider\nParameters: deleteprovider <provider number>\nDescription: Deletes a provider from the system.")]
         [RoleRequired(Role = UserRole.Operator)]
         public string deleteprovider(int providerNumber = -1)
         {
-            if (this._callbackTerminal.IsInteractiveMode)
-            {
-                if (providerNumber == -1)
-                {
-                    Console.WriteLine("Enter the member number:\n");
-                    string providerNumberString = Console.ReadLine();
-                    providerNumber = Convert.ToInt32(providerNumberString);
-                }
+            return this.DeleteUser(UserRole.Provider, providerNumber);
+        }
 
-                if (this._callbackTerminal.GetDbConnection().DeleteUser(providerNumber))
-                {
-                    // TODO: Format return message
-                    return string.Empty;
-                }
-
-                // TODO: Format return message
-                return string.Empty;
-            }
-
-            // TODO: Format return message
-            return string.Empty;
+        [Display(Description = "Command Name: deleteoperator\nParameters: deleteoperator <operator number>\nDescription: Deletes an operator from the system.")]
+        [RoleRequired(Role = UserRole.Super)]
+        public string deleteoperator(int operatorNumber = -1)
+        {
+            return this.DeleteUser(UserRole.Operator, operatorNumber);
         }
 
         [Display(Description = "Command Name: echo\nParameters: echo <message>\nDescription: Prints the message.")]
@@ -331,19 +309,19 @@ namespace BLUE.ChocAn.Library.Commands
             switch (reportName)
             {
                 case "1":
-                    ((IManager)this._callbackTerminal.CurrentUser).GenerateManagersSummary();
+                    ((IManager)this._currentUser).GenerateManagersSummary();
                     break;
                 case "2":
-                    ((IManager)this._callbackTerminal.CurrentUser).GenerateMemberReport();
+                    ((IManager)this._currentUser).GenerateMemberReport();
                     break;
                 case "3":
-                    ((IManager)this._callbackTerminal.CurrentUser).GenerateProviderReport();
+                    ((IManager)this._currentUser).GenerateProviderReport();
                     break;
                 case "4":
-                    ((IManager)this._callbackTerminal.CurrentUser).GenerateEFTRecord();
+                    ((IManager)this._currentUser).GenerateEFTRecord();
                     break;
                 case "5":
-                    ((IManager)this._callbackTerminal.CurrentUser).GenerateAllReports();
+                    ((IManager)this._currentUser).GenerateAllReports();
                     break;
             }
 
@@ -372,9 +350,9 @@ namespace BLUE.ChocAn.Library.Commands
 
                 if (roleRequired != UserRole.None)
                 {
-                    if (this._callbackTerminal.CurrentUser.CurrentRole != UserRole.Super)
+                    if (this._currentUser.CurrentRole != UserRole.Super)
                     {
-                        if (roleRequired == UserRole.All || this._callbackTerminal.CurrentUser.CurrentRole == roleRequired)
+                        if (roleRequired == UserRole.All || this._currentUser.CurrentRole == roleRequired)
                         {
                             result += this.GetCommandDescription(command);
                         }
@@ -389,15 +367,15 @@ namespace BLUE.ChocAn.Library.Commands
             {
                 result += "(Type help <command> to view the information about the command.)\n";
 
-                foreach (var key in this._callbackTerminal.CommandLibraries["CommandRunner"].Keys)
+                foreach (var key in this.CommandLibraries["CommandPresenter"].Keys)
                 {
                     UserRole roleRequired = this.GetRoleRequired(key.ToString());
 
                     if (roleRequired != UserRole.None)
                     {
-                        if (this._callbackTerminal.CurrentUser.CurrentRole != UserRole.Super)
+                        if (this._currentUser.CurrentRole != UserRole.Super)
                         {
-                            if (roleRequired == UserRole.All || this._callbackTerminal.CurrentUser.CurrentRole == roleRequired)
+                            if (roleRequired == UserRole.All || this._currentUser.CurrentRole == roleRequired)
                             {
                                 result += "\n" + key.ToString();
                                 continue;
@@ -463,15 +441,33 @@ namespace BLUE.ChocAn.Library.Commands
             {
                 if (password == "password")
                 {
-                    this._callbackTerminal.CurrentUser = newUser;
-                    this._callbackTerminal.UpdateTerminalPrompt();
+                    this._currentUser = newUser;
+
+                    if (this._currentUser.CurrentRole == UserRole.Guest)
+                    {
+                        this._callbackTerminal.UpdateTerminalPrompt("ChocAnon> ");
+                    }
+                    else
+                    {
+                        this._callbackTerminal.UpdateTerminalPrompt(string.Format("ChocAnon.{0}> ", this._currentUser.Username));
+                    }
+
                     return string.Format("Welcome \'{0}\'! Type 'help' to see the new available commands.\n", newUser.Username);
                 }
             }
             else
             {
-                this._callbackTerminal.CurrentUser = newUser;
-                this._callbackTerminal.UpdateTerminalPrompt();
+                this._currentUser = newUser;
+
+                if (this._currentUser.CurrentRole == UserRole.Guest)
+                {
+                    this._callbackTerminal.UpdateTerminalPrompt("ChocAnon> ");
+                }
+                else
+                {
+                    this._callbackTerminal.UpdateTerminalPrompt(string.Format("ChocAnon.{0}> ", this._currentUser.Username));
+                }
+
                 return string.Format("Welcome \'{0}\'! Type 'help' to see the new available commands.\n", newUser.Username);
             }
 
@@ -482,7 +478,7 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.All)]
         public string logout()
         {
-            if (this._callbackTerminal.CurrentUser.CurrentRole == UserRole.Guest)
+            if (this._currentUser.CurrentRole == UserRole.Guest)
             {
                 return "You are not currently logged in.\n";
             }
@@ -491,8 +487,8 @@ namespace BLUE.ChocAn.Library.Commands
 
             if (Console.ReadLine().ToLower() == "y")
             {
-                this._callbackTerminal.CurrentUser = new User();
-                this._callbackTerminal.UpdateTerminalPrompt();
+                this._currentUser = new User();
+                this._callbackTerminal.UpdateTerminalPrompt("ChocAnon> ");
                 this._callbackTerminal.ClearHistoricalQueue();
                 this.clear();
                 return string.Format("Logged Out.\n");
@@ -580,11 +576,11 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.All)]
         public string reboot()
         {
-            this._callbackTerminal.CurrentUser = new User();
-            this._callbackTerminal.UpdateTerminalPrompt();
+            this._currentUser = new User();
+            this._callbackTerminal.UpdateTerminalPrompt("ChocAnon> ");
             this.clear();
             Console.WriteLine(this.info());
-            Console.WriteLine(string.Format("Welcome {0}! Here are your list of commands:\n", this._callbackTerminal.CurrentUser.Username));
+            Console.WriteLine(string.Format("Welcome {0}! Here are your list of commands:\n", this._currentUser.Username));
             Console.WriteLine(this.help());
             Console.WriteLine("Please Enter a Command. (type 'help' for a list of commands)\n");
 
@@ -660,7 +656,7 @@ namespace BLUE.ChocAn.Library.Commands
                 thisMember.UserZipCode = memberZip;
                 thisMember.UserEmailAddress = memberEmail;
 
-                if (this._callbackTerminal.GetDbConnection().AddUser(thisMember))
+                if (this._dbConnection.AddUser(thisMember))
                 {
                     return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
@@ -726,7 +722,7 @@ namespace BLUE.ChocAn.Library.Commands
                 thisMember.UserZipCode = memberZip;
                 thisMember.UserEmailAddress = memberEmail;
 
-                if (this._callbackTerminal.GetDbConnection().AddUser(thisMember))
+                if (this._dbConnection.AddUser(thisMember))
                 {
                     return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
@@ -751,7 +747,10 @@ namespace BLUE.ChocAn.Library.Commands
                 cardId = Console.ReadLine();
             }
 
-            if (((IProvider)this._callbackTerminal.CurrentUser).ValidateMemberCard(Convert.ToInt32(cardId)))
+            // Get the member corresponding with the number
+            Member thisMember = (Member)this._dbConnection.GetUser(Convert.ToInt32(cardId));
+
+            if (((IProvider)this._currentUser).ValidateMemberCard(thisMember))
             {
                 // TODO: Format return message
                 return string.Empty;
@@ -773,16 +772,18 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string viewpd()
         {
-            // TODO: Under construction
-            ((IProvider)this._callbackTerminal.CurrentUser).ViewProviderDictionary();
-            return string.Empty;
+            var listOfProviders = this._dbConnection.GetAllUsers(UserRole.Provider);
+
+            // TODO: Format the list of providers
+
+            return listOfProviders.ToString();
         }
 
         [Display(Description = "Command Name: whoami\nDescription: Displays the curent user.")]
         [RoleRequired(Role = UserRole.All)]
         public string whoami()
         {
-            return this._callbackTerminal.CurrentUser.Username + "\n";
+            return this._currentUser.Username + "\n";
         }
 
         #endregion
@@ -830,6 +831,252 @@ namespace BLUE.ChocAn.Library.Commands
         private string InsufficientPrivilegeMessage()
         {
             return "You do not have sufficient privileges to perform this command!\n";
+        }
+
+        private string AddUser(User userType)
+        {
+            if (this._callbackTerminal.IsInteractiveMode)
+            {
+                string userName;
+                string userNumber;
+                string userStreetAddress;
+                string userCity;
+                string userState;
+                string userZip;
+                string userEmail;
+
+                Console.WriteLine("Enter the {0} Name:", userType.CurrentRole.ToString());
+                userName = Console.ReadLine();
+                // TODO: Validate name
+
+                Console.WriteLine("Enter the {0} Number:", userType.CurrentRole.ToString());
+                userNumber = Console.ReadLine();
+                // TODO: Validate number
+
+                Console.WriteLine("Enter the {0} Street Address:", userType.CurrentRole.ToString());
+                userStreetAddress = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the {0} City:", userType.CurrentRole.ToString());
+                userCity = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the {0} State:", userType.CurrentRole.ToString());
+                userState = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the {0} Zip:", userType.CurrentRole.ToString());
+                userZip = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the {0} Email Address:", userType.CurrentRole.ToString());
+                userEmail = Console.ReadLine();
+                // TODO: Validate
+
+                // Create the new user
+                userType.UserName = userName;
+                userType.UserNumber = Convert.ToInt32(userNumber);
+                userType.UserState = userState;
+                userType.UserCity = userCity;
+                userType.UserZipCode = userZip;
+                userType.UserEmailAddress = userEmail;
+
+                if (this._dbConnection.AddUser(userType))
+                {
+                    return string.Format("{0} \'{1}\' successfully added.\n", userType.CurrentRole.ToString(), userType.UserName);
+                }
+            }
+
+            return "The terminal must be in interactive mode to run this command.\n";
+        }
+
+        private string DeleteUser(UserRole userType, int userNumber = -1)
+        {
+            if (this._callbackTerminal.IsInteractiveMode)
+            {
+                if (userNumber == -1)
+                {
+                    Console.WriteLine("Enter the {0} number:\n", userType.ToString());
+                    string providerNumberString = Console.ReadLine();
+                    userNumber = Convert.ToInt32(providerNumberString);
+                }
+
+                if (this._dbConnection.DeleteUser(userNumber))
+                {
+                    // TODO: Format return message
+                    return string.Empty;
+                }
+
+                // TODO: Format return message
+                return string.Empty;
+            }
+
+            // TODO: Format return message
+            return string.Empty;
+        }
+
+        private void InitializaDbConnection()
+        {
+            this._dbConnection = new DBConnection("test", "test", "test", "test");
+        }
+
+        private object ParseArgument(Type requiredType, string inputValue)
+        {
+            var requiredTypeCode = Type.GetTypeCode(requiredType);
+            string exceptionMessage = string.Format("Cannnot parse the input argument {0} to required type {1}", inputValue, requiredType.Name);
+            object result = null;
+
+            switch (requiredTypeCode)
+            {
+                case TypeCode.String:
+                    result = inputValue;
+                    break;
+                case TypeCode.Int16:
+                    short number16;
+                    if (Int16.TryParse(inputValue, out number16))
+                        result = number16;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.Int32:
+                    int number32;
+                    if (Int32.TryParse(inputValue, out number32))
+                        result = number32;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.Int64:
+                    long number64;
+                    if (Int64.TryParse(inputValue, out number64))
+                        result = number64;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.Boolean:
+                    bool trueFalse;
+                    if (bool.TryParse(inputValue, out trueFalse))
+                        result = trueFalse;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.Byte:
+                    byte byteValue;
+                    if (byte.TryParse(inputValue, out byteValue))
+                        result = byteValue;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.Char:
+                    char charValue;
+                    if (char.TryParse(inputValue, out charValue))
+                        result = charValue;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.DateTime:
+                    DateTime dateValue;
+                    if (DateTime.TryParse(inputValue, out dateValue))
+                        result = dateValue;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.Decimal:
+                    Decimal decimalValue;
+                    if (Decimal.TryParse(inputValue, out decimalValue))
+                        result = decimalValue;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.Double:
+                    Double doubleValue;
+                    if (Double.TryParse(inputValue, out doubleValue))
+                        result = doubleValue;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.Single:
+                    Single singleValue;
+                    if (Single.TryParse(inputValue, out singleValue))
+                        result = singleValue;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.UInt16:
+                    UInt16 uInt16Value;
+                    if (UInt16.TryParse(inputValue, out uInt16Value))
+                        result = uInt16Value;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.UInt32:
+                    UInt32 uInt32Value;
+                    if (UInt32.TryParse(inputValue, out uInt32Value))
+                        result = uInt32Value;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                case TypeCode.UInt64:
+                    UInt64 uInt64Value;
+                    if (UInt64.TryParse(inputValue, out uInt64Value))
+                        result = uInt64Value;
+                    else
+                        throw new ArgumentException(exceptionMessage);
+                    break;
+                default:
+                    throw new ArgumentException(exceptionMessage);
+            }
+
+            return result;
+        }
+
+        private string RunMethodByName(string command, object[] parameters = null)
+        {
+            UserRole roleRequired = this.GetRoleRequired(command);
+
+            if (roleRequired != UserRole.None)
+            {
+                if (this._currentUser.CurrentRole != UserRole.Super)
+                {
+                    if (roleRequired == UserRole.All || this._currentUser.CurrentRole == roleRequired)
+                    {
+                        return this.RunMethod(command, parameters);
+                    }
+                    else
+                    {
+                        return this.InsufficientPrivilegeMessage();
+                    }
+                }
+
+                return this.RunMethod(command, parameters);
+            }
+
+            return string.Format("Command \'{0}\' was not found.", command);
+        }
+
+        private void InitializeCommandList()
+        {
+            this.CommandLibraries = new Dictionary<string, Dictionary<string, IEnumerable<ParameterInfo>>>();
+
+            var q = from t in Assembly.GetExecutingAssembly().GetTypes()
+                    where t.IsClass && t.Namespace == this.CommandNamespace
+                    select t;
+            var commandClasses = q.ToList();
+
+            foreach (var commandClass in commandClasses)
+            {
+                // Load the method info from each class into a dictionary:
+                var methods = commandClass.GetMethods();
+                var methodDictionary = new Dictionary<string, IEnumerable<ParameterInfo>>();
+
+                foreach (var method in methods)
+                {
+                    string commandName = method.Name;
+                    methodDictionary.Add(commandName, method.GetParameters());
+                }
+
+                // Add the dictionary of methods for the current class into a dictionary of command classes:
+                this.CommandLibraries.Add(commandClass.Name, methodDictionary);
+            }
         }
 
         #endregion

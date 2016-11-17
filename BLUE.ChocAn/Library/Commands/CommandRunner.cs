@@ -110,7 +110,7 @@ namespace BLUE.ChocAn.Library.Commands
                 thisMember.UserZipCode = memberZip;
                 thisMember.UserEmailAddress = memberEmail;
 
-                if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
+                if (this._callbackTerminal.GetDbConnection().AddUser(thisMember))
                 {
                     return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
@@ -171,7 +171,7 @@ namespace BLUE.ChocAn.Library.Commands
                 thisMember.UserZipCode = memberZip;
                 thisMember.UserEmailAddress = memberEmail;
 
-                if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
+                if (this._callbackTerminal.GetDbConnection().AddUser(thisMember))
                 {
                     return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
@@ -226,7 +226,7 @@ namespace BLUE.ChocAn.Library.Commands
                     memberNumber = Convert.ToInt32(memberNumberString);
                 }
 
-                if (((IOperator)this._callbackTerminal.CurrentUser).DeleteMember(memberNumber))
+                if (this._callbackTerminal.GetDbConnection().DeleteUser(memberNumber))
                 {
                     // TODO: Format return message
                     return string.Empty;
@@ -253,7 +253,7 @@ namespace BLUE.ChocAn.Library.Commands
                     providerNumber = Convert.ToInt32(providerNumberString);
                 }
 
-                if (((IOperator)this._callbackTerminal.CurrentUser).DeleteProvider(providerNumber))
+                if (this._callbackTerminal.GetDbConnection().DeleteUser(providerNumber))
                 {
                     // TODO: Format return message
                     return string.Empty;
@@ -660,7 +660,7 @@ namespace BLUE.ChocAn.Library.Commands
                 thisMember.UserZipCode = memberZip;
                 thisMember.UserEmailAddress = memberEmail;
 
-                if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
+                if (this._callbackTerminal.GetDbConnection().AddUser(thisMember))
                 {
                     return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
@@ -680,59 +680,57 @@ namespace BLUE.ChocAn.Library.Commands
             // TODO: Under Construction
             if (this._callbackTerminal.IsInteractiveMode)
             {
-                if (this._callbackTerminal.CurrentUser is IOperator)
+                string memberName;
+                string memberNumber;
+                string memberStreetAddress;
+                string memberCity;
+                string memberState;
+                string memberZip;
+                string memberEmail;
+
+                Console.WriteLine("Enter the Member Name:");
+                memberName = Console.ReadLine();
+                // TODO: Validate name
+
+                Console.WriteLine("Enter the Member Number:");
+                memberNumber = Console.ReadLine();
+                // TODO: Validate number
+
+                Console.WriteLine("Enter the Member Street Address:");
+                memberStreetAddress = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member City:");
+                memberCity = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member State:");
+                memberState = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Member Zip:");
+                memberZip = Console.ReadLine();
+                // TODO: Validate
+
+                Console.WriteLine("Enter the Email Address:");
+                memberEmail = Console.ReadLine();
+                // TODO: Validate
+
+                // Create the new member
+                Member thisMember = new Member();
+
+                thisMember.UserName = memberName;
+                thisMember.UserNumber = Convert.ToInt32(memberNumber);
+                thisMember.UserState = memberState;
+                thisMember.UserCity = memberCity;
+                thisMember.UserZipCode = memberZip;
+                thisMember.UserEmailAddress = memberEmail;
+
+                if (this._callbackTerminal.GetDbConnection().AddUser(thisMember))
                 {
-                    string memberName;
-                    string memberNumber;
-                    string memberStreetAddress;
-                    string memberCity;
-                    string memberState;
-                    string memberZip;
-                    string memberEmail;
-
-                    Console.WriteLine("Enter the Member Name:");
-                    memberName = Console.ReadLine();
-                    // TODO: Validate name
-
-                    Console.WriteLine("Enter the Member Number:");
-                    memberNumber = Console.ReadLine();
-                    // TODO: Validate number
-
-                    Console.WriteLine("Enter the Member Street Address:");
-                    memberStreetAddress = Console.ReadLine();
-                    // TODO: Validate
-
-                    Console.WriteLine("Enter the Member City:");
-                    memberCity = Console.ReadLine();
-                    // TODO: Validate
-
-                    Console.WriteLine("Enter the Member State:");
-                    memberState = Console.ReadLine();
-                    // TODO: Validate
-
-                    Console.WriteLine("Enter the Member Zip:");
-                    memberZip = Console.ReadLine();
-                    // TODO: Validate
-
-                    Console.WriteLine("Enter the Email Address:");
-                    memberEmail = Console.ReadLine();
-                    // TODO: Validate
-
-                    // Create the new member
-                    Member thisMember = new Member();
-
-                    thisMember.UserName = memberName;
-                    thisMember.UserNumber = Convert.ToInt32(memberNumber);
-                    thisMember.UserState = memberState;
-                    thisMember.UserCity = memberCity;
-                    thisMember.UserZipCode = memberZip;
-                    thisMember.UserEmailAddress = memberEmail;
-
-                    if (((IOperator)this._callbackTerminal.CurrentUser).AddMember(thisMember))
-                    {
-                        return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
-                    }
+                    return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
+                
 
                 return this.InsufficientPrivilegeMessage();
             }

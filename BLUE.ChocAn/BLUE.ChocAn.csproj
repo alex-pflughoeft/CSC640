@@ -50,7 +50,6 @@
     <Compile Include="Library\Reports\Provider Reports\ProviderDictionaryReport.cs" />
     <Compile Include="Library\Users\Managers\IManager.cs" />
     <Compile Include="Library\Users\Managers\Manager.cs" />
-    <Compile Include="Library\Users\Operators\IOperator.cs" />
     <Compile Include="Library\Users\Member.cs" />
     <Compile Include="Library\Users\Operators\Operator.cs" />
     <Compile Include="Library\Users\Providers\IProvider.cs" />

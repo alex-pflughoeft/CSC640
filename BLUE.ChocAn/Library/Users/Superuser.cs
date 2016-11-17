@@ -10,14 +10,8 @@ using System.Threading.Tasks;
 
 namespace BLUE.ChocAn.Library.Users
 {
-    public class Superuser : User, IProvider, IOperator, IManager
+    public class Superuser : User, IProvider, IManager
     {
-        #region Private Variables
-
-        private DBConnection _dbConnection;
-
-        #endregion
-
         #region Public Properties
 
         public override string Username { get { return "superuser"; } }
@@ -60,122 +54,6 @@ namespace BLUE.ChocAn.Library.Users
             throw new NotImplementedException();
         }
 
-        public bool AddMember(Member member)
-        {
-            try
-            {
-                this._dbConnection.AddUser(member);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool DeleteMember(Member member)
-        {
-            try
-            {
-                this._dbConnection.DeleteUser(member.UserNumber);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool DeleteMember(int memberNumber)
-        {
-            try
-            {
-                this._dbConnection.DeleteUser(memberNumber);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool UpdateMember(Member member)
-        {
-            try
-            {
-                this._dbConnection.UpdateUser(member);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool UpdateMember(int memberNumber)
-        {
-            // TODO: Finish me
-            throw new NotImplementedException();
-        }
-
-        public bool AddProvider(Provider provider)
-        {
-            try
-            {
-                this._dbConnection.AddUser(provider);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool DeleteProvider(Provider provider)
-        {
-            try
-            {
-                this._dbConnection.DeleteUser(provider.UserNumber);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool DeleteProvider(int providerNumber)
-        {
-            try
-            {
-                this._dbConnection.DeleteUser(providerNumber);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool UpdateProvider(Provider provider)
-        {
-            try
-            {
-                this._dbConnection.UpdateUser(provider);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public bool UpdateProvider(int providerNumber)
-        {
-            // TODO: Finish me
-            throw new NotImplementedException();
-        }
-
         public void GenerateMemberReport(bool sendEmail = false)
         {
             // TODO: Finish me
@@ -204,11 +82,6 @@ namespace BLUE.ChocAn.Library.Users
         {
             // TODO: Finish me
             throw new NotImplementedException();
-        }
-
-        public void ConfigureDBConnection(string serverName, string databaseName)
-        {
-            this._dbConnection = new DBConnection(serverName, databaseName, this.Username, this._userPassword);
         }
 
         #endregion

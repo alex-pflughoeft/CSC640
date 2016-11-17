@@ -1,4 +1,5 @@
 ﻿using BLUE.ChocAn.Library.Commands;
+using BLUE.ChocAn.Library.Database;
 using BLUE.ChocAn.Library.Users;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace BLUE.ChocAn.Library
         private string _commandNamespace;
         private Dictionary<string, Dictionary<string, IEnumerable<ParameterInfo>>> _commandLibraries;
         private CommandRunner _commandRunner;
+        private DBConnection _dbConnection;
 
         #endregion
 
@@ -52,6 +54,7 @@ namespace BLUE.ChocAn.Library
                 this._commandLibraries.Add(commandClass.Name, methodDictionary);
             }
 
+            this.InitializaDbConnection();
             this._commandRunner = new CommandRunner(this);
         }
 
@@ -165,6 +168,11 @@ namespace BLUE.ChocAn.Library
                 var delayInterval = TimeSpan.FromMilliseconds(secondsUntilExit * 1000);
                 var runningTask = this.DoActionAfter(delayInterval, () => this.DisableInteractiveMode());
             }
+        }
+
+        public DBConnection GetDbConnection()
+        {
+            return this._dbConnection;
         }
 
         #endregion
@@ -408,6 +416,11 @@ namespace BLUE.ChocAn.Library
             }
 
             return result;
+        }
+
+        private void InitializaDbConnection()
+        {
+            this._dbConnection = new DBConnection("test", "test", "test", "test");
         }
 
         #endregion

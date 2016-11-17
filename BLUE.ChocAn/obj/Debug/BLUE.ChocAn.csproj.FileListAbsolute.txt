@@ -23,3 +23,11 @@ C:\Users\broberts\Documents\CSC640\BLUE.ChocAn\bin\Debug\BLUE.ChocAn.exe
 C:\Users\broberts\Documents\CSC640\BLUE.ChocAn\bin\Debug\BLUE.ChocAn.pdb
 C:\Users\broberts\Documents\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.exe
 C:\Users\broberts\Documents\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.pdb
+C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\bin\Debug\Library\Sounds\matrixwakeup.mp3
+C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\bin\Debug\BLUE.ChocAn.exe.config
+C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\bin\Debug\BLUE.ChocAn.exe
+C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\bin\Debug\BLUE.ChocAn.pdb
+C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\obj\Debug\Interop.WMPLib.dll
+C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.csproj.ResolveComReference.cache
+C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.exe
+C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.pdb

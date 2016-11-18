@@ -32,8 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -42,16 +47,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Library\BaseTable.cs" />
     <Compile Include="Library\Commands\CommandPresenter.cs" />
     <Compile Include="Library\Communication\EmailSender.cs" />
     <Compile Include="Library\Commands\ConsoleCommand.cs" />
     <Compile Include="Library\Database\DBConnection.cs" />
+    <Compile Include="Library\Database\Helper\DBHelper.cs" />
+    <Compile Include="Library\Database\Hydrator\DBHydrator.cs" />
+    <Compile Include="Library\Database\Persister\DBPersistor.cs" />
     <Compile Include="Library\Other\Matrix.cs" />
     <Compile Include="Library\Reports\Provider Reports\ProviderDictionaryReport.cs" />
+    <Compile Include="Library\UserServiceLinker.cs" />
     <Compile Include="Library\Users\Managers\IManager.cs" />
     <Compile Include="Library\Users\Managers\Manager.cs" />
     <Compile Include="Library\Users\Member.cs" />
     <Compile Include="Library\Users\Operators\Operator.cs" />
+    <Compile Include="Library\PrimaryKey.cs" />
     <Compile Include="Library\Users\Providers\IProvider.cs" />
     <Compile Include="Library\Users\Providers\Provider.cs" />
     <Compile Include="Library\Reports\EFTReport.cs" />
@@ -64,11 +75,16 @@
     <Compile Include="Library\Users\Superuser.cs" />
     <Compile Include="Library\Users\User.cs" />
     <Compile Include="Library\Utils\EnumUtilities.cs" />
+    <Compile Include="Library\Utils\MySQLUtilities.cs" />
+    <Compile Include="Library\Utils\PropertyInfoUtilities.cs" />
+    <Compile Include="Library\Utils\StringUtilities.cs" />
+    <Compile Include="Library\Utils\UserUtilities.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Library\Sounds\matrixwakeup.mp3">

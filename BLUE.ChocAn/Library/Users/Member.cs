@@ -6,24 +6,22 @@ namespace BLUE.ChocAn.Library.Users
     public enum MemberStatusEnum
     {
         [Description("Inactive")]
-        INACTIVE,
+        INACTIVE = 0,
 
         [Description("Active")]
-        ACTIVE,
+        ACTIVE = 1,
 
         [Description("Suspended")]
-        SUSPENDED
+        SUSPENDED = 2,
     }
 
     public class Member : User
     {
         #region Public Properties
 
-        public override UserRole CurrentRole { get { return UserRole.Member; } }
-        public MemberStatusEnum MemberStatus { get; set; }
-        public int CardNumber { get; set; }
+        public int MemberStatus { get; set; }
+        public int? CardNumber { get; set; }
         public bool CardValidated { get; private set; }
-        public virtual string Username { get { return "member"; } }
 
         #endregion
 
@@ -31,8 +29,23 @@ namespace BLUE.ChocAn.Library.Users
 
         public Member()
         {
-            this.MemberStatus = MemberStatusEnum.INACTIVE;
+            this.MemberStatus = (int)MemberStatusEnum.INACTIVE;
             this.CardValidated = false;
+            this.UserRole = (int)Users.UserRole.Member;
+        }
+
+        public Member(User user)
+        {
+            this.UserAddress = user.UserAddress;
+            this.UserCity = user.UserCity;
+            this.UserEmailAddress = user.UserEmailAddress;
+            this.UserName = user.UserName;
+            this.UserNumber = user.UserNumber;
+            this.UserRole = user.UserRole;
+            this.UserState = user.UserState;
+            this.UserZipCode = user.UserZipCode;
+            this.LoginName = user.LoginName;
+            this.UserPassword = user.UserPassword;
         }
 
         #endregion
@@ -44,7 +57,7 @@ namespace BLUE.ChocAn.Library.Users
  	         return string.Format("Member Number: {0}, Member Name: {1}, Member Address: {2}, Member City: {3}, Member Province: {4}, Member Zip Code: {5}, Member Email Address: {6}, Member Status: {7}",
                                   this.UserNumber,
                                   this.UserName,
-                                  this.UsertAddress,
+                                  this.UserAddress,
                                   this.UserCity,
                                   this.UserState,
                                   this.UserZipCode,

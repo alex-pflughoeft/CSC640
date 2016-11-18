@@ -24,14 +24,22 @@ namespace BLUE.ChocAn.Library.Users.Managers
         public Manager()
         {
             // Default Constructor
+            this.UserRole = (int)Users.UserRole.Manager;
         }
 
-        #endregion
-
-        #region Public Properties
-
-        public override string Username { get { return "manager"; } }
-        public override UserRole CurrentRole { get { return UserRole.Manager; } }
+        public Manager(User user)
+        {
+            this.UserAddress = user.UserAddress;
+            this.UserCity = user.UserCity;
+            this.UserEmailAddress = user.UserEmailAddress;
+            this.UserName = user.UserName;
+            this.UserNumber = user.UserNumber;
+            this.UserRole = user.UserRole;
+            this.UserState = user.UserState;
+            this.UserZipCode = user.UserZipCode;
+            this.LoginName = user.LoginName;
+            this.UserPassword = user.UserPassword;
+        }
 
         #endregion
 

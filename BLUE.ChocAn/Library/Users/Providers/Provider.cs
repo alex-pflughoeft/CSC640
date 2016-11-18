@@ -8,18 +8,26 @@ namespace BLUE.ChocAn.Library.Users.Providers
 {
     public class Provider : User, IProvider
     {
-        #region Public Properties
-
-        public override string Username { get { return "provider"; } }
-        public override UserRole CurrentRole { get { return UserRole.Provider; } }
-
-        #endregion
-
         #region Constructors
 
         public Provider()
         {
             // Default Constructor
+            this.UserRole = (int)Users.UserRole.Provider;
+        }
+
+        public Provider(User user)
+        {
+            this.UserAddress = user.UserAddress;
+            this.UserCity = user.UserCity;
+            this.UserEmailAddress = user.UserEmailAddress;
+            this.UserName = user.UserName;
+            this.UserNumber = user.UserNumber;
+            this.UserRole = user.UserRole;
+            this.UserState = user.UserState;
+            this.UserZipCode = user.UserZipCode;
+            this.LoginName = user.LoginName;
+            this.UserPassword = user.UserPassword;
         }
 
         #endregion
@@ -28,7 +36,7 @@ namespace BLUE.ChocAn.Library.Users.Providers
 
         public bool ValidateMemberCard(Member member)
         {
-            member.MemberStatus = MemberStatusEnum.ACTIVE;
+            member.MemberStatus = (int)MemberStatusEnum.ACTIVE;
 
             return true;
         }
@@ -38,7 +46,7 @@ namespace BLUE.ChocAn.Library.Users.Providers
             // TODO: Get member corresponding to that card number
             Member member = new Member();
 
-            member.MemberStatus = MemberStatusEnum.ACTIVE;
+            member.MemberStatus = (int)MemberStatusEnum.ACTIVE;
 
             Console.WriteLine("Card Number \'{0}\' has been validated for member \'{1}\'.\n", member.CardNumber.ToString(), member.UserName);
 

@@ -1,9 +1,11 @@
 ﻿using BLUE.ChocAn.Library.Database;
+using BLUE.ChocAn.Library.Database.Helper;
 using BLUE.ChocAn.Library.Other;
 using BLUE.ChocAn.Library.Users;
 using BLUE.ChocAn.Library.Users.Managers;
 using BLUE.ChocAn.Library.Users.Operators;
 using BLUE.ChocAn.Library.Users.Providers;
+using BLUE.ChocAn.Library.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,7 +21,7 @@ namespace BLUE.ChocAn.Library.Commands
         #region Private Variables
 
         private TerminalView _callbackTerminal;
-        private DBConnection _dbConnection;
+        private DBHelper _dbHelper;
         private User _currentUser;
 
         #endregion
@@ -30,9 +32,9 @@ namespace BLUE.ChocAn.Library.Commands
         {
             this._callbackTerminal = terminal;
             this._currentUser = new User();
-            this.InitializaDbConnection();
             this.CommandNamespace = "BLUE.ChocAn.Library.Commands";
             this.InitializeCommandList();
+            this._dbHelper = new DBHelper();
         }
 
         #endregion
@@ -350,9 +352,9 @@ namespace BLUE.ChocAn.Library.Commands
 
                 if (roleRequired != UserRole.None)
                 {
-                    if (this._currentUser.CurrentRole != UserRole.Super)
+                    if (this._currentUser.GetUserRole() != UserRole.Super)
                     {
-                        if (roleRequired == UserRole.All || this._currentUser.CurrentRole == roleRequired)
+                        if (roleRequired == UserRole.All || this._currentUser.GetUserRole() == roleRequired)
                         {
                             result += this.GetCommandDescription(command);
                         }
@@ -373,9 +375,9 @@ namespace BLUE.ChocAn.Library.Commands
 
                     if (roleRequired != UserRole.None)
                     {
-                        if (this._currentUser.CurrentRole != UserRole.Super)
+                        if (this._currentUser.GetUserRole() != UserRole.Super)
                         {
-                            if (roleRequired == UserRole.All || this._currentUser.CurrentRole == roleRequired)
+                            if (roleRequired == UserRole.All || this._currentUser.GetUserRole() == roleRequired)
                             {
                                 result += "\n" + key.ToString();
                                 continue;
@@ -404,81 +406,56 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Guest)]
         public string login(string userName, string password = "")
         {
-            User newUser;
-            bool passRequired = true;
+            var user = this._dbHelper.GetUserByLoginName(userName);
 
-            switch (userName.ToLower())
+            if (user != null)
             {
-                case "manager":
-                    newUser = new Manager();
-                    break;
-                case "operator":
-                    newUser = new Operator();
-                    break;
-                case "provider":
-                    passRequired = false;
-                    Console.WriteLine("Please enter your provider number.");
-
-                    // TODO: Validate number
-                    if (Console.ReadLine() != string.Empty)
-                    {
-                        newUser = new Provider();
-                    }
-                    else
-                    {
-                        return string.Empty;
-                    }
-
-                    break;
-                case "superuser":
-                    newUser = new Superuser();
-                    break;
-                default:
-                    return string.Format("User \'{0}\' does not exist. Please try again.\n", userName);
-            }
-
-            if (passRequired)
-            {
-                if (password == "password")
+                if (password == user.UserPassword)
                 {
-                    this._currentUser = newUser;
+                    switch ((UserRole)user.UserRole)
+                    {
+                        case UserRole.Manager:
+                            this._currentUser = (Manager)user;
+                            break;
+                        case UserRole.Member:
+                            this._currentUser = (Member)user;
+                            break;
+                        case UserRole.Operator:
+                            this._currentUser = (Operator)user;
+                            break;
+                        case UserRole.Provider:
+                            this._currentUser = (Provider)user;
+                            break;
+                        case UserRole.Super:
+                            this._currentUser = (Superuser)user;
+                            break;
+                        default:
+                            break;
+                    }
 
-                    if (this._currentUser.CurrentRole == UserRole.Guest)
+                    if (this._currentUser.GetUserRole() == UserRole.Guest)
                     {
                         this._callbackTerminal.UpdateTerminalPrompt("ChocAnon> ");
                     }
                     else
                     {
-                        this._callbackTerminal.UpdateTerminalPrompt(string.Format("ChocAnon.{0}> ", this._currentUser.Username));
+                        this._callbackTerminal.UpdateTerminalPrompt(string.Format("ChocAnon.{0}> ", this._currentUser.LoginName));
                     }
 
-                    return string.Format("Welcome \'{0}\'! Type 'help' to see the new available commands.\n", newUser.Username);
-                }
-            }
-            else
-            {
-                this._currentUser = newUser;
-
-                if (this._currentUser.CurrentRole == UserRole.Guest)
-                {
-                    this._callbackTerminal.UpdateTerminalPrompt("ChocAnon> ");
-                }
-                else
-                {
-                    this._callbackTerminal.UpdateTerminalPrompt(string.Format("ChocAnon.{0}> ", this._currentUser.Username));
+                    return string.Format("Welcome \'{0}\'! Type 'help' to see the new available commands.\n", this._currentUser.LoginName);
                 }
 
-                return string.Format("Welcome \'{0}\'! Type 'help' to see the new available commands.\n", newUser.Username);
+                return string.Format("Failed login for user \'{0}\'. Wrong Password.\n", userName);
             }
 
-            return string.Format("Failed login for user \'{0}\'. Wrong Password.\n", userName);
+            return string.Format("Failed login for user \'{0}\'. User Not Found.\n", userName);
         }
 
         [Display(Description = "Command Name: logout\nDescription: Logs the user out of the application.")]
         [RoleRequired(Role = UserRole.All)]
         public string logout()
         {
-            if (this._currentUser.CurrentRole == UserRole.Guest)
+            if (this._currentUser.GetUserRole() == UserRole.Guest)
             {
                 return "You are not currently logged in.\n";
             }
@@ -580,7 +557,7 @@ namespace BLUE.ChocAn.Library.Commands
             this._callbackTerminal.UpdateTerminalPrompt("ChocAnon> ");
             this.clear();
             Console.WriteLine(this.info());
-            Console.WriteLine(string.Format("Welcome {0}! Here are your list of commands:\n", this._currentUser.Username));
+            Console.WriteLine(string.Format("Welcome {0}! Here are your list of commands:\n", this._currentUser.LoginName));
             Console.WriteLine(this.help());
             Console.WriteLine("Please Enter a Command. (type 'help' for a list of commands)\n");
 
@@ -656,7 +633,7 @@ namespace BLUE.ChocAn.Library.Commands
                 thisMember.UserZipCode = memberZip;
                 thisMember.UserEmailAddress = memberEmail;
 
-                if (this._dbConnection.AddUser(thisMember))
+                if (this._dbHelper.Create(thisMember))
                 {
                     return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
@@ -722,7 +699,7 @@ namespace BLUE.ChocAn.Library.Commands
                 thisMember.UserZipCode = memberZip;
                 thisMember.UserEmailAddress = memberEmail;
 
-                if (this._dbConnection.AddUser(thisMember))
+                if (this._dbHelper.Create(thisMember))
                 {
                     return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
@@ -748,7 +725,7 @@ namespace BLUE.ChocAn.Library.Commands
             }
 
             // Get the member corresponding with the number
-            Member thisMember = (Member)this._dbConnection.GetUser(Convert.ToInt32(cardId));
+            Member thisMember = (Member)this._dbHelper.GetMemberByCardNumber(Convert.ToInt32(cardId));
 
             if (((IProvider)this._currentUser).ValidateMemberCard(thisMember))
             {
@@ -772,7 +749,7 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string viewpd()
         {
-            var listOfProviders = this._dbConnection.GetAllUsers(UserRole.Provider);
+            var listOfProviders = this._dbHelper.GetUsersByRole(UserRole.Provider);
 
             // TODO: Format the list of providers
 
@@ -783,7 +760,7 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.All)]
         public string whoami()
         {
-            return this._currentUser.Username + "\n";
+            return this._currentUser.LoginName + "\n";
         }
 
         #endregion
@@ -833,7 +810,7 @@ namespace BLUE.ChocAn.Library.Commands
             return "You do not have sufficient privileges to perform this command!\n";
         }
 
-        private string AddUser(User userType)
+        private string AddUser(User user)
         {
             if (this._callbackTerminal.IsInteractiveMode)
             {
@@ -845,45 +822,46 @@ namespace BLUE.ChocAn.Library.Commands
                 string userZip;
                 string userEmail;
 
-                Console.WriteLine("Enter the {0} Name:", userType.CurrentRole.ToString());
+                Console.WriteLine("Enter the {0} Name:", user.GetUserRole().ToString());
                 userName = Console.ReadLine();
                 // TODO: Validate name
 
-                Console.WriteLine("Enter the {0} Number:", userType.CurrentRole.ToString());
+                Console.WriteLine("Enter the {0} Number:", user.GetUserRole().ToString());
                 userNumber = Console.ReadLine();
                 // TODO: Validate number
 
-                Console.WriteLine("Enter the {0} Street Address:", userType.CurrentRole.ToString());
+                Console.WriteLine("Enter the {0} Street Address:", user.GetUserRole().ToString());
                 userStreetAddress = Console.ReadLine();
                 // TODO: Validate
 
-                Console.WriteLine("Enter the {0} City:", userType.CurrentRole.ToString());
+                Console.WriteLine("Enter the {0} City:", user.GetUserRole().ToString());
                 userCity = Console.ReadLine();
                 // TODO: Validate
 
-                Console.WriteLine("Enter the {0} State:", userType.CurrentRole.ToString());
+                Console.WriteLine("Enter the {0} State:", user.GetUserRole().ToString());
                 userState = Console.ReadLine();
-                // TODO: Validate
+                // TODO: Validate 2 characters, alpha only
 
-                Console.WriteLine("Enter the {0} Zip:", userType.CurrentRole.ToString());
+                Console.WriteLine("Enter the {0} Zip:", user.GetUserRole().ToString());
                 userZip = Console.ReadLine();
                 // TODO: Validate
 
-                Console.WriteLine("Enter the {0} Email Address:", userType.CurrentRole.ToString());
+                Console.WriteLine("Enter the {0} Email Address:", user.GetUserRole().ToString());
                 userEmail = Console.ReadLine();
                 // TODO: Validate
 
                 // Create the new user
-                userType.UserName = userName;
-                userType.UserNumber = Convert.ToInt32(userNumber);
-                userType.UserState = userState;
-                userType.UserCity = userCity;
-                userType.UserZipCode = userZip;
-                userType.UserEmailAddress = userEmail;
+                user.UserName = userName;
+                user.UserNumber = Convert.ToInt32(userNumber);
+                user.UserState = userState;
+                user.UserCity = userCity;
+                user.UserZipCode = userZip;
+                user.UserEmailAddress = userEmail;
+                user.UserPassword = "password";
 
-                if (this._dbConnection.AddUser(userType))
+                if (this._dbHelper.Create(user))
                 {
-                    return string.Format("{0} \'{1}\' successfully added.\n", userType.CurrentRole.ToString(), userType.UserName);
+                    return string.Format("{0} \'{1}\' successfully added.\n", user.GetUserRole().ToString(), user.UserName);
                 }
             }
 
@@ -894,18 +872,18 @@ namespace BLUE.ChocAn.Library.Commands
         {
             if (this._callbackTerminal.IsInteractiveMode)
             {
-                if (userNumber == -1)
-                {
-                    Console.WriteLine("Enter the {0} number:\n", userType.ToString());
-                    string providerNumberString = Console.ReadLine();
-                    userNumber = Convert.ToInt32(providerNumberString);
-                }
+                //if (userNumber == -1)
+                //{
+                //    Console.WriteLine("Enter the {0} number:\n", userType.ToString());
+                //    string providerNumberString = Console.ReadLine();
+                //    userNumber = Convert.ToInt32(providerNumberString);
+                //}
 
-                if (this._dbConnection.DeleteUser(userNumber))
-                {
-                    // TODO: Format return message
-                    return string.Empty;
-                }
+                //if (this._dbHelper.de(userNumber))
+                //{
+                //    // TODO: Format return message
+                //    return string.Empty;
+                //}
 
                 // TODO: Format return message
                 return string.Empty;
@@ -913,11 +891,6 @@ namespace BLUE.ChocAn.Library.Commands
 
             // TODO: Format return message
             return string.Empty;
-        }
-
-        private void InitializaDbConnection()
-        {
-            this._dbConnection = new DBConnection("test", "test", "test", "test");
         }
 
         private object ParseArgument(Type requiredType, string inputValue)
@@ -1035,9 +1008,9 @@ namespace BLUE.ChocAn.Library.Commands
 
             if (roleRequired != UserRole.None)
             {
-                if (this._currentUser.CurrentRole != UserRole.Super)
+                if (this._currentUser.GetUserRole() != UserRole.Super)
                 {
-                    if (roleRequired == UserRole.All || this._currentUser.CurrentRole == roleRequired)
+                    if (roleRequired == UserRole.All || this._currentUser.GetUserRole() == roleRequired)
                     {
                         return this.RunMethod(command, parameters);
                     }

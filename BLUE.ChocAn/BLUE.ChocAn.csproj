@@ -56,13 +56,14 @@
     <Compile Include="Library\Database\Hydrator\DBHydrator.cs" />
     <Compile Include="Library\Database\Persister\DBPersistor.cs" />
     <Compile Include="Library\Other\Matrix.cs" />
+    <Compile Include="Library\PrimaryKey.cs" />
     <Compile Include="Library\Reports\Provider Reports\ProviderDictionaryReport.cs" />
+    <Compile Include="Library\TerminalView.cs" />
     <Compile Include="Library\UserServiceLinker.cs" />
     <Compile Include="Library\Users\Managers\IManager.cs" />
     <Compile Include="Library\Users\Managers\Manager.cs" />
     <Compile Include="Library\Users\Member.cs" />
     <Compile Include="Library\Users\Operators\Operator.cs" />
-    <Compile Include="Library\PrimaryKey.cs" />
     <Compile Include="Library\Users\Providers\IProvider.cs" />
     <Compile Include="Library\Users\Providers\Provider.cs" />
     <Compile Include="Library\Reports\EFTReport.cs" />
@@ -71,7 +72,6 @@
     <Compile Include="Library\Reports\Provider Reports\ProviderReport.cs" />
     <Compile Include="Library\Reports\Report.cs" />
     <Compile Include="Library\Service.cs" />
-    <Compile Include="Library\TerminalView.cs" />
     <Compile Include="Library\Users\Superuser.cs" />
     <Compile Include="Library\Users\User.cs" />
     <Compile Include="Library\Utils\EnumUtilities.cs" />

@@ -597,7 +597,7 @@ namespace BLUE.ChocAn.Library.Commands
 
                 Console.WriteLine("Enter the Member Name:");
                 memberName = Console.ReadLine();
-                // TODO: Validate name
+                // TODO: Validate name (max 25 characters)
 
                 Console.WriteLine("Enter the Member Number:");
                 memberNumber = Console.ReadLine();
@@ -814,57 +814,90 @@ namespace BLUE.ChocAn.Library.Commands
         {
             if (this._callbackTerminal.IsInteractiveMode)
             {
-                string userName;
-                string userNumber;
-                string userStreetAddress;
-                string userCity;
-                string userState;
-                string userZip;
-                string userEmail;
+                string userName = "";
+                string userNumber = "";
+                string userStreetAddress = "";
+                string userCity = "";
+                string userState = "";
+                string userZip = "";
+                string userEmail = "";
+                string confirmationResponse = "";
 
-                Console.WriteLine("Enter the {0} Name:", user.GetUserRole().ToString());
-                userName = Console.ReadLine();
-                // TODO: Validate name
-
-                Console.WriteLine("Enter the {0} Number:", user.GetUserRole().ToString());
-                userNumber = Console.ReadLine();
-                // TODO: Validate number
-
-                Console.WriteLine("Enter the {0} Street Address:", user.GetUserRole().ToString());
-                userStreetAddress = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the {0} City:", user.GetUserRole().ToString());
-                userCity = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the {0} State:", user.GetUserRole().ToString());
-                userState = Console.ReadLine();
-                // TODO: Validate 2 characters, alpha only
-
-                Console.WriteLine("Enter the {0} Zip:", user.GetUserRole().ToString());
-                userZip = Console.ReadLine();
-                // TODO: Validate
-
+                // Validate name
+                while (userName.Length == 0 || userName.Length > 25)
+                {
+                    Console.WriteLine("Enter the {0} Name (max 25 characters):", user.GetUserRole().ToString());
+                    userName = Console.ReadLine();
+                }
+                // Validate number
+                while (!System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{9}$"))
+                {
+                    Console.WriteLine("Enter the {0} Number (9 digits):", user.GetUserRole().ToString());
+                    userNumber = Console.ReadLine();
+                }
+                // Validate address
+                while (userStreetAddress.Length == 0 || userStreetAddress.Length > 25)
+                {
+                    Console.WriteLine("Enter the {0} Street Address (max 25 characters):", user.GetUserRole().ToString());
+                    userStreetAddress = Console.ReadLine();
+                }
+                //Validate City
+                while (userCity.Length == 0 || userCity.Length > 14)
+                {
+                    Console.WriteLine("Enter the {0} City (max 14 characters):", user.GetUserRole().ToString());
+                    userCity = Console.ReadLine();
+                }
+                //Validate State (2 characters, alpha only)
+                while (!System.Text.RegularExpressions.Regex.IsMatch(userState, "^[a-zA-Z]{2}$"))
+                {
+                    Console.WriteLine("Enter the {0} State (ex: 'WI'):", user.GetUserRole().ToString());
+                    userState = Console.ReadLine();
+                }
+                //Validate Zip Code
+                while (!System.Text.RegularExpressions.Regex.IsMatch(userZip, "^[0-9]{5}$"))
+                {
+                    Console.WriteLine("Enter the {0} Zip:", user.GetUserRole().ToString());
+                    userZip = Console.ReadLine();
+                }
+                //Get Email address
                 Console.WriteLine("Enter the {0} Email Address:", user.GetUserRole().ToString());
                 userEmail = Console.ReadLine();
-                // TODO: Validate
-
-                // Create the new user
-                user.UserName = userName;
-                user.UserNumber = Convert.ToInt32(userNumber);
-                user.UserState = userState;
-                user.UserCity = userCity;
-                user.UserZipCode = userZip;
-                user.UserEmailAddress = userEmail;
-                user.UserPassword = "password";
-
-                if (this._dbHelper.Create(user))
+                //Confirm add user
+                Console.WriteLine("You have entered the following for a new {0}:", user.GetUserRole().ToString());
+                Console.WriteLine(userName);
+                Console.WriteLine(userNumber);
+                Console.WriteLine(userStreetAddress);
+                Console.WriteLine(userCity);
+                Console.WriteLine(userState);
+                Console.WriteLine(userZip);
+                Console.WriteLine(userEmail);
+                //Confirm creating new user
+                while (confirmationResponse.Length == 0)
                 {
-                    return string.Format("{0} \'{1}\' successfully added.\n", user.GetUserRole().ToString(), user.UserName);
+                    Console.WriteLine("Do you want to add this new {0} (Y/N)?:", user.GetUserRole().ToString());
+                    confirmationResponse = Console.ReadLine();
+                }
+                confirmationResponse = confirmationResponse.ToUpper();
+                if (confirmationResponse.Equals("Y") || confirmationResponse.Equals("YES"))
+                {
+                    // Create the new user
+                    user.UserName = userName;
+                    user.UserNumber = Convert.ToInt32(userNumber);
+                    user.UserState = userState;
+                    user.UserCity = userCity;
+                    user.UserZipCode = userZip;
+                    user.UserEmailAddress = userEmail;
+                    user.UserPassword = "password";
+
+                    if (this._dbHelper.Create(user))
+                    {
+                        return string.Format("{0} \'{1}\' successfully added.\n", user.GetUserRole().ToString(), user.UserName);
+                    }
+                }else
+                {
+                    return "Add user aborted.";
                 }
             }
-
             return "The terminal must be in interactive mode to run this command.\n";
         }
 

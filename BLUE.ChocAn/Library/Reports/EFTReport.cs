@@ -8,13 +8,7 @@ namespace BLUE.ChocAn.Library.Reports
 {
     public class EFTReport : Report
     {
-        public override string ReportString()
-        {
-            // TODO: Finish me
-            throw new NotImplementedException();
-        }
-
-        public override ReportType TypeOfReport { get { return ReportType.EFTRecord; } }
+        #region Public Properties
 
         public override string ReportTitle
         {
@@ -28,10 +22,24 @@ namespace BLUE.ChocAn.Library.Reports
             get { throw new NotImplementedException(); }
         }
 
+        public override ReportType TypeOfReport { get { return ReportType.EFTRecord; } }
+
+        #endregion
+
+        #region Public Methods
+
+        public override string ReportString()
+        {
+            // TODO: Finish me
+            throw new NotImplementedException();
+        }
+
         public override string ReportHTML()
         {
             // TODO: Finish me
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }

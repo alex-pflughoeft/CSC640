@@ -57,7 +57,9 @@ namespace BLUE.ChocAn.Library.Commands
             {
                 return string.Format("Command \'{0}\' does not exist\n", command.Name);
             }
+
             var methodDictionary = this.CommandLibraries[command.LibraryClassName];
+
             if (!methodDictionary.ContainsKey(command.Name))
             {
                 return string.Format("Command \'{0}\' does not exist\n", command.Name);
@@ -86,7 +88,6 @@ namespace BLUE.ChocAn.Library.Commands
             // of arguments provided does not match the number of parameters in the 
             // method signature, even if some are optional:
             // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
             if (paramInfoList.Count() > 0)
             {
                 // Populate the list with default values:
@@ -704,7 +705,6 @@ namespace BLUE.ChocAn.Library.Commands
                     return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
                 
-
                 return this.InsufficientPrivilegeMessage();
             }
 
@@ -814,14 +814,14 @@ namespace BLUE.ChocAn.Library.Commands
         {
             if (this._callbackTerminal.IsInteractiveMode)
             {
-                string userName = "";
-                string userNumber = "";
-                string userStreetAddress = "";
-                string userCity = "";
-                string userState = "";
-                string userZip = "";
-                string userEmail = "";
-                string confirmationResponse = "";
+                string userName = string.Empty;
+                string userNumber = string.Empty;
+                string userStreetAddress = string.Empty;
+                string userCity = string.Empty;
+                string userState = string.Empty;
+                string userZip = string.Empty;
+                string userEmail = string.Empty;
+                string confirmationResponse = string.Empty;
 
                 // Validate name
                 while (userName.Length == 0 || userName.Length > 25)
@@ -859,10 +859,10 @@ namespace BLUE.ChocAn.Library.Commands
                     Console.WriteLine("Enter the {0} Zip:", user.GetUserRole().ToString());
                     userZip = Console.ReadLine();
                 }
-                //Get Email address
+                // Get Email address
                 Console.WriteLine("Enter the {0} Email Address:", user.GetUserRole().ToString());
                 userEmail = Console.ReadLine();
-                //Confirm add user
+                // Confirm add user
                 Console.WriteLine("You have entered the following for a new {0}:", user.GetUserRole().ToString());
                 Console.WriteLine(userName);
                 Console.WriteLine(userNumber);
@@ -871,14 +871,15 @@ namespace BLUE.ChocAn.Library.Commands
                 Console.WriteLine(userState);
                 Console.WriteLine(userZip);
                 Console.WriteLine(userEmail);
-                //Confirm creating new user
+
+                // Confirm creating new user
                 while (confirmationResponse.Length == 0)
                 {
                     Console.WriteLine("Do you want to add this new {0} (Y/N)?:", user.GetUserRole().ToString());
                     confirmationResponse = Console.ReadLine();
                 }
-                confirmationResponse = confirmationResponse.ToUpper();
-                if (confirmationResponse.Equals("Y") || confirmationResponse.Equals("YES"))
+
+                if (confirmationResponse.ToUpper().Equals("Y") || confirmationResponse.ToUpper().Equals("YES"))
                 {
                     // Create the new user
                     user.UserName = userName;
@@ -893,11 +894,13 @@ namespace BLUE.ChocAn.Library.Commands
                     {
                         return string.Format("{0} \'{1}\' successfully added.\n", user.GetUserRole().ToString(), user.UserName);
                     }
-                }else
+                }
+                else
                 {
                     return "Add user aborted.";
                 }
             }
+
             return "The terminal must be in interactive mode to run this command.\n";
         }
 
@@ -987,15 +990,15 @@ namespace BLUE.ChocAn.Library.Commands
                         throw new ArgumentException(exceptionMessage);
                     break;
                 case TypeCode.Decimal:
-                    Decimal decimalValue;
-                    if (Decimal.TryParse(inputValue, out decimalValue))
+                    decimal decimalValue;
+                    if (decimal.TryParse(inputValue, out decimalValue))
                         result = decimalValue;
                     else
                         throw new ArgumentException(exceptionMessage);
                     break;
                 case TypeCode.Double:
-                    Double doubleValue;
-                    if (Double.TryParse(inputValue, out doubleValue))
+                    double doubleValue;
+                    if (double.TryParse(inputValue, out doubleValue))
                         result = doubleValue;
                     else
                         throw new ArgumentException(exceptionMessage);

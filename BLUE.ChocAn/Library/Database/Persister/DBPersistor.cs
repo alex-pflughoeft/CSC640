@@ -1,9 +1,8 @@
-﻿using System;
-using MySql.Data.MySqlClient;
-using System.Reflection;
-using BLUE.ChocAn.Library.Utils;
+﻿using BLUE.ChocAn.Library.Utils;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Reflection;
 
 namespace BLUE.ChocAn.Library.Database.Persister
 {
@@ -57,7 +56,7 @@ namespace BLUE.ChocAn.Library.Database.Persister
                         }
                         else if (property.PropertyType == typeof(bool))
                         {
-                            if(Convert.ToBoolean(value))
+                            if (Convert.ToBoolean(value))
                             {
                                 values.Add("1");
                             }

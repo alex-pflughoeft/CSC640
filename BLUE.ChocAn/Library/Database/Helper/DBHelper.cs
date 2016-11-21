@@ -1,13 +1,13 @@
 ﻿using BLUE.ChocAn.Library.Database.Hydrator;
 using BLUE.ChocAn.Library.Database.Persister;
 using BLUE.ChocAn.Library.Users;
+using BLUE.ChocAn.Library.Users.Managers;
+using BLUE.ChocAn.Library.Users.Operators;
+using BLUE.ChocAn.Library.Users.Providers;
+using BLUE.ChocAn.Library.Utils;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Configuration;
-using BLUE.ChocAn.Library.Utils;
-using BLUE.ChocAn.Library.Users.Providers;
-using BLUE.ChocAn.Library.Users.Operators;
-using BLUE.ChocAn.Library.Users.Managers;
 
 namespace BLUE.ChocAn.Library.Database.Helper
 {
@@ -77,7 +77,7 @@ namespace BLUE.ChocAn.Library.Database.Helper
                         reader.Read();
                         User thisUser = (User)hydrator.Hydrate(new User(), reader);
 
-                        switch(thisUser.GetUserRole())
+                        switch (thisUser.GetUserRole())
                         {
                             case UserRole.Member:
                                 return new Member(thisUser);
@@ -116,7 +116,6 @@ namespace BLUE.ChocAn.Library.Database.Helper
                         }
                     }
                 }
-
             }
 
             return null;

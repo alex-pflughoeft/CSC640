@@ -17,6 +17,23 @@ namespace BLUE.ChocAn.Library.Users
     [TableName("chocan_user")]
     public class User : BaseTable
     {
+        #region Constructors
+
+        public User()
+        {
+            this.UserRole = (int)Users.UserRole.Guest;
+            this.LoginName = "guest";
+        }
+
+        public override string ToString()
+        {
+            return "No User Specified";
+        }
+
+        #endregion
+
+        #region Public Properties
+
         [PrimaryKey]
         public int UserNumber { get; set; }
 
@@ -46,36 +63,6 @@ namespace BLUE.ChocAn.Library.Users
 
         public int UserRole { get; set; }
 
-        public User()
-        {
-            this.UserRole = (int)Users.UserRole.Guest;
-            this.LoginName = "guest";
-        }
-
-        public override string ToString()
-        {
-            return "No User Specified";
-        }
-
-        //public void ChangePassword()
-        //{
-        //    if (this.UserRole == UserRole.Guest)
-        //    {
-        //        Console.WriteLine("Guests do not have passwords!\n");
-        //        return;
-        //    }
-
-        //    Console.WriteLine("Please enter your current password:\n");
-        //    string oldPassword = Console.ReadLine();
-
-        //    if (oldPassword == this._userPassword)
-        //    {
-        //        Console.WriteLine("Please enter your new password:\n");
-        //        string newPassword = Console.ReadLine();
-        //        this._userPassword = newPassword;
-
-        //        Console.WriteLine("Your new password has been set successfully!\n");
-        //    }
-        //}
+        #endregion
     }
 }

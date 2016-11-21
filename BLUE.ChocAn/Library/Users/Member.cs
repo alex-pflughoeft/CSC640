@@ -17,14 +17,6 @@ namespace BLUE.ChocAn.Library.Users
 
     public class Member : User
     {
-        #region Public Properties
-
-        public int MemberStatus { get; set; }
-        public int? CardNumber { get; set; }
-        public bool CardValidated { get; private set; }
-
-        #endregion
-
         #region Constructors
 
         public Member()
@@ -47,6 +39,14 @@ namespace BLUE.ChocAn.Library.Users
             this.LoginName = user.LoginName;
             this.UserPassword = user.UserPassword;
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public int MemberStatus { get; set; }
+        public int? CardNumber { get; set; }
+        public bool CardValidated { get; private set; }
 
         #endregion
 

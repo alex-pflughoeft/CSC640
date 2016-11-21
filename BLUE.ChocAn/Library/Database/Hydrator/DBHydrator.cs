@@ -1,7 +1,7 @@
-﻿using MySql.Data.MySqlClient;
+﻿using BLUE.ChocAn.Library.Utils;
+using MySql.Data.MySqlClient;
 using System;
 using System.Reflection;
-using BLUE.ChocAn.Library.Utils;
 
 namespace BLUE.ChocAn.Library.Database.Hydrator
 {

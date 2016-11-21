@@ -31,6 +31,7 @@ namespace BLUE.ChocAn.Library.Other
                     Console.Write(R);
                     Console.ForegroundColor = ConsoleColor.Green;
                 }
+
                 Console.SetCursorPosition(x, y[x]);
                 Console.Write(R);
                 y[x] = inBoxY(y[x] + 1, height);

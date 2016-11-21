@@ -6,13 +6,6 @@ namespace BLUE.ChocAn.Library.Communication
 {
     public class EmailSender : IDisposable
     {
-        #region Public Properties
-
-        public string EmailHost { get; private set; }
-        public int EmailPort { get; private set; }
-
-        #endregion
-
         #region Constructors
 
         public EmailSender(string emailHost, int emailPort)
@@ -20,6 +13,13 @@ namespace BLUE.ChocAn.Library.Communication
             this.EmailHost = emailHost;
             this.EmailPort = emailPort;
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public string EmailHost { get; private set; }
+        public int EmailPort { get; private set; }
 
         #endregion
 

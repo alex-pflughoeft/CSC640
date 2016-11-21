@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BLUE.ChocAn.Library.Utils
 {
-    public static class UserUtilities
+    public static class UserExtensions
     {
         public static UserRole GetUserRole(this User user)
         {

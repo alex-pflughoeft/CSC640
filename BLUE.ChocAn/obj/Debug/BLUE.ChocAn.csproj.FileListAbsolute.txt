@@ -24,3 +24,4 @@ C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.Cho
 C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.exe
 C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.pdb
 C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.ChocAn\bin\Debug\MySql.Data.dll
+C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.csprojResolveAssemblyReference.cache

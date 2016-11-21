@@ -75,10 +75,10 @@
     <Compile Include="Library\Users\Superuser.cs" />
     <Compile Include="Library\Users\User.cs" />
     <Compile Include="Library\Utils\EnumUtilities.cs" />
-    <Compile Include="Library\Utils\MySQLUtilities.cs" />
-    <Compile Include="Library\Utils\PropertyInfoUtilities.cs" />
-    <Compile Include="Library\Utils\StringUtilities.cs" />
-    <Compile Include="Library\Utils\UserUtilities.cs" />
+    <Compile Include="Library\Utils\MySQLExtensions.cs" />
+    <Compile Include="Library\Utils\PropertyInfoExtensions.cs" />
+    <Compile Include="Library\Utils\StringExtensions.cs" />
+    <Compile Include="Library\Utils\UserExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

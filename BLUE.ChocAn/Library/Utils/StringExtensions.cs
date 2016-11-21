@@ -2,7 +2,7 @@
 
 namespace BLUE.ChocAn.Library.Utils
 {
-    public static class StringUtilities
+    public static class StringExtensions
     {
         public static string ToUnderscoreCase(this string str)
         {

@@ -2,7 +2,7 @@
 
 namespace BLUE.ChocAn.Library.Utils
 {
-    public static class MySQLUtilities
+    public static class MySQLExtensions
     {
         public static int? GetNullableInt(this MySqlDataReader r, int ord)
         {

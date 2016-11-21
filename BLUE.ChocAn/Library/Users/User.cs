@@ -11,7 +11,8 @@ namespace BLUE.ChocAn.Library.Users
         Operator,
         Manager,
         Super, // The override role
-        None
+        None,
+        AllLoggedIn,
     }
 
     [TableName("chocan_user")]

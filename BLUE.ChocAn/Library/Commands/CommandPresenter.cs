@@ -147,6 +147,7 @@ namespace BLUE.ChocAn.Library.Commands
                 current.GetType(this.CommandNamespace + "." + command.LibraryClassName);
 
             object[] inputArgs = null;
+
             if (methodParameterValueList.Count > 0)
             {
                 inputArgs = methodParameterValueList.ToArray();
@@ -207,7 +208,16 @@ namespace BLUE.ChocAn.Library.Commands
         public string billchoc(string dateOfService, string serviceCode)
         {
             ((IProvider)this._currentUser).BillChocAn();
-            // TODO: Format return message
+           
+            // TODO: Finish return message
+            return string.Empty;
+        }
+
+        [Display(Description = "Command Name: changepassword\nParameters: changepassword <old password> <new password>\nDescription: Changes your password from the old password to the new password.")]
+        [RoleRequired(Role = UserRole.AllLoggedIn)]
+        public string changepassword(string oldPassword, string newPassword = "")
+        {
+            // TODO: Finish me!
             return string.Empty;
         }
 
@@ -219,12 +229,30 @@ namespace BLUE.ChocAn.Library.Commands
             return string.Empty;
         }
 
-        [Display(Description = "Command Name: credits\nDescription: Prints the credits for the project.")]
+        [Display(Description = "Command Name: credits\nDescription: Displays the credits for the project.")]
         [RoleRequired(Role = UserRole.All)]
         public string credits()
         {
-            // TODO: Print the credits of the program and copyright information
-            return string.Format("TODO: List Credits\n");
+            var result = string.Empty;
+
+            result += "\n**********************************************************************";
+            result += "\n*               Chocoholics Anonymous Terminal Program               *";
+            result += "\n*                        CSC640 - Final Project                      *";
+            result += "\n*                                                                    *";
+            result += "\n*   The ChocAn Terminal is a program used to manage services and     *";
+            result += "\n*        users relating to a chocoholics anonymous program.          *";
+            result += "\n*                                                                    *";
+            result += "\n*   This program was created using the following technology stack:   *";
+            result += "\n*                        C# with .NET 4.5, MySQL                     *";
+            result += "\n*                                                                    *";
+            result += "\n*                                                                    *";
+            result += "\n*                        The developing team:                        *";
+            result += "\n*                Alex Pflughoeft - Software Engineer, PM             *";
+            result += "\n*                   Brad Roberts - Software Engineer                 *";
+            result += "\n*                    Sonia Akter - Software Engineer                 *";
+            result += "\n**********************************************************************";
+
+            return result + "\n";
         }
 
         [Display(Description = "Command Name: deletemember\nParameters: deletemember <member number>\nDescription: Deletes a member from the system.")]
@@ -347,25 +375,41 @@ namespace BLUE.ChocAn.Library.Commands
         {
             var result = string.Empty;
 
+            // Enter this block if you want to view the specifics of a certain command
             if (command != "No Data")
             {
                 UserRole roleRequired = this.GetRoleRequired(command);
 
                 if (roleRequired != UserRole.None)
                 {
-                    if (this._currentUser.GetUserRole() != UserRole.Super)
+                    // Check to see if it's an open command or if this is a super user
+                    if (roleRequired == UserRole.All || this._currentUser.GetUserRole() == UserRole.Super)
                     {
-                        if (roleRequired == UserRole.All || this._currentUser.GetUserRole() == roleRequired)
+                        result += this.GetCommandDescription(command);
+                    }
+
+                    if (this._currentUser.GetUserRole() != UserRole.Guest)
+                    {
+                        // Check to see if the user has the correct role
+                        if (this._currentUser.GetUserRole() == roleRequired)
+                        {
+                            result += this.GetCommandDescription(command);
+                        }
+                        else if (roleRequired == UserRole.AllLoggedIn)
                         {
                             result += this.GetCommandDescription(command);
                         }
                     }
                     else
                     {
-                        result += this.GetCommandDescription(command);
+                        if (this._currentUser.GetUserRole() == roleRequired)
+                        {
+                            result += this.GetCommandDescription(command);
+                        }
                     }
                 }
             }
+            // Enter this block to get a list of commands
             else
             {
                 result += "(Type help <command> to view the information about the command.)\n";
@@ -376,9 +420,22 @@ namespace BLUE.ChocAn.Library.Commands
 
                     if (roleRequired != UserRole.None)
                     {
-                        if (this._currentUser.GetUserRole() != UserRole.Super)
+                        // Check to see if it's an open command or if this is a super user
+                        if (roleRequired == UserRole.All || this._currentUser.GetUserRole() == UserRole.Super)
                         {
-                            if (roleRequired == UserRole.All || this._currentUser.GetUserRole() == roleRequired)
+                            result += "\n" + key.ToString();
+                            continue;
+                        }
+
+                        if (this._currentUser.GetUserRole() != UserRole.Guest)
+                        {
+                            // Check to see if the user has the correct role
+                            if (this._currentUser.GetUserRole() == roleRequired)
+                            {
+                                result += "\n" + key.ToString();
+                                continue;
+                            }
+                            else if (roleRequired == UserRole.AllLoggedIn)
                             {
                                 result += "\n" + key.ToString();
                                 continue;
@@ -386,8 +443,11 @@ namespace BLUE.ChocAn.Library.Commands
                         }
                         else
                         {
-                            result += "\n" + key.ToString();
-                            continue;
+                            if (this._currentUser.GetUserRole() == roleRequired)
+                            {
+                                result += "\n" + key.ToString();
+                                continue;
+                            }
                         }
                     }
                 }
@@ -453,7 +513,7 @@ namespace BLUE.ChocAn.Library.Commands
         }
 
         [Display(Description = "Command Name: logout\nDescription: Logs the user out of the application.")]
-        [RoleRequired(Role = UserRole.All)]
+        [RoleRequired(Role = UserRole.AllLoggedIn)]
         public string logout()
         {
             if (this._currentUser.GetUserRole() == UserRole.Guest)
@@ -565,8 +625,17 @@ namespace BLUE.ChocAn.Library.Commands
             return string.Empty;
         }
 
+        [Display(Description = "Command Name: resetpassword\nParameters: resetpassword <user> <new password>\nDescription: Resets the password of the user to the new password assigned.")]
+        [RoleRequired(Role = UserRole.Super)]
+        public string resetpassword(string username, string newPassword)
+        {
+            // TODO: Finish me!
+
+            return string.Empty;
+        }
+
         [Display(Description = "Command Name: shutdown\nDescription: Shuts down the terminal.")]
-        [RoleRequired(Role = UserRole.All)]
+        [RoleRequired(Role = UserRole.Guest)]
         public string shutdown()
         {
             Console.WriteLine("Are you sure you want to shutdown the terminal? (y/n)");
@@ -712,11 +781,27 @@ namespace BLUE.ChocAn.Library.Commands
             return string.Empty;
         }
 
+        [Display(Description = "Command Name: userlist\nDescription: View the list of all the users in the system.")]
+        [RoleRequired(Role = UserRole.Super)]
+        public string userlist()
+        {
+            var listOfUsers = this._dbHelper.GetUsersByRole(UserRole.All);
+
+            if (listOfUsers != null)
+            {
+                // TODO: Format the list of users
+
+                return listOfUsers.ToString();
+            }
+
+            return "No users found!";
+        }
+
         [Display(Description = "Command Name: validatecard\nParameters: validatecard <member card id>\nDescription: Validate a members card.")]
         [RoleRequired(Role = UserRole.Provider)]
         public string validatecard(string cardId = "")
         {
-            // TODO: Under construction
+            // TODO: Finish me!
 
             if (cardId == string.Empty)
             {
@@ -751,9 +836,14 @@ namespace BLUE.ChocAn.Library.Commands
         {
             var listOfProviders = this._dbHelper.GetUsersByRole(UserRole.Provider);
 
-            // TODO: Format the list of providers
+            if (listOfProviders != null)
+            {
+                // TODO: Format the list of providers
 
-            return listOfProviders.ToString();
+                return listOfProviders.ToString();
+            }
+
+            return "No providers found!";
         }
 
         [Display(Description = "Command Name: whoami\nDescription: Displays the curent user.")]
@@ -841,19 +931,19 @@ namespace BLUE.ChocAn.Library.Commands
                     Console.WriteLine("Enter the {0} Street Address (max 25 characters):", user.GetUserRole().ToString());
                     userStreetAddress = Console.ReadLine();
                 }
-                //Validate City
+                // Validate City
                 while (userCity.Length == 0 || userCity.Length > 14)
                 {
                     Console.WriteLine("Enter the {0} City (max 14 characters):", user.GetUserRole().ToString());
                     userCity = Console.ReadLine();
                 }
-                //Validate State (2 characters, alpha only)
+                // Validate State (2 characters, alpha only)
                 while (!System.Text.RegularExpressions.Regex.IsMatch(userState, "^[a-zA-Z]{2}$"))
                 {
                     Console.WriteLine("Enter the {0} State (ex: 'WI'):", user.GetUserRole().ToString());
                     userState = Console.ReadLine();
                 }
-                //Validate Zip Code
+                // Validate Zip Code
                 while (!System.Text.RegularExpressions.Regex.IsMatch(userZip, "^[0-9]{5}$"))
                 {
                     Console.WriteLine("Enter the {0} Zip:", user.GetUserRole().ToString());
@@ -1042,21 +1132,36 @@ namespace BLUE.ChocAn.Library.Commands
         {
             UserRole roleRequired = this.GetRoleRequired(command);
 
+            // Make sure that is is a command we can run
             if (roleRequired != UserRole.None)
             {
-                if (this._currentUser.GetUserRole() != UserRole.Super)
+                // Check to see if it's an open command or if this is a super user
+                if (roleRequired == UserRole.All || this._currentUser.GetUserRole() == UserRole.Super)
                 {
-                    if (roleRequired == UserRole.All || this._currentUser.GetUserRole() == roleRequired)
+                    return this.RunMethod(command, parameters);
+                }
+
+                if (this._currentUser.GetUserRole() != UserRole.Guest)
+                {
+                    // Check to see if the user has the correct role
+                    if (this._currentUser.GetUserRole() == roleRequired)
                     {
                         return this.RunMethod(command, parameters);
                     }
-                    else
+                    else if (roleRequired == UserRole.AllLoggedIn)
                     {
-                        return this.InsufficientPrivilegeMessage();
+                        return this.RunMethod(command, parameters);
+                    }
+                }
+                else
+                {
+                    if (this._currentUser.GetUserRole() == roleRequired)
+                    {
+                        return this.RunMethod(command, parameters);
                     }
                 }
 
-                return this.RunMethod(command, parameters);
+                return this.InsufficientPrivilegeMessage();
             }
 
             return string.Format("Command \'{0}\' was not found.", command);

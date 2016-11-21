@@ -104,7 +104,16 @@ namespace BLUE.ChocAn.Library.Database.Helper
 
             using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
             {
-                string sql = string.Format("SELECT * FROM {0} WHERE user_role = {1}", new User().GetTableName(), (int)userRole);
+                string sql = string.Empty;
+
+                if (userRole != UserRole.All)
+                {
+                    sql = string.Format("SELECT * FROM {0} WHERE user_role = {1}", new User().GetTableName(), (int)userRole);
+                }
+                else
+                {
+                    sql = string.Format("SELECT * FROM {0}", new User().GetTableName());
+                }
 
                 using (MySqlDataReader reader = connection.Read(sql))
                 {

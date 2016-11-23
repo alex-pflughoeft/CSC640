@@ -36,6 +36,8 @@ namespace BLUE.ChocAn.Library.Users
         #region Public Properties
 
         [PrimaryKey]
+        public int UserId { get; set; }
+
         public int UserNumber { get; set; }
 
         [StringLength(15, ErrorMessage = "Login Name must not be greater than 15 characters long.")]

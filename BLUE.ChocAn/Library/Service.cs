@@ -7,6 +7,8 @@ namespace BLUE.ChocAn.Library
     public class Service : BaseTable
     {
         [PrimaryKey]
+        public int ServiceId { get; set; }
+
         [StringLength(11, ErrorMessage = "Provider Number must not be greater than 11 characters long.")]
         public string ServiceCode { get; set; }
 

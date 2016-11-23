@@ -1,5 +1,4 @@
-﻿using BLUE.ChocAn.Library.Database;
-using BLUE.ChocAn.Library.Database.Helper;
+﻿using BLUE.ChocAn.Library.Database.Helper;
 using BLUE.ChocAn.Library.Other;
 using BLUE.ChocAn.Library.Users;
 using BLUE.ChocAn.Library.Users.Managers;
@@ -199,8 +198,63 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string addservice()
         {
-            // TODO: Finish me!
-            return string.Empty;
+            if (this._callbackTerminal.IsInteractiveMode)
+            {
+                string serviceCode = string.Empty;
+                string serviceName = string.Empty;
+
+                // Validate code
+                while (!System.Text.RegularExpressions.Regex.IsMatch(serviceCode, "^[0-9]{1,10}$"))
+                {
+                    Console.WriteLine("Enter the Service Code (<= 9 digits):");
+                    serviceCode = Console.ReadLine();
+                }
+
+                // Validate Name
+                while (serviceName.Length == 0 || serviceName.Length > 25)
+                {
+                    Console.WriteLine("Enter the Service Name (max 25 characters):");
+                    serviceName = Console.ReadLine();
+                }
+
+                // Confirm add service
+                Console.WriteLine("\nYou have entered the following for a new Service:");
+                Console.WriteLine(serviceCode);
+                Console.WriteLine(serviceName);
+
+                string confirmationResponse = string.Empty;
+
+                // Confirm creating new user
+                while (confirmationResponse.Length == 0)
+                {
+                    Console.WriteLine("\nDo you want to add this new Service (Y/N)?");
+                    confirmationResponse = Console.ReadLine();
+                }
+
+                if (confirmationResponse.ToUpper().Equals("Y") || confirmationResponse.ToUpper().Equals("YES"))
+                {
+                    Service service = new Service();
+
+                    // Create the new service
+                    service.ServiceCode = serviceCode;
+                    service.ServiceName = serviceName;
+
+                    if (this._dbHelper.Create(service))
+                    {
+                        return string.Format("\n{0} \'{1}\' successfully added.\n", "Service", service.ServiceName);
+                    }
+                    else
+                    {
+                        return string.Format("\n{0} \'{1}\' could not be added!\n", "Service", service.ServiceName);
+                    }
+                }
+                else
+                {
+                    return "\nAdd service aborted.";
+                }
+            }
+
+            return "The terminal must be in interactive mode to run this command.\n";
         }
 
         [Display(Description = "Command Name: billchoc\nParameters: billchoc <date of service (dd/mm/yyyy)> <service code>\nDescription: Bills Chocoholics Anonymous with the service.")]
@@ -385,7 +439,7 @@ namespace BLUE.ChocAn.Library.Commands
                     // Check to see if it's an open command or if this is a super user
                     if (roleRequired == UserRole.All || this._currentUser.GetUserRole() == UserRole.Super)
                     {
-                        result += this.GetCommandDescription(command);
+                        return this.GetCommandDescription(command) + "\n";
                     }
 
                     if (this._currentUser.GetUserRole() != UserRole.Guest)
@@ -393,18 +447,18 @@ namespace BLUE.ChocAn.Library.Commands
                         // Check to see if the user has the correct role
                         if (this._currentUser.GetUserRole() == roleRequired)
                         {
-                            result += this.GetCommandDescription(command);
+                            return this.GetCommandDescription(command) + "\n";
                         }
                         else if (roleRequired == UserRole.AllLoggedIn)
                         {
-                            result += this.GetCommandDescription(command);
+                            return this.GetCommandDescription(command) + "\n";
                         }
                     }
                     else
                     {
                         if (this._currentUser.GetUserRole() == roleRequired)
                         {
-                            result += this.GetCommandDescription(command);
+                            return this.GetCommandDescription(command) + "\n";
                         }
                     }
                 }
@@ -830,6 +884,14 @@ namespace BLUE.ChocAn.Library.Commands
             return string.Format("TODO: View the pending charges\n");
         }
 
+        [Display(Description = "Command Name: viewservices\nDescription: View the service charges.")]
+        [RoleRequired(Role = UserRole.Member)]
+        public string viewservices()
+        {
+            // TODO: Validate the member card to be used.
+            return string.Format("TODO: View the charges\n");
+        }
+
         [Display(Description = "Command Name: viewpd\nDescription: View the provider dictionary.")]
         [RoleRequired(Role = UserRole.Provider)]
         public string viewpd()
@@ -920,9 +982,9 @@ namespace BLUE.ChocAn.Library.Commands
                     userName = Console.ReadLine();
                 }
                 // Validate number
-                while (!System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{9}$"))
+                while (!System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,10}$"))
                 {
-                    Console.WriteLine("Enter the {0} Number (9 digits):", user.GetUserRole().ToString());
+                    Console.WriteLine("Enter the {0} Number (<= 9 digits):", user.GetUserRole().ToString());
                     userNumber = Console.ReadLine();
                 }
                 // Validate address
@@ -953,7 +1015,7 @@ namespace BLUE.ChocAn.Library.Commands
                 Console.WriteLine("Enter the {0} Email Address:", user.GetUserRole().ToString());
                 userEmail = Console.ReadLine();
                 // Confirm add user
-                Console.WriteLine("You have entered the following for a new {0}:", user.GetUserRole().ToString());
+                Console.WriteLine("\nYou have entered the following for a new {0}:", user.GetUserRole().ToString());
                 Console.WriteLine(userName);
                 Console.WriteLine(userNumber);
                 Console.WriteLine(userStreetAddress);
@@ -965,7 +1027,7 @@ namespace BLUE.ChocAn.Library.Commands
                 // Confirm creating new user
                 while (confirmationResponse.Length == 0)
                 {
-                    Console.WriteLine("Do you want to add this new {0} (Y/N)?:", user.GetUserRole().ToString());
+                    Console.WriteLine("\nDo you want to add this new {0} (Y/N)?:", user.GetUserRole().ToString());
                     confirmationResponse = Console.ReadLine();
                 }
 
@@ -982,7 +1044,11 @@ namespace BLUE.ChocAn.Library.Commands
 
                     if (this._dbHelper.Create(user))
                     {
-                        return string.Format("{0} \'{1}\' successfully added.\n", user.GetUserRole().ToString(), user.UserName);
+                        return string.Format("\n{0} \'{1}\' successfully added.\n", user.GetUserRole().ToString(), user.UserName);
+                    }
+                    else
+                    {
+                        return string.Format("\n{0} \'{1}\' could not be added!\n", user.GetUserRole().ToString(), user.UserName);
                     }
                 }
                 else

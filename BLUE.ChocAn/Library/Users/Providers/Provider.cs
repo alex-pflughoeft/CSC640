@@ -53,24 +53,9 @@ namespace BLUE.ChocAn.Library.Users.Providers
             return true;
         }
 
-        public void EnterService(int memberNumber)
-        {
-            // TODO: Enter a service here
-        }
-
-        public void ViewPendingCharges()
-        {
-            // TODO: Return the pending charges that have yet to be billed to ChocAn
-        }
-
         public void BillChocAn()
         {
             // TODO: Bill ChocAn
-        }
-
-        public void ViewProviderDictionary()
-        {
-            // TODO: View the provider dictionary
         }
 
         #endregion

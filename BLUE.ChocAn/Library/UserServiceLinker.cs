@@ -20,5 +20,7 @@ namespace BLUE.ChocAn.Library
 
         [StringLength(255, ErrorMessage = "Provider Number must not be greater than 255 characters long.")]
         public string ServiceComments { get; set; }
+
+        public bool IsCharged { get; set; }
     }
 }

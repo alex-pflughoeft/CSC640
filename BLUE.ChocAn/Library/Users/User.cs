@@ -28,7 +28,7 @@ namespace BLUE.ChocAn.Library.Users
 
         public override string ToString()
         {
-            return "No User Specified";
+            return string.Format("User Number:\t{0}\nName:\t\t{1}\nLogin Name:\t{2}\nEmail:\t\t{3}\n", this.UserNumber, this.UserName, this.LoginName, this.UserEmailAddress);
         }
 
         #endregion

@@ -839,13 +839,17 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Super)]
         public string userlist()
         {
-            var listOfUsers = this._dbHelper.GetUsersByRole(UserRole.All);
+            List<User> listOfUsers = this._dbHelper.GetUsersByRole(UserRole.All);
+            string returnMessage = string.Empty;
 
-            if (listOfUsers != null)
+            if (listOfUsers.Count > 0)
             {
-                // TODO: Format the list of users
+                foreach (User user in listOfUsers)
+                {
+                    returnMessage += user.ToString() + "\n";
+                }
 
-                return listOfUsers.ToString();
+                return returnMessage;
             }
 
             return "No users found!";
@@ -896,13 +900,17 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string viewpd()
         {
-            var listOfProviders = this._dbHelper.GetUsersByRole(UserRole.Provider);
+            List<User> listOfProviders = this._dbHelper.GetUsersByRole(UserRole.Provider);
+            string returnMessage = string.Empty;
 
-            if (listOfProviders != null)
+            if (listOfProviders.Count > 0)
             {
-                // TODO: Format the list of providers
+                foreach (User user in listOfProviders)
+                {
+                    returnMessage += user.ToString() + "\n";
+                }
 
-                return listOfProviders.ToString();
+                return returnMessage;
             }
 
             return "No providers found!";
@@ -1064,25 +1072,22 @@ namespace BLUE.ChocAn.Library.Commands
         {
             if (this._callbackTerminal.IsInteractiveMode)
             {
-                //if (userNumber == -1)
-                //{
-                //    Console.WriteLine("Enter the {0} number:\n", userType.ToString());
-                //    string providerNumberString = Console.ReadLine();
-                //    userNumber = Convert.ToInt32(providerNumberString);
-                //}
+                if (userNumber == -1)
+                {
+                    Console.WriteLine("Enter the {0} number:\n", userType.ToString());
+                    string providerNumberString = Console.ReadLine();
+                    userNumber = Convert.ToInt32(providerNumberString);
+                }
 
-                //if (this._dbHelper.de(userNumber))
-                //{
-                //    // TODO: Format return message
-                //    return string.Empty;
-                //}
+                if (this._dbHelper.DeleteUser(userNumber))
+                {
+                    return string.Format("\n{0} \'{1}\' successfully deleted.\n", userType.ToString(), userNumber.ToString());
+                }
 
-                // TODO: Format return message
-                return string.Empty;
+                return string.Format("\n{0} \'{1}\' could not be deleted.\n", userType.ToString(), userNumber.ToString());
             }
 
-            // TODO: Format return message
-            return string.Empty;
+            return "The terminal must be in interactive mode to run this command.\n";
         }
 
         private object ParseArgument(Type requiredType, string inputValue)

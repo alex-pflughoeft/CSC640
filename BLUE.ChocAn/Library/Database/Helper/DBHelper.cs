@@ -41,6 +41,48 @@ namespace BLUE.ChocAn.Library.Database.Helper
             return true;
         }
 
+        public bool DeleteUser(int userNumber)
+        {
+            DBHydrator hydrator = new DBHydrator();
+
+            using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
+            {
+                string sql = string.Format("DELETE FROM {0} WHERE user_number = {1}", new User().GetTableName(), userNumber);
+
+                using (MySqlDataReader reader = connection.Read(sql))
+                {
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public bool DeleteService(string serviceCode)
+        {
+            DBHydrator hydrator = new DBHydrator();
+
+            using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
+            {
+                string sql = string.Format("DELETE FROM {0} WHERE service_code = {1}", new Service().GetTableName(), serviceCode);
+
+                using (MySqlDataReader reader = connection.Read(sql))
+                {
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+      
         public User GetUserByNumber(int userNumber)
         {
             DBHydrator hydrator = new DBHydrator();
@@ -127,7 +169,7 @@ namespace BLUE.ChocAn.Library.Database.Helper
                 }
             }
 
-            return null;
+            return users;
         }
 
         public User GetMemberByCardNumber(int cardNumber)

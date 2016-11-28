@@ -859,41 +859,96 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string validatecard(string cardId = "")
         {
-            // TODO: Finish me!
-
             if (cardId == string.Empty)
             {
-                Console.WriteLine("Please slide card, or type in the member number.");
+                Console.WriteLine("Please slide card, or type in the card number.");
                 cardId = Console.ReadLine();
             }
 
             // Get the member corresponding with the number
             Member thisMember = (Member)this._dbHelper.GetMemberByCardNumber(Convert.ToInt32(cardId));
 
-            if (((IProvider)this._currentUser).ValidateMemberCard(thisMember))
+            if (thisMember != null)
             {
-                // TODO: Format return message
-                return string.Empty;
+                if (((IProvider)this._currentUser).ValidateMemberCard(thisMember))
+                {
+                    return string.Format("Card number '{0}' has been validated for member '{1}'!", cardId, thisMember.LoginName);
+                }
+
+                return string.Format("Error validating card number '{0}'!", cardId);
             }
 
-            // TODO: Format return message
-            return string.Empty;
+            return string.Format("Member for card number '{0}' not found!", cardId);
         }
 
         [Display(Description = "Command Name: viewpend\nDescription: View the pending service charges.")]
         [RoleRequired(Role = UserRole.Provider)]
         public string viewpend()
         {
-            // TODO: Validate the member card to be used.
-            return string.Format("TODO: View the pending charges\n");
+            string userNumber = string.Empty;
+
+            if (this._currentUser.UserRole == (int)UserRole.Super)
+            {
+                while (!System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,10}$"))
+                {
+                    Console.WriteLine("Enter the Provider Number (<= 9 digits):");
+                    userNumber = Console.ReadLine();
+                }
+            }
+            else
+            {
+                userNumber = this._currentUser.UserNumber.ToString();
+            }
+
+            List<UserServiceLinker> listOfRenderedServices = this._dbHelper.GetRenderedServicesByProvider(Convert.ToInt32(userNumber), 0);
+            string returnMessage = string.Empty;
+
+            if (listOfRenderedServices.Count > 0)
+            {
+                foreach (UserServiceLinker renderedService in listOfRenderedServices)
+                {
+                    returnMessage += renderedService.ToString() + "\n";
+                }
+
+                return returnMessage;
+            }
+
+            return "No pending charges found!";
         }
 
         [Display(Description = "Command Name: viewservices\nDescription: View the service charges.")]
         [RoleRequired(Role = UserRole.Member)]
         public string viewservices()
         {
-            // TODO: Validate the member card to be used.
-            return string.Format("TODO: View the charges\n");
+            string userNumber = string.Empty;
+
+            if (this._currentUser.UserRole == (int)UserRole.Super)
+            {
+                while (!System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,10}$"))
+                {
+                    Console.WriteLine("Enter the Member Number (<= 9 digits):");
+                    userNumber = Console.ReadLine();
+                }
+            }
+            else
+            {
+                userNumber = this._currentUser.UserNumber.ToString();
+            }
+
+            List<UserServiceLinker> listOfRenderedServices = this._dbHelper.GetRenderedServicesByProvider(Convert.ToInt32(userNumber));
+            string returnMessage = string.Empty;
+
+            if (listOfRenderedServices.Count > 0)
+            {
+                foreach (UserServiceLinker renderedService in listOfRenderedServices)
+                {
+                    returnMessage += renderedService.ToString() + "\n";
+                }
+
+                return returnMessage;
+            }
+
+            return "No service charges found!";
         }
 
         [Display(Description = "Command Name: viewpd\nDescription: View the provider dictionary.")]

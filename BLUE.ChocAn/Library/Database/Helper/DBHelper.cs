@@ -83,6 +83,151 @@ namespace BLUE.ChocAn.Library.Database.Helper
             return false;
         }
       
+        public Service GetServiceByServiceCode(int serviceCode)
+        {
+            DBHydrator hydrator = new DBHydrator();
+
+            using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
+            {
+                string sql = string.Format("SELECT * FROM {0} WHERE service_code like '{1}'", new Service().GetTableName(), serviceCode.ToString());
+
+                using (MySqlDataReader reader = connection.Read(sql))
+                {
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        return (Service)hydrator.Hydrate(new Service(), reader);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public List<UserServiceLinker> GetRenderedServicesByProvider(int providerNumber, int isCharged = -1)
+        {
+            List<UserServiceLinker> renderedServices = new List<UserServiceLinker>();
+            DBHydrator hydrator = new DBHydrator();
+
+            using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
+            {
+                string sql = string.Empty;
+
+                sql = string.Format("SELECT * FROM {0} WHERE provider_number = {1}", new UserServiceLinker().GetTableName(), providerNumber.ToString());
+
+                if (isCharged != -1)
+                {
+                    sql += string.Format(" AND is_charged = {0}", isCharged.ToString());
+                }
+
+                using (MySqlDataReader reader = connection.Read(sql))
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            renderedServices.Add((UserServiceLinker)hydrator.Hydrate((BaseTable)(new UserServiceLinker()), reader));
+                        }
+                    }
+                }
+            }
+
+            return renderedServices;
+        }
+
+        public List<UserServiceLinker> GetRenderedServicesByMember(int memberNumber, int isCharged = -1)
+        {
+            List<UserServiceLinker> renderedServices = new List<UserServiceLinker>();
+            DBHydrator hydrator = new DBHydrator();
+
+            using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
+            {
+                string sql = string.Empty;
+
+                sql = string.Format("SELECT * FROM {0} WHERE member_number = {1}", new UserServiceLinker().GetTableName(), memberNumber.ToString());
+
+                if (isCharged != -1)
+                {
+                    sql += string.Format(" AND is_charged = {0}", isCharged.ToString());
+                }
+
+                using (MySqlDataReader reader = connection.Read(sql))
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            renderedServices.Add((UserServiceLinker)hydrator.Hydrate((BaseTable)(new UserServiceLinker()), reader));
+                        }
+                    }
+                }
+            }
+
+            return renderedServices;
+        }
+
+        public List<UserServiceLinker> GetRenderedServicesByServiceCode(int serviceCode, int isCharged = -1)
+        {
+            List<UserServiceLinker> renderedServices = new List<UserServiceLinker>();
+            DBHydrator hydrator = new DBHydrator();
+
+            using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
+            {
+                string sql = string.Empty;
+
+                sql = string.Format("SELECT * FROM {0} WHERE service_code = {1}", new UserServiceLinker().GetTableName(), serviceCode.ToString());
+
+                if (isCharged != -1)
+                {
+                    sql += string.Format(" AND is_charged = {0}", isCharged.ToString());
+                }
+
+                using (MySqlDataReader reader = connection.Read(sql))
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            renderedServices.Add((UserServiceLinker)hydrator.Hydrate((BaseTable)(new UserServiceLinker()), reader));
+                        }
+                    }
+                }
+            }
+
+            return renderedServices;
+        }
+
+        public List<UserServiceLinker> GetRenderedServicesByProviderMember(int providerNumber, int memberNumber, int isCharged = -1)
+        {
+            List<UserServiceLinker> renderedServices = new List<UserServiceLinker>();
+            DBHydrator hydrator = new DBHydrator();
+
+            using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
+            {
+                string sql = string.Empty;
+
+                sql = string.Format("SELECT * FROM {0} WHERE provider_number = {1} AND member_number = {2}", new UserServiceLinker().GetTableName(), providerNumber.ToString(), memberNumber.ToString());
+
+                if (isCharged != -1)
+                {
+                    sql += string.Format(" AND is_charged = {0}", isCharged.ToString());
+                }
+
+                using (MySqlDataReader reader = connection.Read(sql))
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            renderedServices.Add((UserServiceLinker)hydrator.Hydrate((BaseTable)(new UserServiceLinker()), reader));
+                        }
+                    }
+                }
+            }
+
+            return renderedServices;
+        }
+
         public User GetUserByNumber(int userNumber)
         {
             DBHydrator hydrator = new DBHydrator();

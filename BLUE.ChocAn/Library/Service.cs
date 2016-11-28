@@ -6,6 +6,11 @@ namespace BLUE.ChocAn.Library
     [TableName("chocan_service")]
     public class Service : BaseTable
     {
+        public override string ToString()
+        {
+            return string.Format("Service Code:\t{0}\nService Name:\t\t{1}", this.ServiceCode, this.ServiceName);
+        }
+
         [PrimaryKey]
         public int ServiceId { get; set; }
 

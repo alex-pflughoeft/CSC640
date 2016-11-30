@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BLUE.ChocAn")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("ChocAn Terminal")]
+[assembly: AssemblyDescription("Terminal interface for the ChocAn system.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BLUE.ChocAn")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCompany("Team Blue")]
+[assembly: AssemblyProduct("ChocAn Terminal v1.0")]
+[assembly: AssemblyCopyright("© Team Blue. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

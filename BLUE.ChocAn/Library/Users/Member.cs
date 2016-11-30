@@ -65,11 +65,6 @@ namespace BLUE.ChocAn.Library.Users
                                   EnumUtilities.GetEnumDescription(this.MemberStatus));
         }
 
-        public void ViewServices()
-        {
-            // TODO: Finish me!
-        }
-
         #endregion
     }
 }

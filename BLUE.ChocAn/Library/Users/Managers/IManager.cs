@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BLUE.ChocAn.Library.Communication;
+using BLUE.ChocAn.Library.Database.Helper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +10,10 @@ namespace BLUE.ChocAn.Library.Users.Managers
 {
     internal interface IManager
     {
-        void GenerateMemberReport(bool sendEmail = false);
-        void GenerateProviderReport(bool sendEmail = false);
-        void GenerateEFTRecord(bool sendEmail = false);
-        void GenerateManagersSummary(bool sendEmail = false);
-        void GenerateAllReports(bool sendEmail = false);
+        string GenerateMemberReport(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false);
+        string GenerateProviderReport(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false);
+        string GenerateEFTRecord(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false);
+        string GenerateManagersSummary(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false);
+        string GenerateAllReports(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false);
     }
 }

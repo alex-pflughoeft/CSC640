@@ -1,4 +1,5 @@
 ﻿using BLUE.ChocAn.Library.Communication;
+using BLUE.ChocAn.Library.Database.Helper;
 using BLUE.ChocAn.Library.Reports;
 using BLUE.ChocAn.Library.Reports.Manager_Reports;
 using BLUE.ChocAn.Library.Reports.Member_Reports;
@@ -13,12 +14,6 @@ namespace BLUE.ChocAn.Library.Users.Managers
 {
     public class Manager : User, IManager
     {
-        #region Private Variables
-
-        private EmailSender _emailSender;
-
-        #endregion
-
         #region Constructors
 
         public Manager()
@@ -45,59 +40,81 @@ namespace BLUE.ChocAn.Library.Users.Managers
 
         #region Public Methods
 
-        public void ConfigureEmailServer(string emailHost, int emailPort)
+        public string GenerateMemberReport(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            this._emailSender = new EmailSender(emailHost, emailPort);
-        }
+            Report memberReport = new MemberReport(dbHelper.GetUsersByRole(Users.UserRole.Member));
 
-        public void GenerateMemberReport(bool sendEmail = false)
-        {
-            Report memberReport = new MemberReport();
-            Console.WriteLine(memberReport.ReportString());
-
-            if (sendEmail)
+            if (emailSender != null)
             {
-                this._emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, memberReport.ReportTitle, memberReport.ReportHTML());
+                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, memberReport.ReportTitle, memberReport.ReportHTML());
             }
-        }
 
-        public void GenerateProviderReport(bool sendEmail = false)
-        {
-            Report providerReport = new ProviderReport();
-            Console.WriteLine(providerReport.ReportString());
-
-            if (sendEmail)
+            if (saveFile)
             {
-                this._emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, providerReport.ReportTitle, providerReport.ReportHTML());
+                // TODO: Save the file
             }
+
+            return memberReport.ToString();
         }
 
-        public void GenerateEFTRecord(bool sendEmail = false)
+        public string GenerateProviderReport(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
+        {
+            Report providerReport = new ProviderReport(dbHelper.GetUsersByRole(Users.UserRole.Provider));
+
+            if (emailSender != null)
+            {
+                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, providerReport.ReportTitle, providerReport.ReportHTML());
+            }
+
+            if (saveFile)
+            {
+                // TODO: Save the file
+            }
+
+            return providerReport.ToString();
+        }
+
+        public string GenerateEFTRecord(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
             Report eftReport = new EFTReport();
-            Console.WriteLine(eftReport.ReportString());
 
-            if (sendEmail)
+            if (emailSender != null)
             {
-                this._emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, eftReport.ReportTitle, eftReport.ReportHTML());
+                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, eftReport.ReportTitle, eftReport.ReportHTML());
             }
+
+            if (saveFile)
+            {
+                // TODO: Save the file
+            }
+
+            return eftReport.ToString();
         }
 
-        public void GenerateManagersSummary(bool sendEmail = false)
+        public string GenerateManagersSummary(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            Report managerSummaryReport = new ManagerSummaryReport();
-            Console.WriteLine(managerSummaryReport.ReportString());
+            Report managerSummaryReport = new ManagerSummaryReport(dbHelper.GetUsersByRole(Users.UserRole.All));
 
-            if (sendEmail)
+            if (emailSender != null)
             {
-                this._emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, managerSummaryReport.ReportTitle, managerSummaryReport.ReportHTML());
+                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, managerSummaryReport.ReportTitle, managerSummaryReport.ReportHTML());
             }
+
+            if (saveFile)
+            {
+                // TODO: Save the file
+            }
+
+            return managerSummaryReport.ToString();
         }
 
-        public void GenerateAllReports(bool sendEmail = false)
+        public string GenerateAllReports(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            // TODO: Finish me
-            throw new NotImplementedException();
+            return string.Format("{0}/n{1}/n{2}/n{3}",
+                this.GenerateMemberReport(dbHelper, emailSender, saveFile),
+                this.GenerateProviderReport(dbHelper, emailSender, saveFile),
+                this.GenerateEFTRecord(dbHelper, emailSender, saveFile),
+                this.GenerateManagersSummary(dbHelper, emailSender, saveFile)); 
         }
 
         #endregion

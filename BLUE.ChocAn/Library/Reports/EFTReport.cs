@@ -8,18 +8,26 @@ namespace BLUE.ChocAn.Library.Reports
 {
     public class EFTReport : Report
     {
+        #region Constructors
+
+        public EFTReport()
+        {
+        }
+
+        #endregion
+
         #region Public Properties
 
         public override string ReportTitle
         {
             // TODO: Finish me
-            get { throw new NotImplementedException(); }
+            get { return "TODO: Finish me!"; }
         }
 
         public override string ReportBody
         {
             // TODO: Finish me
-            get { throw new NotImplementedException(); }
+            get { return "TODO: Finish me!"; }
         }
 
         public override ReportType TypeOfReport { get { return ReportType.EFTRecord; } }
@@ -28,16 +36,16 @@ namespace BLUE.ChocAn.Library.Reports
 
         #region Public Methods
 
-        public override string ReportString()
+        public override string ToString()
         {
             // TODO: Finish me
-            throw new NotImplementedException();
+            return "TODO: Finish me!";
         }
 
         public override string ReportHTML()
         {
             // TODO: Finish me
-            throw new NotImplementedException();
+            return "TODO: Finish me!";
         }
 
         #endregion

@@ -1,4 +1,10 @@
-﻿using BLUE.ChocAn.Library.Users.Managers;
+﻿using BLUE.ChocAn.Library.Communication;
+using BLUE.ChocAn.Library.Database.Helper;
+using BLUE.ChocAn.Library.Reports;
+using BLUE.ChocAn.Library.Reports.Manager_Reports;
+using BLUE.ChocAn.Library.Reports.Member_Reports;
+using BLUE.ChocAn.Library.Reports.Provider_Reports;
+using BLUE.ChocAn.Library.Users.Managers;
 using BLUE.ChocAn.Library.Users.Providers;
 using System;
 
@@ -44,34 +50,81 @@ namespace BLUE.ChocAn.Library.Users
             throw new NotImplementedException();
         }
 
-        public void GenerateMemberReport(bool sendEmail = false)
+        public string GenerateMemberReport(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            // TODO: Finish me
-            throw new NotImplementedException();
+            Report memberReport = new MemberReport(dbHelper.GetUsersByRole(Users.UserRole.Member));
+
+            if (emailSender != null)
+            {
+                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, memberReport.ReportTitle, memberReport.ReportHTML());
+            }
+
+            if (saveFile)
+            {
+                // TODO: Save the file
+            }
+
+            return memberReport.ToString();
         }
 
-        public void GenerateProviderReport(bool sendEmail = false)
+        public string GenerateProviderReport(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            // TODO: Finish me
-            throw new NotImplementedException();
+            Report providerReport = new ProviderReport(dbHelper.GetUsersByRole(Users.UserRole.Provider));
+
+            if (emailSender != null)
+            {
+                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, providerReport.ReportTitle, providerReport.ReportHTML());
+            }
+
+            if (saveFile)
+            {
+                // TODO: Save the file
+            }
+
+            return providerReport.ToString();
         }
 
-        public void GenerateEFTRecord(bool sendEmail = false)
+        public string GenerateEFTRecord(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            // TODO: Finish me
-            throw new NotImplementedException();
+            Report eftReport = new EFTReport();
+
+            if (emailSender != null)
+            {
+                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, eftReport.ReportTitle, eftReport.ReportHTML());
+            }
+
+            if (saveFile)
+            {
+                // TODO: Save the file
+            }
+
+            return eftReport.ToString();
         }
 
-        public void GenerateManagersSummary(bool sendEmail = false)
+        public string GenerateManagersSummary(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            // TODO: Finish me
-            throw new NotImplementedException();
+            Report managerSummaryReport = new ManagerSummaryReport(dbHelper.GetUsersByRole(Users.UserRole.All));
+
+            if (emailSender != null)
+            {
+                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, managerSummaryReport.ReportTitle, managerSummaryReport.ReportHTML());
+            }
+
+            if (saveFile)
+            {
+                // TODO: Save the file
+            }
+
+            return managerSummaryReport.ToString();
         }
 
-        public void GenerateAllReports(bool sendEmail = false)
+        public string GenerateAllReports(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            // TODO: Finish me
-            throw new NotImplementedException();
+            return string.Format("{0}/n{1}/n{2}/n{3}",
+                this.GenerateMemberReport(dbHelper, emailSender, saveFile),
+                this.GenerateProviderReport(dbHelper, emailSender, saveFile),
+                this.GenerateEFTRecord(dbHelper, emailSender, saveFile),
+                this.GenerateManagersSummary(dbHelper, emailSender, saveFile));
         }
 
         #endregion

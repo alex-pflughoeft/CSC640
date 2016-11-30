@@ -1,4 +1,5 @@
-﻿using BLUE.ChocAn.Library.Database.Helper;
+﻿using BLUE.ChocAn.Library.Communication;
+using BLUE.ChocAn.Library.Database.Helper;
 using BLUE.ChocAn.Library.Other;
 using BLUE.ChocAn.Library.Users;
 using BLUE.ChocAn.Library.Users.Managers;
@@ -8,6 +9,7 @@ using BLUE.ChocAn.Library.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -21,6 +23,7 @@ namespace BLUE.ChocAn.Library.Commands
 
         private TerminalView _callbackTerminal;
         private DBHelper _dbHelper;
+        private EmailSender _emailSender;
         private User _currentUser;
 
         #endregion
@@ -34,6 +37,10 @@ namespace BLUE.ChocAn.Library.Commands
             this.CommandNamespace = "BLUE.ChocAn.Library.Commands";
             this.InitializeCommandList();
             this._dbHelper = new DBHelper();
+            this._emailSender = new EmailSender(ConfigurationManager.AppSettings["EmailHost"],
+                Convert.ToInt32(ConfigurationManager.AppSettings["EmailPort"]),
+                ConfigurationManager.AppSettings["FromAddress"],
+                ConfigurationManager.AppSettings["FromPassword"]);
         }
 
         #endregion
@@ -86,7 +93,6 @@ namespace BLUE.ChocAn.Library.Commands
             // value for every emthod parameter. The InvokeMember method fails if the number 
             // of arguments provided does not match the number of parameters in the 
             // method signature, even if some are optional:
-            // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             if (paramInfoList.Count() > 0)
             {
                 // Populate the list with default values:
@@ -262,7 +268,7 @@ namespace BLUE.ChocAn.Library.Commands
         public string billchoc(string dateOfService, string serviceCode)
         {
             ((IProvider)this._currentUser).BillChocAn();
-           
+
             // TODO: Finish return message
             return string.Empty;
         }
@@ -358,12 +364,11 @@ namespace BLUE.ChocAn.Library.Commands
 
                 this._callbackTerminal.EnableInteractiveMode(secondsUntilExit);
 
-                // TODO: Format return message
-                return string.Empty;
+                return "The terminal has been set to interactive mode.\n";
             }
 
             // Already in interactive mode
-            return string.Empty;
+            return "The terminal is already in interactive mode.\n";
         }
 
         [Display(Description = "Command Name: exitim\nParameters: exitim <seconds until exit>\nDescription: Exits interactive mode with an optional time period until exit.")]
@@ -373,45 +378,65 @@ namespace BLUE.ChocAn.Library.Commands
             if (this._callbackTerminal.IsInteractiveMode)
             {
                 this._callbackTerminal.DisableInteractiveMode(secondsUntilExit);
-                // TODO: Validate the member card to be used.
-                return string.Format("TODO: Exit Interactive Mode\n");
+
+                return "The terminal has exited interactive mode.\n";
             }
 
             // Not in interactive mode
-            return string.Empty;
+            return "The terminal is not in interactive mode.\n";
         }
 
         [Display(Description = "Command Name: genreport\nParameters: genreport <report name> <email=y/n>\nDescription: Generates the specified report on screen and optionally emails it to you.")]
         [RoleRequired(Role = UserRole.Manager)]
         public string genreport(string reportName = "")
         {
+            EmailSender emailSender = null;
+            bool saveCopy = false;
+            string returnMessage = string.Empty;
+
             if (reportName == string.Empty)
             {
                 Console.WriteLine("Which report would you like to run?\n");
+                Console.WriteLine("{0}\n{1}\n{2}\n{3}\n{4}", "1 - Managers Summary", "2 - Member Report", "3 - Provider Report", "4 - EFT Record", "5 - All Reports");
                 reportName = Console.ReadLine();
+            }
+
+            Console.WriteLine("Would you like an email of the report? (y/n)");
+            string email = Console.ReadLine();
+
+            if (email.ToLower() == "y")
+            {
+                emailSender = this._emailSender;
+            }
+
+            Console.WriteLine("Would you like to save a local copy of the report? (y/n)");
+            string save = Console.ReadLine();
+
+            if (save.ToLower() == "y")
+            {
+                saveCopy = true;
             }
 
             switch (reportName)
             {
                 case "1":
-                    ((IManager)this._currentUser).GenerateManagersSummary();
+                    returnMessage = ((IManager)this._currentUser).GenerateManagersSummary(this._dbHelper, emailSender, saveCopy);
                     break;
                 case "2":
-                    ((IManager)this._currentUser).GenerateMemberReport();
+                    returnMessage = ((IManager)this._currentUser).GenerateMemberReport(this._dbHelper, emailSender, saveCopy);
                     break;
                 case "3":
-                    ((IManager)this._currentUser).GenerateProviderReport();
+                    returnMessage = ((IManager)this._currentUser).GenerateProviderReport(this._dbHelper, emailSender, saveCopy);
                     break;
                 case "4":
-                    ((IManager)this._currentUser).GenerateEFTRecord();
+                    returnMessage = ((IManager)this._currentUser).GenerateEFTRecord(this._dbHelper, emailSender, saveCopy);
                     break;
                 case "5":
-                    ((IManager)this._currentUser).GenerateAllReports();
+                    returnMessage = ((IManager)this._currentUser).GenerateAllReports(this._dbHelper, emailSender, saveCopy);
                     break;
             }
 
-            // TODO: Format return message
-            return string.Empty;
+            return returnMessage;
         }
 
         [Display(Description = "Command Name: history\nDescription: Show the historical list of commands.")]
@@ -827,7 +852,7 @@ namespace BLUE.ChocAn.Library.Commands
                 {
                     return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
                 }
-                
+
                 return this.InsufficientPrivilegeMessage();
             }
 

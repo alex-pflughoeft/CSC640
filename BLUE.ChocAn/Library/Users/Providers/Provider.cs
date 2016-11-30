@@ -55,7 +55,7 @@ namespace BLUE.ChocAn.Library.Users.Providers
 
         public void BillChocAn()
         {
-            // TODO: Bill ChocAn
+            // TODO: Bill ChocAn - Maybe add some sort of table in the database which represents chocan invoices?
         }
 
         #endregion

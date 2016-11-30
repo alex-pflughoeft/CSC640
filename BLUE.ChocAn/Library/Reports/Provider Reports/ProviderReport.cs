@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BLUE.ChocAn.Library.Users;
+using BLUE.ChocAn.Library.Users.Providers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,30 +10,53 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
 {
     public class ProviderReport : Report
     {
-        public override string ReportString()
+        #region Private Variables
+
+        private List<User> _listOfProviders;
+
+        #endregion
+
+        #region Constructors
+
+        public ProviderReport(List<User> listOfProviders)
         {
-            // TODO: Finish me
-            throw new NotImplementedException();
+            this._listOfProviders = listOfProviders;
         }
+
+        #endregion
+
+        #region Public Properties
 
         public override ReportType TypeOfReport { get { return ReportType.Provider; } }
 
         public override string ReportTitle
         {
             // TODO: Finish me
-            get { throw new NotImplementedException(); }
+            get { return "TODO: Finish me!"; }
         }
 
         public override string ReportBody
         {
             // TODO: Finish me
-            get { throw new NotImplementedException(); }
+            get { return "TODO: Finish me!"; }
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public override string ToString()
+        {
+            // TODO: Finish me
+            return "TODO: Finish me!";
         }
 
         public override string ReportHTML()
         {
             // TODO: Finish me
-            throw new NotImplementedException();
+            return "TODO: Finish me!";
         }
+
+        #endregion
     }
 }

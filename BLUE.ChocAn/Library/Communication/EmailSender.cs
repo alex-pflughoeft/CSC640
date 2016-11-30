@@ -58,7 +58,10 @@ namespace BLUE.ChocAn.Library.Communication
         {
             try
             {
-                // TODO: Send the email to multiple
+                foreach (MailAddress address in to)
+                {
+                    this.SendEmail(from, address.Address, subject, message);
+                }
             }
             catch (Exception e)
             {

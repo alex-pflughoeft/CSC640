@@ -40,9 +40,9 @@ namespace BLUE.ChocAn.Library.Users.Managers
 
         #region Public Methods
 
-        public string GenerateMemberReport(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
+        public string GenerateMemberReport(int memberNumber, DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            Report memberReport = new MemberReport(dbHelper.GetUsersByRole(Users.UserRole.Member));
+            Report memberReport = new MemberReport(dbHelper.GetRenderedServicesByMember(memberNumber));
 
             if (emailSender != null)
             {
@@ -111,7 +111,7 @@ namespace BLUE.ChocAn.Library.Users.Managers
         public string GenerateAllReports(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
             return string.Format("{0}\n{1}\n{2}\n{3}",
-                this.GenerateMemberReport(dbHelper, emailSender, saveFile),
+                //this.GenerateMemberReport(dbHelper, emailSender, saveFile),
                 this.GenerateProviderReport(dbHelper, emailSender, saveFile),
                 this.GenerateEFTRecord(dbHelper, emailSender, saveFile),
                 this.GenerateManagersSummary(dbHelper, emailSender, saveFile)); 

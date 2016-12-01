@@ -448,7 +448,7 @@ namespace BLUE.ChocAn.Library.Commands
                     returnMessage = ((IManager)this._currentUser).GenerateManagersSummary(this._dbHelper, emailSender, saveCopy);
                     break;
                 case "2":
-                    returnMessage = ((IManager)this._currentUser).GenerateMemberReport(this._dbHelper, emailSender, saveCopy);
+                    returnMessage = ((IManager)this._currentUser).GenerateMemberReport(9876, this._dbHelper, emailSender, saveCopy);
                     break;
                 case "3":
                     returnMessage = ((IManager)this._currentUser).GenerateProviderReport(this._dbHelper, emailSender, saveCopy);
@@ -774,13 +774,23 @@ namespace BLUE.ChocAn.Library.Commands
                 string memberZip;
                 string memberEmail;
 
-                Console.WriteLine("Enter the Member Name:");
-                memberName = Console.ReadLine();
-                // TODO: Validate name (max 25 characters)
-
                 Console.WriteLine("Enter the Member Number:");
                 memberNumber = Console.ReadLine();
                 // TODO: Validate number
+                User tempUser = this._dbHelper.GetUserByNumber(Convert.ToInt32(memberNumber));
+                if (tempUser == null)
+                {
+                    Console.WriteLine("No member exists with that number.");
+                    Console.WriteLine("Enter the Member Number:");
+                }
+                else {
+
+                    Console.WriteLine(tempUser.UserName);
+                }
+
+                Console.WriteLine("Enter the Member Name:");
+                memberName = Console.ReadLine();
+                // TODO: Validate name (max 25 characters)
 
                 Console.WriteLine("Enter the Member Street Address:");
                 memberStreetAddress = Console.ReadLine();

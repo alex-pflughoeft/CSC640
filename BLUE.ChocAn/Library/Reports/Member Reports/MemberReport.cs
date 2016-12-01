@@ -11,15 +11,15 @@ namespace BLUE.ChocAn.Library.Reports.Member_Reports
     {
         #region Private Variables
 
-        private List<User> _memberList;
+        private List<UserServiceLinker> _memberServices;
 
         #endregion
 
         #region Public Constructors
 
-        public MemberReport(List<User> memberList)
+        public MemberReport(List<UserServiceLinker> memberServices)
         {
-            this._memberList = memberList;
+            this._memberServices = memberServices;
         }
 
         #endregion
@@ -46,13 +46,20 @@ namespace BLUE.ChocAn.Library.Reports.Member_Reports
 
         public override string ToString()
         {
-            // TODO: Finish me
-            return "TODO: Finish me!";
+            string returnString = string.Empty;
+
+            foreach (UserServiceLinker serviceRendered in this._memberServices)
+            {
+                returnString += string.Format("Service Provider: {0}\nService Code: {1}", serviceRendered.ProviderNumber, serviceRendered.ServiceCode) + "\n\n"; 
+            }
+
+            return returnString;
         }
 
         public override string ReportHTML()
         {
             // TODO: Finish me
+
             return "TODO: Finish me!";
         }
 

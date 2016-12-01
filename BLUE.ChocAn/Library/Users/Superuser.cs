@@ -44,10 +44,10 @@ namespace BLUE.ChocAn.Library.Users
             return true;
         }
 
-        public void BillChocAn()
+        public bool BillChocAn()
         {
             // TODO: Finish me
-            throw new NotImplementedException();
+            return true;
         }
 
         public string GenerateMemberReport(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
@@ -120,7 +120,7 @@ namespace BLUE.ChocAn.Library.Users
 
         public string GenerateAllReports(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            return string.Format("{0}/n{1}/n{2}/n{3}",
+            return string.Format("{0}\n{1}\n{2}\n{3}",
                 this.GenerateMemberReport(dbHelper, emailSender, saveFile),
                 this.GenerateProviderReport(dbHelper, emailSender, saveFile),
                 this.GenerateEFTRecord(dbHelper, emailSender, saveFile),

@@ -53,9 +53,10 @@ namespace BLUE.ChocAn.Library.Users.Providers
             return true;
         }
 
-        public void BillChocAn()
+        public bool BillChocAn()
         {
             // TODO: Bill ChocAn - Maybe add some sort of table in the database which represents chocan invoices?
+            return true;
         }
 
         #endregion

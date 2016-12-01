@@ -110,7 +110,7 @@ namespace BLUE.ChocAn.Library.Users.Managers
 
         public string GenerateAllReports(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
         {
-            return string.Format("{0}/n{1}/n{2}/n{3}",
+            return string.Format("{0}\n{1}\n{2}\n{3}",
                 this.GenerateMemberReport(dbHelper, emailSender, saveFile),
                 this.GenerateProviderReport(dbHelper, emailSender, saveFile),
                 this.GenerateEFTRecord(dbHelper, emailSender, saveFile),

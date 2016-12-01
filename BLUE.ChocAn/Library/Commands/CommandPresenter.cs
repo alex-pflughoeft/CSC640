@@ -263,14 +263,39 @@ namespace BLUE.ChocAn.Library.Commands
             return "The terminal must be in interactive mode to run this command.\n";
         }
 
-        [Display(Description = "Command Name: billchoc\nParameters: billchoc <date of service (dd/mm/yyyy)> <service code>\nDescription: Bills Chocoholics Anonymous with the service.")]
+        [Display(Description = "Command Name: billchoc\nParameters: billchoc\nDescription: Bills Chocoholics Anonymous with the charges that are outstanding.")]
         [RoleRequired(Role = UserRole.Provider)]
-        public string billchoc(string dateOfService, string serviceCode)
+        public string billchoc()
         {
-            ((IProvider)this._currentUser).BillChocAn();
+            string providerNumber = string.Empty;
 
-            // TODO: Finish return message
-            return string.Empty;
+            if (this._currentUser.GetUserRole() == UserRole.Super)
+            {
+                // Validate provider number
+                while (!System.Text.RegularExpressions.Regex.IsMatch(providerNumber, "^[0-9]{1,10}$"))
+                {
+                    Console.WriteLine("Enter the {0} Number (<= 9 digits):", "Provider");
+                    providerNumber = Console.ReadLine();
+                }
+            }
+            else
+            {
+                providerNumber = this._currentUser.UserNumber.ToString();
+            }
+
+            List<UserServiceLinker> services = this._dbHelper.GetRenderedServicesByProvider(Convert.ToInt32(providerNumber), 0);
+
+            if (services.Count > 0)
+            {
+                if (((IProvider)this._currentUser).BillChocAn())
+                {
+                    return string.Format("Outstanding services have been billed to the ChocAn system!\n");
+                }
+
+                return string.Format("Outstanding services could not be billed to the ChocAn system!\n"); 
+            }
+
+            return "There are no outstanding services that need to be charged.\n";
         }
 
         [Display(Description = "Command Name: changepassword\nParameters: changepassword <old password> <new password>\nDescription: Changes your password from the old password to the new password.")]
@@ -546,49 +571,54 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Guest)]
         public string login(string userName, string password = "")
         {
-            var user = this._dbHelper.GetUserByLoginName(userName);
-
-            if (user != null)
+            if (this._currentUser.GetUserRole() == UserRole.Guest)
             {
-                if (password == user.UserPassword)
+                var user = this._dbHelper.GetUserByLoginName(userName);
+
+                if (user != null)
                 {
-                    switch ((UserRole)user.UserRole)
+                    if (password == user.UserPassword)
                     {
-                        case UserRole.Manager:
-                            this._currentUser = (Manager)user;
-                            break;
-                        case UserRole.Member:
-                            this._currentUser = (Member)user;
-                            break;
-                        case UserRole.Operator:
-                            this._currentUser = (Operator)user;
-                            break;
-                        case UserRole.Provider:
-                            this._currentUser = (Provider)user;
-                            break;
-                        case UserRole.Super:
-                            this._currentUser = (Superuser)user;
-                            break;
-                        default:
-                            break;
+                        switch ((UserRole)user.UserRole)
+                        {
+                            case UserRole.Manager:
+                                this._currentUser = (Manager)user;
+                                break;
+                            case UserRole.Member:
+                                this._currentUser = (Member)user;
+                                break;
+                            case UserRole.Operator:
+                                this._currentUser = (Operator)user;
+                                break;
+                            case UserRole.Provider:
+                                this._currentUser = (Provider)user;
+                                break;
+                            case UserRole.Super:
+                                this._currentUser = (Superuser)user;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (this._currentUser.GetUserRole() == UserRole.Guest)
+                        {
+                            this._callbackTerminal.UpdateTerminalPrompt("ChocAnon> ");
+                        }
+                        else
+                        {
+                            this._callbackTerminal.UpdateTerminalPrompt(string.Format("ChocAnon.{0}> ", this._currentUser.LoginName));
+                        }
+
+                        return string.Format("Welcome \'{0}\'! Type 'help' to see the new available commands.\n", this._currentUser.LoginName);
                     }
 
-                    if (this._currentUser.GetUserRole() == UserRole.Guest)
-                    {
-                        this._callbackTerminal.UpdateTerminalPrompt("ChocAnon> ");
-                    }
-                    else
-                    {
-                        this._callbackTerminal.UpdateTerminalPrompt(string.Format("ChocAnon.{0}> ", this._currentUser.LoginName));
-                    }
-
-                    return string.Format("Welcome \'{0}\'! Type 'help' to see the new available commands.\n", this._currentUser.LoginName);
+                    return string.Format("Failed login for user \'{0}\'. Wrong Password.\n", userName);
                 }
 
-                return string.Format("Failed login for user \'{0}\'. Wrong Password.\n", userName);
+                return string.Format("Failed login for user \'{0}\'. User Not Found.\n", userName);
             }
 
-            return string.Format("Failed login for user \'{0}\'. User Not Found.\n", userName);
+            return "You are already logged in. Please logout first to login as a different user.\n";
         }
 
         [Display(Description = "Command Name: logout\nDescription: Logs the user out of the application.")]

@@ -34,26 +34,7 @@ namespace BLUE.ChocAn.Library.Users.Providers
 
         #region Public Methods
 
-        public bool ValidateMemberCard(Member member)
-        {
-            member.MemberStatus = (int)MemberStatusEnum.ACTIVE;
-
-            return true;
-        }
-
-        public bool ValidateMemberCard(int memberCardNumber)
-        {
-            // TODO: Get member corresponding to that card number
-            Member member = new Member();
-
-            member.MemberStatus = (int)MemberStatusEnum.ACTIVE;
-
-            Console.WriteLine("Card Number \'{0}\' has been validated for member \'{1}\'.\n", member.CardNumber.ToString(), member.UserName);
-
-            return true;
-        }
-
-        public bool BillChocAn()
+        public bool BillChocAn(int memberNumber, int serviceCode)
         {
             // TODO: Bill ChocAn - Maybe add some sort of table in the database which represents chocan invoices?
             return true;

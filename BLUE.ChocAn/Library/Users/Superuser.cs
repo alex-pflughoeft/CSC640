@@ -40,11 +40,11 @@ namespace BLUE.ChocAn.Library.Users
 
         public bool ValidateMemberCard(Member member)
         {
-            member.MemberStatus = (int)MemberStatusEnum.ACTIVE;
+            //member.MemberStatus = (int)MemberStatusEnum.ACTIVE;
             return true;
         }
 
-        public bool BillChocAn()
+        public bool BillChocAn(int memberNumber, int serviceCode)
         {
             // TODO: Finish me
             return true;

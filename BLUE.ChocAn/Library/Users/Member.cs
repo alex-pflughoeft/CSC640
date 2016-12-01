@@ -3,26 +3,12 @@ using System.ComponentModel;
 
 namespace BLUE.ChocAn.Library.Users
 {
-    public enum MemberStatusEnum
-    {
-        [Description("Inactive")]
-        INACTIVE = 0,
-
-        [Description("Active")]
-        ACTIVE = 1,
-
-        [Description("Suspended")]
-        SUSPENDED = 2,
-    }
-
     public class Member : User
     {
         #region Constructors
 
         public Member()
         {
-            this.MemberStatus = (int)MemberStatusEnum.INACTIVE;
-            this.CardValidated = false;
             this.UserRole = (int)Users.UserRole.Member;
         }
 
@@ -42,27 +28,18 @@ namespace BLUE.ChocAn.Library.Users
 
         #endregion
 
-        #region Public Properties
-
-        public int MemberStatus { get; set; }
-        public int? CardNumber { get; set; }
-        public bool CardValidated { get; private set; }
-
-        #endregion
-
         #region Public Methods
 
         public override string ToString()
         {
- 	         return string.Format("Member Number: {0}, Member Name: {1}, Member Address: {2}, Member City: {3}, Member Province: {4}, Member Zip Code: {5}, Member Email Address: {6}, Member Status: {7}",
+ 	         return string.Format("Member Number: {0}, Member Name: {1}, Member Address: {2}, Member City: {3}, Member Province: {4}, Member Zip Code: {5}, Member Email Address: {6}",
                                   this.UserNumber,
                                   this.UserName,
                                   this.UserAddress,
                                   this.UserCity,
                                   this.UserState,
                                   this.UserZipCode,
-                                  this.UserEmailAddress,
-                                  EnumUtilities.GetEnumDescription(this.MemberStatus));
+                                  this.UserEmailAddress);
         }
 
         #endregion

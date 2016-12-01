@@ -66,6 +66,8 @@ namespace BLUE.ChocAn.Library.Users
 
         public int UserRole { get; set; }
 
+        public int? CardNumber { get; set; }
+
         #endregion
     }
 }

@@ -13,7 +13,7 @@ namespace BLUE.ChocAn.Library
 
         [PrimaryKey]
         [StringLength(11, ErrorMessage = "Service Code must not be greater than 11 digits long.")]
-        public int ServiceCode { get; set; }
+        public string ServiceCode { get; set; }
 
         [StringLength(11, ErrorMessage = "Provider Number must not be greater than 11 digits long.")]
         public int ProviderNumber { get; set; }

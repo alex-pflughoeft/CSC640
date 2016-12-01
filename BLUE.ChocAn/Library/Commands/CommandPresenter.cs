@@ -25,6 +25,7 @@ namespace BLUE.ChocAn.Library.Commands
         private DBHelper _dbHelper;
         private EmailSender _emailSender;
         private User _currentUser;
+        private User validatedMember;
 
         #endregion
 
@@ -41,6 +42,7 @@ namespace BLUE.ChocAn.Library.Commands
                 Convert.ToInt32(ConfigurationManager.AppSettings["EmailPort"]),
                 ConfigurationManager.AppSettings["FromAddress"],
                 ConfigurationManager.AppSettings["FromPassword"]);
+            this.validatedMember = null;
         }
 
         #endregion
@@ -267,35 +269,78 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string billchoc()
         {
-            string providerNumber = string.Empty;
-
-            if (this._currentUser.GetUserRole() == UserRole.Super)
+            if (validatedMember != null)
             {
-                // Validate provider number
-                while (!System.Text.RegularExpressions.Regex.IsMatch(providerNumber, "^[0-9]{1,10}$"))
+                string choice = string.Empty;
+
+                if (choice == string.Empty)
                 {
-                    Console.WriteLine("Enter the {0} Number (<= 9 digits):", "Provider");
-                    providerNumber = Console.ReadLine();
-                }
-            }
-            else
-            {
-                providerNumber = this._currentUser.UserNumber.ToString();
-            }
-
-            List<UserServiceLinker> services = this._dbHelper.GetRenderedServicesByProvider(Convert.ToInt32(providerNumber), 0);
-
-            if (services.Count > 0)
-            {
-                if (((IProvider)this._currentUser).BillChocAn())
-                {
-                    return string.Format("Outstanding services have been billed to the ChocAn system!\n");
+                    Console.WriteLine("Current Validated Member - {0}\n", this.validatedMember.UserName);
+                    Console.WriteLine("What would you like to do?\n");
+                    Console.WriteLine("{0}\n{1}", "1 - Charge a Service", "2 - Pay a Service");
+                    choice = Console.ReadLine();
                 }
 
-                return string.Format("Outstanding services could not be billed to the ChocAn system!\n"); 
+                if (choice == "1")
+                {
+                    string providerNumber = string.Empty;
+
+                    if (this._currentUser.UserRole == (int)UserRole.Super)
+                    {
+                        while (!System.Text.RegularExpressions.Regex.IsMatch(providerNumber, "^[0-11]{1,10}$"))
+                        {
+                            Console.WriteLine("Enter the Provider Number (<= 11 digits):");
+                            providerNumber = Console.ReadLine();
+                        }
+                    }
+                    else
+                    {
+                        providerNumber = this._currentUser.UserNumber.ToString();
+                    }
+
+                    string serviceCode;
+                    Console.WriteLine("Which Service would you like to charge?");
+                    serviceCode = Console.ReadLine();
+
+                    Service service = this._dbHelper.GetServiceByServiceCode(Convert.ToInt32(serviceCode));
+
+                    UserServiceLinker linker = new UserServiceLinker();
+
+                    // TODO: Finish gathering the information and put it in the correct
+
+                    linker.MemberNumber = validatedMember.UserNumber;
+                    linker.ServiceCode = service.ServiceCode;
+                    linker.DateCreated = DateTime.Now;
+                    linker.ServiceComments = "Test";
+
+                    this._dbHelper.Create(linker);
+
+                    return "TODO: Finish me!";
+                }
+                else if (choice == "2")
+                {
+                    string providerNumber = string.Empty;
+
+                    if (this._currentUser.UserRole == (int)UserRole.Super)
+                    {
+                        while (!System.Text.RegularExpressions.Regex.IsMatch(providerNumber, "^[0-11]{1,10}$"))
+                        {
+                            Console.WriteLine("Enter the Provider Number (<= 11 digits):");
+                            providerNumber = Console.ReadLine();
+                        }
+                    }
+                    else
+                    {
+                        providerNumber = this._currentUser.UserNumber.ToString();
+                    }
+
+                    // TODO: Finish me!
+                }
+
+                return string.Empty;
             }
 
-            return "There are no outstanding services that need to be charged.\n";
+            return "Please validate the member card before performing this action.\n";
         }
 
         [Display(Description = "Command Name: changepassword\nParameters: changepassword <old password> <new password>\nDescription: Changes your password from the old password to the new password.")]
@@ -783,7 +828,8 @@ namespace BLUE.ChocAn.Library.Commands
                     Console.WriteLine("No member exists with that number.");
                     Console.WriteLine("Enter the Member Number:");
                 }
-                else {
+                else
+                {
 
                     Console.WriteLine(tempUser.UserName);
                 }
@@ -926,48 +972,47 @@ namespace BLUE.ChocAn.Library.Commands
         {
             if (memberNumber == string.Empty)
             {
-                Console.WriteLine("Please slide card, or type in the card number.");
+                Console.WriteLine("Please slide card, or type in the member number.");
                 memberNumber = Console.ReadLine();
             }
 
             // Get the member corresponding with the number
-            Member thisMember = (Member)this._dbHelper.GetUserByNumber(Convert.ToInt32(memberNumber));
+            User thisMember = this._dbHelper.GetUserByNumber(Convert.ToInt32(memberNumber));
 
             if (thisMember != null)
             {
-                if (thisMember.CardNumber.HasValue)
+                if (thisMember.GetUserRole() == UserRole.Member)
                 {
-                    List<UserServiceLinker> servicesOutstanding = this._dbHelper.GetRenderedServicesByMember(thisMember.UserNumber, 0);
-
-                    foreach (UserServiceLinker service in servicesOutstanding)
+                    if (thisMember.CardNumber.HasValue)
                     {
-                        if (service.ProviderNumber == this._currentUser.UserNumber)
+                        List<UserServiceLinker> servicesOutstanding = this._dbHelper.GetRenderedServicesByMember(thisMember.UserNumber, 0);
+
+                        foreach (UserServiceLinker service in servicesOutstanding)
                         {
-                            if (service.PaymentDueDate.HasValue)
+                            if (service.ProviderNumber == this._currentUser.UserNumber)
                             {
-                                if (!service.DatePaid.HasValue)
+                                if (service.PaymentDueDate.HasValue)
                                 {
-                                    if (DateTime.Now > service.PaymentDueDate.Value)
+                                    if (!service.DatePaid.HasValue)
                                     {
-                                        return string.Format("Member '{0}' is suspended. Payment for service '{0}' is past due!", memberNumber, service.ServiceCode);
+                                        if (DateTime.Now > service.PaymentDueDate.Value)
+                                        {
+                                            return string.Format("Member '{0}' is suspended. Payment for service '{0}' is past due!", memberNumber, service.ServiceCode);
+                                        }
                                     }
                                 }
                             }
                         }
+
+                        validatedMember = thisMember;
+                        return string.Format("Member '{0}' has been validated!", thisMember.UserName);
                     }
 
-                    if (((IProvider)this._currentUser).ValidateMemberCard(thisMember))
-                    {
-                        return string.Format("Card number '{0}' has been validated for member '{1}'!", memberNumber, thisMember.LoginName);
-                    }
-
-                    return string.Format("Error validating card number '{0}'!", memberNumber);
+                    return string.Format("Member '{0}' has no card associated with the account!", memberNumber);
                 }
-
-                return string.Format("Member '{0}' has no card associatd with the account!", memberNumber); 
             }
 
-            return string.Format("Member for card number '{0}' not found!", memberNumber);
+            return string.Format("Member '{0}' not found!", memberNumber);
         }
 
         [Display(Description = "Command Name: viewpend\nDescription: View the pending service charges.")]

@@ -82,7 +82,31 @@ namespace BLUE.ChocAn.Library.Database.Helper
 
             return false;
         }
-      
+
+        public List<Service> GetAllServices()
+        {
+            List<Service> services = new List<Service>();
+            DBHydrator hydrator = new DBHydrator();
+
+            using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
+            {
+                string sql = string.Format("SELECT * FROM {0} ORDER BY service_name asc", new Service().GetTableName());
+
+                using (MySqlDataReader reader = connection.Read(sql))
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            services.Add((Service)hydrator.Hydrate((BaseTable)(new Service()), reader));
+                        }
+                    }
+                }
+            }
+
+            return services;
+        }
+
         public Service GetServiceByServiceCode(int serviceCode)
         {
             DBHydrator hydrator = new DBHydrator();

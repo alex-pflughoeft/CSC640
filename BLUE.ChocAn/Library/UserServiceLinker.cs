@@ -27,5 +27,11 @@ namespace BLUE.ChocAn.Library
         public string ServiceComments { get; set; }
 
         public bool IsCharged { get; set; }
+
+        public DateTime? PaymentDueDate { get; set; }
+
+        public DateTime? DatePaid { get; set; }
+
+        public DateTime? DateCreated { get; set; }
     }
 }

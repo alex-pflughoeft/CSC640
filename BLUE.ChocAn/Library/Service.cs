@@ -8,7 +8,7 @@ namespace BLUE.ChocAn.Library
     {
         public override string ToString()
         {
-            return string.Format("Service Code:\t{0}\nService Name:\t\t{1}", this.ServiceCode, this.ServiceName);
+            return string.Format("Service Name:\t{0}\nService Code:\t{1}\nService Fee:\t{2}", this.ServiceName, this.ServiceCode, this.ServiceFee.ToString("C"));
         }
 
         [PrimaryKey]
@@ -19,5 +19,7 @@ namespace BLUE.ChocAn.Library
 
         [StringLength(45, ErrorMessage = "Provider Number must not be greater than 45 characters long.")]
         public string ServiceName { get; set; }
+
+        public double ServiceFee { get; set; }
     }
 }

@@ -920,30 +920,54 @@ namespace BLUE.ChocAn.Library.Commands
             return "No users found!";
         }
 
-        [Display(Description = "Command Name: validatecard\nParameters: validatecard <member card id>\nDescription: Validate a members card.")]
+        [Display(Description = "Command Name: validatecard\nParameters: validatecard <member number>\nDescription: Validate a members card.")]
         [RoleRequired(Role = UserRole.Provider)]
-        public string validatecard(string cardId = "")
+        public string validatecard(string memberNumber = "")
         {
-            if (cardId == string.Empty)
+            if (memberNumber == string.Empty)
             {
                 Console.WriteLine("Please slide card, or type in the card number.");
-                cardId = Console.ReadLine();
+                memberNumber = Console.ReadLine();
             }
 
             // Get the member corresponding with the number
-            Member thisMember = (Member)this._dbHelper.GetMemberByCardNumber(Convert.ToInt32(cardId));
+            Member thisMember = (Member)this._dbHelper.GetUserByNumber(Convert.ToInt32(memberNumber));
 
             if (thisMember != null)
             {
-                if (((IProvider)this._currentUser).ValidateMemberCard(thisMember))
+                if (thisMember.CardNumber.HasValue)
                 {
-                    return string.Format("Card number '{0}' has been validated for member '{1}'!", cardId, thisMember.LoginName);
+                    List<UserServiceLinker> servicesOutstanding = this._dbHelper.GetRenderedServicesByMember(thisMember.UserNumber, 0);
+
+                    foreach (UserServiceLinker service in servicesOutstanding)
+                    {
+                        if (service.ProviderNumber == this._currentUser.UserNumber)
+                        {
+                            if (service.PaymentDueDate.HasValue)
+                            {
+                                if (!service.DatePaid.HasValue)
+                                {
+                                    if (DateTime.Now > service.PaymentDueDate.Value)
+                                    {
+                                        return string.Format("Member '{0}' is suspended. Payment for service '{0}' is past due!", memberNumber, service.ServiceCode);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (((IProvider)this._currentUser).ValidateMemberCard(thisMember))
+                    {
+                        return string.Format("Card number '{0}' has been validated for member '{1}'!", memberNumber, thisMember.LoginName);
+                    }
+
+                    return string.Format("Error validating card number '{0}'!", memberNumber);
                 }
 
-                return string.Format("Error validating card number '{0}'!", cardId);
+                return string.Format("Member '{0}' has no card associatd with the account!", memberNumber); 
             }
 
-            return string.Format("Member for card number '{0}' not found!", cardId);
+            return string.Format("Member for card number '{0}' not found!", memberNumber);
         }
 
         [Display(Description = "Command Name: viewpend\nDescription: View the pending service charges.")]
@@ -1020,20 +1044,20 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string viewpd()
         {
-            List<User> listOfProviders = this._dbHelper.GetUsersByRole(UserRole.Provider);
+            List<Service> listOfServices = this._dbHelper.GetAllServices();
             string returnMessage = string.Empty;
 
-            if (listOfProviders.Count > 0)
+            if (listOfServices.Count > 0)
             {
-                foreach (User user in listOfProviders)
+                foreach (Service service in listOfServices)
                 {
-                    returnMessage += user.ToString() + "\n";
+                    returnMessage += service.ToString() + "\n";
                 }
 
                 return returnMessage;
             }
 
-            return "No providers found!";
+            return "No services found!";
         }
 
         [Display(Description = "Command Name: whoami\nDescription: Displays the curent user.")]

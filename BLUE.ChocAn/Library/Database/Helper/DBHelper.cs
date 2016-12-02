@@ -361,5 +361,18 @@ namespace BLUE.ChocAn.Library.Database.Helper
 
             return null;
         }
+        public void updateUser(int userNumber, string attribute, string newValue)
+        {
+            DBHydrator hydrator = new DBHydrator();
+            using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
+            {
+                string sql = string.Format("UPDATE `{0}` SET `{1}`='{2}' WHERE `user_number`={3}", new User().GetTableName(),attribute,newValue, userNumber);
+
+                using (MySqlDataReader reader = connection.Read(sql))
+                {
+                    reader.Read();
+                }
+            }
+        }
     }
 }

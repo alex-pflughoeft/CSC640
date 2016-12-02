@@ -811,74 +811,86 @@ namespace BLUE.ChocAn.Library.Commands
             // TODO: Under Construction
             if (this._callbackTerminal.IsInteractiveMode)
             {
-                string memberName;
-                string memberNumber;
-                string memberStreetAddress;
-                string memberCity;
-                string memberState;
-                string memberZip;
-                string memberEmail;
+                string memberName = null;
+                string memberNumber = null;
+                string memberStreetAddress = null;
+                string memberCity = null;
+                string memberState = null;
+                string memberZip = null;
+                string memberEmail = null;
+                User tempUser = null;
 
-                Console.WriteLine("Enter the Member Number:");
+                Console.WriteLine("Enter Member Number ('q' to quit):");
                 memberNumber = Console.ReadLine();
-                // TODO: Validate number
-                User tempUser = this._dbHelper.GetUserByNumber(Convert.ToInt32(memberNumber));
-                if (tempUser == null)
+                if (memberNumber.Equals("q") || memberNumber.Equals("Q")) return "Member update command aborted.";
+                if (System.Text.RegularExpressions.Regex.IsMatch(memberNumber, "^[0-9]{1,10}$")) tempUser = this._dbHelper.GetUserByNumber(Convert.ToInt32(memberNumber));
+                while (tempUser == null)
                 {
-                    Console.WriteLine("No member exists with that number.");
-                    Console.WriteLine("Enter the Member Number:");
+                    Console.WriteLine("Invalid Entry.\nEnter Member Number ('q' to quit):");
+                    memberNumber = Console.ReadLine();
+                    if (memberNumber.Equals("q") || memberNumber.Equals("Q")) return "Member update command aborted.";
+                    if(System.Text.RegularExpressions.Regex.IsMatch(memberNumber, "^[0-9]{1,10}$")) tempUser = this._dbHelper.GetUserByNumber(Convert.ToInt32(memberNumber));
                 }
-                else
+                Console.WriteLine("\nMember # {0} selected: {1}.", tempUser.UserNumber,tempUser.UserName);
+                Console.WriteLine("For each item press 'Enter' to keep current data, or enter new data.");
+
+                //Validate name (max 25 characters)
+                while (((memberName == null)) || (memberName.Length > 25 && (!(memberName.Length == 0))))
                 {
-
-                    Console.WriteLine(tempUser.UserName);
+                    Console.WriteLine("Name ({0}), max 25 characters:", tempUser.UserName);
+                    memberName = Console.ReadLine();
                 }
 
-                Console.WriteLine("Enter the Member Name:");
-                memberName = Console.ReadLine();
-                // TODO: Validate name (max 25 characters)
+                // Validate address
+                while (memberStreetAddress == null || (memberStreetAddress.Length > 25 && (!(memberStreetAddress.Length == 0))))
+                {
+                    Console.WriteLine("Street Address ({0}), max 25 characters:", tempUser.UserAddress);
+                    memberStreetAddress = Console.ReadLine();
+                }
 
-                Console.WriteLine("Enter the Member Street Address:");
-                memberStreetAddress = Console.ReadLine();
-                // TODO: Validate
+                // Validate City
+                while (memberCity == null || (memberCity.Length > 14 && (!(memberCity.Length == 0))))
+                {
+                    Console.WriteLine("City ({0}), max 14 characters:", tempUser.UserCity);
+                    memberCity = Console.ReadLine();
+                }
 
-                Console.WriteLine("Enter the Member City:");
-                memberCity = Console.ReadLine();
-                // TODO: Validate
+                // Validate State (2 characters, alpha only)
+                while (memberState == null || (!System.Text.RegularExpressions.Regex.IsMatch(memberState, "^[a-zA-Z]{2}$") && (!(memberState.Length == 0))))
+                {
+                    Console.WriteLine("State ({0}), ex: 'WI':", tempUser.UserState);
+                    memberState = Console.ReadLine();
+                }
 
-                Console.WriteLine("Enter the Member State:");
-                memberState = Console.ReadLine();
-                // TODO: Validate
+                // Validate Zip Code
+                while (memberZip == null || (!System.Text.RegularExpressions.Regex.IsMatch(memberZip, "^[0-9]{5}$") && (!(memberZip.Length == 0))))
+                {
+                    Console.WriteLine("Zip Code ({0}), ex: '12345':", tempUser.UserZipCode);
+                    memberZip = Console.ReadLine();
+                }
 
-                Console.WriteLine("Enter the Member Zip:");
-                memberZip = Console.ReadLine();
-                // TODO: Validate
-
-                Console.WriteLine("Enter the Email Address:");
+                // Get Email address
+                Console.WriteLine("Email Address ({0}):", tempUser.UserEmailAddress);
                 memberEmail = Console.ReadLine();
-                // TODO: Validate
 
-                // Create the new member
-                Member thisMember = new Member();
+                //Update Any Changes
+                if(memberName.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(memberNumber), "user_name", memberName);
+                if(memberStreetAddress.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(memberNumber), "user_address", memberStreetAddress);
+                if (memberCity.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(memberNumber), "user_city", memberCity);
+                if (memberState.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(memberNumber), "user_state", memberState);
+                if (memberZip.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(memberNumber), "user_zip_code", memberZip);
+                if (memberEmail.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(memberNumber), "user_email_address", memberEmail);
 
-                thisMember.UserName = memberName;
-                thisMember.UserNumber = Convert.ToInt32(memberNumber);
-                thisMember.UserState = memberState;
-                thisMember.UserCity = memberCity;
-                thisMember.UserZipCode = memberZip;
-                thisMember.UserEmailAddress = memberEmail;
-
-                if (this._dbHelper.Create(thisMember))
+                //Format return message
+                if(memberName.Length == 0 && memberStreetAddress.Length == 0 && memberCity.Length == 0 && memberState.Length == 0 && memberZip.Length == 0 && memberEmail.Length == 0)
                 {
-                    return string.Format("Member \'{0}\' successfully added.\n", thisMember.UserName);
+                    return string.Format("No changes made to Member # {0}, {1}", memberNumber, tempUser.UserName);
+                }else
+                {
+                    return string.Format("Member # {0}, has been updated", memberNumber);
                 }
-
-                // TODO: Format return message
-                return string.Empty;
             }
-
-            // TODO: Format return message
-            return string.Empty;
+            return "Must be in interactive mode to update member.";
         }
 
         [Display(Description = "Command Name: updateprovider\nDescription: Updates a provider to the system.")]

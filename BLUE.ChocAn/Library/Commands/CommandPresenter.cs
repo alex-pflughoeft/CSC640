@@ -808,102 +808,14 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Operator)]
         public string updatemember()
         {
-            return updateUser("Member");
+            return UpdateUser("Member");
         }
 
         [Display(Description = "Command Name: updateprovider\nDescription: Updates a provider to the system.")]
         [RoleRequired(Role = UserRole.Operator)]
         public string updateprovider()
         {
-            return updateUser("Provider");
-        }
-
-        private string updateUser(string userType)
-        {
-            // TODO: Under Construction
-            if (this._callbackTerminal.IsInteractiveMode)
-            {
-                string userName = null;
-                string userNumber = null;
-                string userStreetAddress = null;
-                string userCity = null;
-                string userState = null;
-                string userZip = null;
-                string userEmail = null;
-                User tempUser = null;
-
-                Console.WriteLine("Enter {0} Number ('q' to quit):",userType);
-                userNumber = Console.ReadLine();
-                if (userNumber.Equals("q") || userNumber.Equals("Q")) return string.Format("{0} update command aborted.",userType);
-                if (System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,10}$")) tempUser = this._dbHelper.GetUserByNumber(Convert.ToInt32(userNumber));
-                while (tempUser == null)
-                {
-                    Console.WriteLine("Invalid Entry.\nEnter {0} Number ('q' to quit):",userType);
-                    userNumber = Console.ReadLine();
-                    if (userNumber.Equals("q") || userNumber.Equals("Q")) return string.Format("{0} update command aborted.",userType);
-                    if (System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,10}$")) tempUser = this._dbHelper.GetUserByNumber(Convert.ToInt32(userNumber));
-                }
-                Console.WriteLine("\n{0} # {1} selected: {2}.", userType, tempUser.UserNumber, tempUser.UserName);
-                Console.WriteLine("For each item press 'Enter' to keep current data, or enter new data.");
-
-                //Validate name (max 25 characters)
-                while (((userName == null)) || (userName.Length > 25 && (!(userName.Length == 0))))
-                {
-                    Console.WriteLine("Name ({0}), max 25 characters:", tempUser.UserName);
-                    userName = Console.ReadLine();
-                }
-
-                // Validate address
-                while (userStreetAddress == null || (userStreetAddress.Length > 25 && (!(userStreetAddress.Length == 0))))
-                {
-                    Console.WriteLine("Street Address ({0}), max 25 characters:", tempUser.UserAddress);
-                    userStreetAddress = Console.ReadLine();
-                }
-
-                // Validate City
-                while (userCity == null || (userCity.Length > 14 && (!(userCity.Length == 0))))
-                {
-                    Console.WriteLine("City ({0}), max 14 characters:", tempUser.UserCity);
-                    userCity = Console.ReadLine();
-                }
-
-                // Validate State (2 characters, alpha only)
-                while (userState == null || (!System.Text.RegularExpressions.Regex.IsMatch(userState, "^[a-zA-Z]{2}$") && (!(userState.Length == 0))))
-                {
-                    Console.WriteLine("State ({0}), ex: 'WI':", tempUser.UserState);
-                    userState = Console.ReadLine();
-                }
-
-                // Validate Zip Code
-                while (userZip == null || (!System.Text.RegularExpressions.Regex.IsMatch(userZip, "^[0-9]{5}$") && (!(userZip.Length == 0))))
-                {
-                    Console.WriteLine("Zip Code ({0}), ex: '12345':", tempUser.UserZipCode);
-                    userZip = Console.ReadLine();
-                }
-
-                // Get Email address
-                Console.WriteLine("Email Address ({0}):", tempUser.UserEmailAddress);
-                userEmail = Console.ReadLine();
-
-                //Update Any Changes
-                if (userName.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_name", userName);
-                if (userStreetAddress.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_address", userStreetAddress);
-                if (userCity.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_city", userCity);
-                if (userState.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_state", userState);
-                if (userZip.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_zip_code", userZip);
-                if (userEmail.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_email_address", userEmail);
-
-                //Format return message
-                if (userName.Length == 0 && userStreetAddress.Length == 0 && userCity.Length == 0 && userState.Length == 0 && userZip.Length == 0 && userEmail.Length == 0)
-                {
-                    return string.Format("No changes made to {0} # {1}, {2}", userType, userNumber, tempUser.UserName);
-                }
-                else
-                {
-                    return string.Format("{0} # {1}, has been updated", userType, userNumber);
-                }
-            }
-            return string.Format("Must be in interactive mode to update {0}.",userType);
+            return UpdateUser("Provider");
         }
 
         [Display(Description = "Command Name: userlist\nDescription: View the list of all the users in the system.")]
@@ -1215,6 +1127,96 @@ namespace BLUE.ChocAn.Library.Commands
             }
 
             return "The terminal must be in interactive mode to run this command.\n";
+        }
+
+        private string UpdateUser(string userType)
+        {
+            if (this._callbackTerminal.IsInteractiveMode)
+            {
+                string userName = null;
+                string userNumber = null;
+                string userStreetAddress = null;
+                string userCity = null;
+                string userState = null;
+                string userZip = null;
+                string userEmail = null;
+                User tempUser = null;
+
+                Console.WriteLine("Enter {0} Number ('q' to quit):", userType);
+                userNumber = Console.ReadLine();
+                if (userNumber.Equals("q") || userNumber.Equals("Q")) return string.Format("{0} update command aborted.", userType);
+                if (System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,10}$")) tempUser = this._dbHelper.GetUserByNumber(Convert.ToInt32(userNumber));
+
+                while (tempUser == null)
+                {
+                    Console.WriteLine("Invalid Entry.\nEnter {0} Number ('q' to quit):", userType);
+                    userNumber = Console.ReadLine();
+                    if (userNumber.Equals("q") || userNumber.Equals("Q")) return string.Format("{0} update command aborted.", userType);
+                    if (System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,10}$")) tempUser = this._dbHelper.GetUserByNumber(Convert.ToInt32(userNumber));
+                }
+
+                Console.WriteLine("\n{0} # {1} selected: {2}.", userType, tempUser.UserNumber, tempUser.UserName);
+                Console.WriteLine("For each item press 'Enter' to keep current data, or enter new data.");
+
+                // Validate name (max 25 characters)
+                while (((userName == null)) || (userName.Length > 25 && (!(userName.Length == 0))))
+                {
+                    Console.WriteLine("Name ({0}), max 25 characters:", tempUser.UserName);
+                    userName = Console.ReadLine();
+                }
+
+                // Validate address
+                while (userStreetAddress == null || (userStreetAddress.Length > 25 && (!(userStreetAddress.Length == 0))))
+                {
+                    Console.WriteLine("Street Address ({0}), max 25 characters:", tempUser.UserAddress);
+                    userStreetAddress = Console.ReadLine();
+                }
+
+                // Validate City
+                while (userCity == null || (userCity.Length > 14 && (!(userCity.Length == 0))))
+                {
+                    Console.WriteLine("City ({0}), max 14 characters:", tempUser.UserCity);
+                    userCity = Console.ReadLine();
+                }
+
+                // Validate State (2 characters, alpha only)
+                while (userState == null || (!System.Text.RegularExpressions.Regex.IsMatch(userState, "^[a-zA-Z]{2}$") && (!(userState.Length == 0))))
+                {
+                    Console.WriteLine("State ({0}), ex: 'WI':", tempUser.UserState);
+                    userState = Console.ReadLine();
+                }
+
+                // Validate Zip Code
+                while (userZip == null || (!System.Text.RegularExpressions.Regex.IsMatch(userZip, "^[0-9]{5}$") && (!(userZip.Length == 0))))
+                {
+                    Console.WriteLine("Zip Code ({0}), ex: '12345':", tempUser.UserZipCode);
+                    userZip = Console.ReadLine();
+                }
+
+                // Get Email address
+                Console.WriteLine("Email Address ({0}):", tempUser.UserEmailAddress);
+                userEmail = Console.ReadLine();
+
+                // Update Any Changes
+                if (userName.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_name", userName);
+                if (userStreetAddress.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_address", userStreetAddress);
+                if (userCity.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_city", userCity);
+                if (userState.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_state", userState);
+                if (userZip.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_zip_code", userZip);
+                if (userEmail.Length != 0) this._dbHelper.updateUser(Convert.ToInt32(userNumber), "user_email_address", userEmail);
+
+                // Format return message
+                if (userName.Length == 0 && userStreetAddress.Length == 0 && userCity.Length == 0 && userState.Length == 0 && userZip.Length == 0 && userEmail.Length == 0)
+                {
+                    return string.Format("No changes made to {0} # {1}, {2}", userType, userNumber, tempUser.UserName);
+                }
+                else
+                {
+                    return string.Format("{0} # {1}, has been updated", userType, userNumber);
+                }
+            }
+
+            return string.Format("Must be in interactive mode to update {0}.", userType);
         }
 
         private string DeleteUser(UserRole userType, int userNumber = -1)

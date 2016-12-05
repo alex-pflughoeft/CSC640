@@ -21,17 +21,35 @@ namespace BLUE.ChocAn.Library
         [StringLength(11, ErrorMessage = "Member Number must not be greater than 11 digits long.")]
         public int MemberNumber { get; set; }
 
+        /// <summary>
+        /// The date the service was rendered
+        /// </summary>
         public DateTime? DateOfService { get; set; }
 
+        /// <summary>
+        /// The comments about the service rendered
+        /// </summary>
         [StringLength(255, ErrorMessage = "Provider Number must not be greater than 255 characters long.")]
         public string ServiceComments { get; set; }
 
+        /// <summary>
+        /// If the service is charged to the ChocAn system or not
+        /// </summary>
         public bool IsCharged { get; set; }
 
+        /// <summary>
+        /// The date payment of the service is due
+        /// </summary>
         public DateTime? PaymentDueDate { get; set; }
 
+        /// <summary>
+        /// The date the customer paid for the service
+        /// </summary>
         public DateTime? DatePaid { get; set; }
 
+        /// <summary>
+        /// The date created
+        /// </summary>
         public DateTime? DateCreated { get; set; }
     }
 }

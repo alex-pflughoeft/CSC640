@@ -232,7 +232,7 @@ namespace BLUE.ChocAn.Library.Commands
 
                 string confirmationResponse = string.Empty;
 
-                // Confirm creating new user
+                // Confirm creating new service
                 while (confirmationResponse.Length == 0)
                 {
                     Console.WriteLine("\nDo you want to add this new Service (Y/N)?");
@@ -273,7 +273,7 @@ namespace BLUE.ChocAn.Library.Commands
             {
                 string choice = string.Empty;
 
-                if (choice == string.Empty)
+                while (choice == string.Empty)
                 {
                     Console.WriteLine("Current Validated Member - {0}\n", this.validatedMember.UserName);
                     Console.WriteLine("What would you like to do?\n");
@@ -347,8 +347,25 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.AllLoggedIn)]
         public string changepassword(string oldPassword, string newPassword = "")
         {
-            // TODO: Finish me!
-            return string.Empty;
+            if (oldPassword == this._currentUser.UserPassword)
+            {
+                if (newPassword == "")
+                {
+                    Console.WriteLine("Please enter your new password:\n");
+                    newPassword = Console.ReadLine();
+                }
+
+                this._currentUser.UserPassword = newPassword;
+
+                if (this._dbHelper.Update(this._currentUser))
+                {
+                    return string.Format("Password was successfully updated!.\n", this._currentUser.LoginName);
+                }
+
+                return string.Format("Failed to change password. Database failure.\n");
+            }
+
+            return string.Format("Failed to change password. Password Incorrect.\n");
         }
 
         [Display(Description = "Command Name: clear\nDescription: Clears the screen.")]
@@ -686,7 +703,6 @@ namespace BLUE.ChocAn.Library.Commands
                 return string.Format("Logged Out.\n");
             }
 
-            // TODO: Format return message
             return string.Empty;
         }
 
@@ -783,9 +799,23 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Super)]
         public string resetpassword(string username, string newPassword)
         {
-            // TODO: Finish me!
+            User thisUser = this._dbHelper.GetUserByLoginName(username);
 
-            return string.Empty;
+            if (thisUser == null)
+            {
+                return string.Format("User '{0}' not found, please try again.", username);
+            }
+
+            thisUser.UserPassword = newPassword;
+
+            if (this._dbHelper.Update(thisUser))
+            {
+                return string.Format("Password was successfully changed for user '{0}'.", thisUser.UserName);
+            }
+            else
+            {
+                return string.Format("Failed to update the password for user '{0}'.", thisUser.UserName);
+            }
         }
 
         [Display(Description = "Command Name: shutdown\nDescription: Shuts down the terminal.")]

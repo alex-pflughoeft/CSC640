@@ -27,4 +27,3 @@ C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.Cho
 C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\bin\Debug\ChocAn Terminal.exe.config
 C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\obj\Debug\Interop.WMPLib.dll
 C:\Users\Sonia\Documents\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.csproj.ResolveComReference.cache
-C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.csprojResolveAssemblyReference.cache

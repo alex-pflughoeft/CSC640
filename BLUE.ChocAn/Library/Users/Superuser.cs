@@ -22,6 +22,7 @@ namespace BLUE.ChocAn.Library.Users
 
         public Superuser(User user)
         {
+            this.UserId = user.UserId;
             this.UserAddress = user.UserAddress;
             this.UserCity = user.UserCity;
             this.UserEmailAddress = user.UserEmailAddress;

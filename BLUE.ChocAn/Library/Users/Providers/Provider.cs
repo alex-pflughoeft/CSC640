@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BLUE.ChocAn.Library.Users.Providers
+﻿namespace BLUE.ChocAn.Library.Users.Providers
 {
     public class Provider : User, IProvider
     {
@@ -37,7 +31,7 @@ namespace BLUE.ChocAn.Library.Users.Providers
 
         public bool BillChocAn(int memberNumber, int serviceCode)
         {
-            // TODO: Bill ChocAn - Maybe add some sort of table in the database which represents chocan invoices?
+            // Theoretically this is where the system would actually bill the ChocAn system. We are just going to assume it works.
             return true;
         }
 

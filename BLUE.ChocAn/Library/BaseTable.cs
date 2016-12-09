@@ -1,5 +1,5 @@
 ﻿using System;
-// hello, testing
+
 namespace BLUE.ChocAn.Library
 {
     public abstract class BaseTable

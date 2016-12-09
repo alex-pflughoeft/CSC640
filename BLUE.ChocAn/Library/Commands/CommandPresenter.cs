@@ -25,7 +25,7 @@ namespace BLUE.ChocAn.Library.Commands
         private DBHelper _dbHelper;
         private EmailSender _emailSender;
         private User _currentUser;
-        private User validatedMember;
+        private User _validatedMember;
 
         #endregion
 
@@ -42,7 +42,7 @@ namespace BLUE.ChocAn.Library.Commands
                 Convert.ToInt32(ConfigurationManager.AppSettings["EmailPort"]),
                 ConfigurationManager.AppSettings["FromAddress"],
                 ConfigurationManager.AppSettings["FromPassword"]);
-            this.validatedMember = null;
+            this._validatedMember = null;
         }
 
         #endregion
@@ -269,13 +269,13 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string billchoc()
         {
-            if (validatedMember != null)
+            if (_validatedMember != null)
             {
                 string choice = string.Empty;
 
                 while (choice == string.Empty)
                 {
-                    Console.WriteLine("Current Validated Member - {0}\n", this.validatedMember.UserName);
+                    Console.WriteLine("Current Validated Member - {0}\n", this._validatedMember.UserName);
                     Console.WriteLine("What would you like to do?\n");
                     Console.WriteLine("{0}\n{1}", "1 - Charge a Service", "2 - Pay a Service");
                     choice = Console.ReadLine();
@@ -308,7 +308,7 @@ namespace BLUE.ChocAn.Library.Commands
 
                     // TODO: Finish gathering the information and put it in the correct
 
-                    linker.MemberNumber = validatedMember.UserNumber;
+                    linker.MemberNumber = _validatedMember.UserNumber;
                     linker.ServiceCode = service.ServiceCode;
                     linker.DateCreated = DateTime.Now;
                     linker.ServiceComments = "Test";
@@ -906,7 +906,7 @@ namespace BLUE.ChocAn.Library.Commands
                             }
                         }
 
-                        validatedMember = thisMember;
+                        _validatedMember = thisMember;
                         return string.Format("Member '{0}' has been validated!", thisMember.UserName);
                     }
 

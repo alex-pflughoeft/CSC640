@@ -361,6 +361,7 @@ namespace BLUE.ChocAn.Library.Database.Helper
 
             return null;
         }
+
         public void updateUser(int userNumber, string attribute, string newValue)
         {
             DBHydrator hydrator = new DBHydrator();

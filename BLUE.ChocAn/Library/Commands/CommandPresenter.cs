@@ -1065,6 +1065,7 @@ namespace BLUE.ChocAn.Library.Commands
         {
             if (this._callbackTerminal.IsInteractiveMode)
             {
+                string loginName = string.Empty;
                 string userName = string.Empty;
                 string userNumber = string.Empty;
                 string userStreetAddress = string.Empty;
@@ -1074,6 +1075,12 @@ namespace BLUE.ChocAn.Library.Commands
                 string userEmail = string.Empty;
                 string confirmationResponse = string.Empty;
 
+                // Login Name
+                while (loginName.Length == 0 || loginName.Length > 10)
+                {
+                    Console.WriteLine("Enter the {0} Login Name (max 10 characters):", user.GetUserRole().ToString());
+                    userName = Console.ReadLine();
+                }
                 // Validate name
                 while (userName.Length == 0 || userName.Length > 25)
                 {
@@ -1110,6 +1117,7 @@ namespace BLUE.ChocAn.Library.Commands
                     Console.WriteLine("Enter the {0} Zip:", user.GetUserRole().ToString());
                     userZip = Console.ReadLine();
                 }
+
                 // Get Email address
                 Console.WriteLine("Enter the {0} Email Address:", user.GetUserRole().ToString());
                 userEmail = Console.ReadLine();
@@ -1133,6 +1141,7 @@ namespace BLUE.ChocAn.Library.Commands
                 if (confirmationResponse.ToUpper().Equals("Y") || confirmationResponse.ToUpper().Equals("YES"))
                 {
                     // Create the new user
+                    user.LoginName = loginName;
                     user.UserName = userName;
                     user.UserNumber = Convert.ToInt32(userNumber);
                     user.UserState = userState;

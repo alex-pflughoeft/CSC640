@@ -33,23 +33,13 @@ namespace BLUE.ChocAn.Library
         public string ServiceComments { get; set; }
 
         /// <summary>
-        /// If the service is charged to the ChocAn system or not
+        /// If the service is paid to the provider or not
         /// </summary>
-        public bool IsCharged { get; set; }
-
-        /// <summary>
-        /// The date payment of the service is due
-        /// </summary>
-        public DateTime? PaymentDueDate { get; set; }
-
-        /// <summary>
-        /// The date the customer paid for the service
-        /// </summary>
-        public DateTime? DatePaid { get; set; }
+        public bool IsPaid { get; set; }
 
         /// <summary>
         /// The date created
         /// </summary>
-        public DateTime? DateCreated { get; set; }
+        public DateTime DateCreated { get; set; }
     }
 }

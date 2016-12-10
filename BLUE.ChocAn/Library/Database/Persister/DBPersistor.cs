@@ -145,7 +145,6 @@ namespace BLUE.ChocAn.Library.Database.Persister
                         valueString = "'" + ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss") + "'";
                     }
 
-                    // TODO: This may break everything
                     columnUpdates.Add(string.Format("{0} = {1}", columnName, valueString));
                 }
 

@@ -210,6 +210,7 @@ namespace BLUE.ChocAn.Library.Commands
             {
                 string serviceCode = string.Empty;
                 string serviceName = string.Empty;
+                string fee = string.Empty;
 
                 // Validate code
                 while (!System.Text.RegularExpressions.Regex.IsMatch(serviceCode, "^[0-9]{1,10}$"))
@@ -225,10 +226,18 @@ namespace BLUE.ChocAn.Library.Commands
                     serviceName = Console.ReadLine();
                 }
 
+                // TODO: Validate Fee
+                while (!System.Text.RegularExpressions.Regex.IsMatch(fee, "^[0-9]{1,10}$"))
+                {
+                    Console.WriteLine("Enter the cost of the service ($xxx.xx):");
+                    serviceName = Console.ReadLine();
+                }
+
                 // Confirm add service
                 Console.WriteLine("\nYou have entered the following for a new Service:");
                 Console.WriteLine(serviceCode);
                 Console.WriteLine(serviceName);
+                Console.WriteLine(fee);
 
                 string confirmationResponse = string.Empty;
 
@@ -246,6 +255,7 @@ namespace BLUE.ChocAn.Library.Commands
                     // Create the new service
                     service.ServiceCode = serviceCode;
                     service.ServiceName = serviceName;
+                    service.ServiceFee = Convert.ToDouble(fee);
 
                     if (this._dbHelper.Create(service))
                     {
@@ -271,77 +281,111 @@ namespace BLUE.ChocAn.Library.Commands
         {
             if (_validatedMember != null)
             {
-                string choice = string.Empty;
+                string providerNumber = string.Empty;
+                string dateOfService = string.Empty;
+                string serviceComments = string.Empty;
+                DateTime serviceDate;
 
-                while (choice == string.Empty)
+                if (this._currentUser.UserRole == (int)UserRole.Super)
                 {
-                    Console.WriteLine("Current Validated Member - {0}\n", this._validatedMember.UserName);
-                    Console.WriteLine("What would you like to do?\n");
-                    Console.WriteLine("{0}\n{1}", "1 - Charge a Service", "2 - Pay a Service");
-                    choice = Console.ReadLine();
+                    while (!System.Text.RegularExpressions.Regex.IsMatch(providerNumber, "^[0-11]{1,10}$"))
+                    {
+                        Console.WriteLine("Enter the Provider Number (<= 11 digits):");
+                        providerNumber = Console.ReadLine();
+                    }
+                }
+                else
+                {
+                    providerNumber = this._currentUser.UserNumber.ToString();
                 }
 
-                if (choice == "1")
+                string serviceCode;
+                Service service = null;
+
+                while (true)
                 {
-                    string providerNumber = string.Empty;
-
-                    if (this._currentUser.UserRole == (int)UserRole.Super)
-                    {
-                        while (!System.Text.RegularExpressions.Regex.IsMatch(providerNumber, "^[0-11]{1,10}$"))
-                        {
-                            Console.WriteLine("Enter the Provider Number (<= 11 digits):");
-                            providerNumber = Console.ReadLine();
-                        }
-                    }
-                    else
-                    {
-                        providerNumber = this._currentUser.UserNumber.ToString();
-                    }
-
-                    string serviceCode;
-                    Console.WriteLine("Which Service would you like to charge?");
+                    Console.WriteLine("Which service would you like to charge? (Press 'd' for directory)");
                     serviceCode = Console.ReadLine();
 
-                    Service service = this._dbHelper.GetServiceByServiceCode(Convert.ToInt32(serviceCode));
+                    if (serviceCode.ToLower() == "d")
+                    {
+                        Console.Write(this.viewpd());
+                    }
 
-                    UserServiceLinker linker = new UserServiceLinker();
+                    service = this._dbHelper.GetServiceByServiceCode(serviceCode);
 
-                    // TODO: Finish gathering the information and put it in the correct
-
-                    linker.MemberNumber = _validatedMember.UserNumber;
-                    linker.ServiceCode = service.ServiceCode;
-                    linker.DateCreated = DateTime.Now;
-                    linker.ServiceComments = "Test";
-
-                    this._dbHelper.Create(linker);
-
-                    return "TODO: Finish me!";
+                    if (service != null)
+                    {
+                        break;
+                    }
                 }
-                else if (choice == "2")
+
+                UserServiceLinker linker = new UserServiceLinker();
+
+                // Date of service
+                while (dateOfService.Length == 0 || !DateTime.TryParse(dateOfService, out serviceDate))
                 {
-                    string providerNumber = string.Empty;
-
-                    if (this._currentUser.UserRole == (int)UserRole.Super)
-                    {
-                        while (!System.Text.RegularExpressions.Regex.IsMatch(providerNumber, "^[0-11]{1,10}$"))
-                        {
-                            Console.WriteLine("Enter the Provider Number (<= 11 digits):");
-                            providerNumber = Console.ReadLine();
-                        }
-                    }
-                    else
-                    {
-                        providerNumber = this._currentUser.UserNumber.ToString();
-                    }
-
-                    // TODO: Finish me!
+                    Console.WriteLine("Enter the date of service (MM-DD-YYYY):");
+                    dateOfService = Console.ReadLine();
                 }
+                // Service Comments
+                do
+                {
+                    Console.WriteLine("Enter the service comments (optional, max 100 characters):");
+                    serviceComments = Console.ReadLine();
+                } while (serviceComments.Length > 100);
 
-                return string.Empty;
+                linker.DateOfService = serviceDate;
+                linker.MemberNumber = _validatedMember.UserNumber;
+                linker.ServiceCode = service.ServiceCode;
+                linker.DateCreated = DateTime.Now;
+                linker.ServiceComments = "Test";
+
+                this._dbHelper.Create(linker);
+
+                return string.Format("Service '{0}' has been successfully charged to member '{1}'.\n", linker.ServiceCode, linker.MemberNumber);
             }
 
             return "Please validate the member card before performing this action.\n";
         }
+
+        [Display(Description = "Command Name: payservice\nDescription: Pays for a service that has been rendered.")]
+        [RoleRequired(Role = UserRole.Member)]
+        public string payservice()
+        {
+            List<UserServiceLinker> services = this._dbHelper.GetRenderedServicesByMember(this._currentUser.UserNumber, 0);
+
+            if (services.Count > 0)
+            {
+                string serviceList = string.Empty;
+                string serviceCode = string.Empty;
+
+                foreach (UserServiceLinker renderedService in services)
+                {
+                    serviceList += this._dbHelper.GetServiceByServiceCode(renderedService.ServiceCode).ServiceName;
+                    serviceList += renderedService.ToString() + "\n";
+                }
+
+                Console.WriteLine(serviceList);
+                Console.WriteLine("Enter the service code you would like to pay for:");
+                serviceCode = Console.ReadLine();
+
+                foreach (UserServiceLinker renderedService in services)
+                {
+                    if (renderedService.ServiceCode == serviceCode)
+                    {
+                        renderedService.IsPaid = true;
+                        this._dbHelper.Update(renderedService);
+                        return string.Format("Successfully paid for service '{0}'!", this._dbHelper.GetServiceByServiceCode(renderedService.ServiceCode).ServiceName);
+                    }
+                }
+
+                return "Service code not found!";
+            }
+
+            return "There are no outstanding services that need to be paid!";
+        }
+
 
         [Display(Description = "Command Name: changepassword\nParameters: changepassword <old password> <new password>\nDescription: Changes your password from the old password to the new password.")]
         [RoleRequired(Role = UserRole.AllLoggedIn)]
@@ -885,32 +929,21 @@ namespace BLUE.ChocAn.Library.Commands
             {
                 if (thisMember.GetUserRole() == UserRole.Member)
                 {
-                    if (thisMember.CardNumber.HasValue)
-                    {
-                        List<UserServiceLinker> servicesOutstanding = this._dbHelper.GetRenderedServicesByMember(thisMember.UserNumber, 0);
+                    List<UserServiceLinker> servicesOutstanding = this._dbHelper.GetRenderedServicesByMember(thisMember.UserNumber, 0);
 
-                        foreach (UserServiceLinker service in servicesOutstanding)
+                    foreach (UserServiceLinker service in servicesOutstanding)
+                    {
+                        if (service.ProviderNumber == this._currentUser.UserNumber)
                         {
-                            if (service.ProviderNumber == this._currentUser.UserNumber)
+                            if (!service.IsPaid)
                             {
-                                if (service.PaymentDueDate.HasValue)
-                                {
-                                    if (!service.DatePaid.HasValue)
-                                    {
-                                        if (DateTime.Now > service.PaymentDueDate.Value)
-                                        {
-                                            return string.Format("Member '{0}' is suspended. Payment for service '{0}' is past due!", memberNumber, service.ServiceCode);
-                                        }
-                                    }
-                                }
+                                return string.Format("Member '{0}' is suspended. Payment for service '{0}' is past due!", memberNumber, service.ServiceCode);                   
                             }
                         }
-
-                        _validatedMember = thisMember;
-                        return string.Format("Member '{0}' has been validated!", thisMember.UserName);
                     }
 
-                    return string.Format("Member '{0}' has no card associated with the account!", memberNumber);
+                    _validatedMember = thisMember;
+                    return string.Format("Member '{0}' has been validated!", thisMember.UserName);
                 }
             }
 
@@ -1079,7 +1112,7 @@ namespace BLUE.ChocAn.Library.Commands
                 while (loginName.Length == 0 || loginName.Length > 10)
                 {
                     Console.WriteLine("Enter the {0} Login Name (max 10 characters):", user.GetUserRole().ToString());
-                    userName = Console.ReadLine();
+                    loginName = Console.ReadLine();
                 }
                 // Validate name
                 while (userName.Length == 0 || userName.Length > 25)

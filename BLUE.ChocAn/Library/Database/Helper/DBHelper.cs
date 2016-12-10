@@ -51,11 +51,7 @@ namespace BLUE.ChocAn.Library.Database.Helper
 
                 using (MySqlDataReader reader = connection.Read(sql))
                 {
-                    if (reader.HasRows)
-                    {
-                        reader.Read();
-                        return true;
-                    }
+                    return true;
                 }
             }
 
@@ -72,11 +68,7 @@ namespace BLUE.ChocAn.Library.Database.Helper
 
                 using (MySqlDataReader reader = connection.Read(sql))
                 {
-                    if (reader.HasRows)
-                    {
-                        reader.Read();
-                        return true;
-                    }
+                    return true;
                 }
             }
 
@@ -107,13 +99,13 @@ namespace BLUE.ChocAn.Library.Database.Helper
             return services;
         }
 
-        public Service GetServiceByServiceCode(int serviceCode)
+        public Service GetServiceByServiceCode(string serviceCode)
         {
             DBHydrator hydrator = new DBHydrator();
 
             using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
             {
-                string sql = string.Format("SELECT * FROM {0} WHERE service_code like '{1}'", new Service().GetTableName(), serviceCode.ToString());
+                string sql = string.Format("SELECT * FROM {0} WHERE service_code like '{1}'", new Service().GetTableName(), serviceCode);
 
                 using (MySqlDataReader reader = connection.Read(sql))
                 {
@@ -128,7 +120,7 @@ namespace BLUE.ChocAn.Library.Database.Helper
             return null;
         }
 
-        public List<UserServiceLinker> GetRenderedServicesByProvider(int providerNumber, int isCharged = -1)
+        public List<UserServiceLinker> GetRenderedServicesByProvider(int providerNumber, int isPaid = -1)
         {
             List<UserServiceLinker> renderedServices = new List<UserServiceLinker>();
             DBHydrator hydrator = new DBHydrator();
@@ -139,9 +131,9 @@ namespace BLUE.ChocAn.Library.Database.Helper
 
                 sql = string.Format("SELECT * FROM {0} WHERE provider_number = {1}", new UserServiceLinker().GetTableName(), providerNumber.ToString());
 
-                if (isCharged != -1)
+                if (isPaid != -1)
                 {
-                    sql += string.Format(" AND is_charged = {0}", isCharged.ToString());
+                    sql += string.Format(" AND is_paid = {0}", isPaid.ToString());
                 }
 
                 using (MySqlDataReader reader = connection.Read(sql))
@@ -159,7 +151,7 @@ namespace BLUE.ChocAn.Library.Database.Helper
             return renderedServices;
         }
 
-        public List<UserServiceLinker> GetRenderedServicesByMember(int memberNumber, int isCharged = -1)
+        public List<UserServiceLinker> GetRenderedServicesByMember(int memberNumber, int isPaid = -1)
         {
             List<UserServiceLinker> renderedServices = new List<UserServiceLinker>();
             DBHydrator hydrator = new DBHydrator();
@@ -170,9 +162,9 @@ namespace BLUE.ChocAn.Library.Database.Helper
 
                 sql = string.Format("SELECT * FROM {0} WHERE member_number = {1}", new UserServiceLinker().GetTableName(), memberNumber.ToString());
 
-                if (isCharged != -1)
+                if (isPaid != -1)
                 {
-                    sql += string.Format(" AND is_charged = {0}", isCharged.ToString());
+                    sql += string.Format(" AND is_paid = {0}", isPaid.ToString());
                 }
 
                 using (MySqlDataReader reader = connection.Read(sql))
@@ -190,7 +182,7 @@ namespace BLUE.ChocAn.Library.Database.Helper
             return renderedServices;
         }
 
-        public List<UserServiceLinker> GetRenderedServicesByServiceCode(int serviceCode, int isCharged = -1)
+        public List<UserServiceLinker> GetRenderedServicesByServiceCode(int serviceCode, int isPaid = -1)
         {
             List<UserServiceLinker> renderedServices = new List<UserServiceLinker>();
             DBHydrator hydrator = new DBHydrator();
@@ -201,9 +193,9 @@ namespace BLUE.ChocAn.Library.Database.Helper
 
                 sql = string.Format("SELECT * FROM {0} WHERE service_code = {1}", new UserServiceLinker().GetTableName(), serviceCode.ToString());
 
-                if (isCharged != -1)
+                if (isPaid != -1)
                 {
-                    sql += string.Format(" AND is_charged = {0}", isCharged.ToString());
+                    sql += string.Format(" AND is_paid = {0}", isPaid.ToString());
                 }
 
                 using (MySqlDataReader reader = connection.Read(sql))
@@ -221,7 +213,7 @@ namespace BLUE.ChocAn.Library.Database.Helper
             return renderedServices;
         }
 
-        public List<UserServiceLinker> GetRenderedServicesByProviderMember(int providerNumber, int memberNumber, int isCharged = -1)
+        public List<UserServiceLinker> GetRenderedServicesByProviderMember(int providerNumber, int memberNumber, int isPaid = -1)
         {
             List<UserServiceLinker> renderedServices = new List<UserServiceLinker>();
             DBHydrator hydrator = new DBHydrator();
@@ -232,9 +224,9 @@ namespace BLUE.ChocAn.Library.Database.Helper
 
                 sql = string.Format("SELECT * FROM {0} WHERE provider_number = {1} AND member_number = {2}", new UserServiceLinker().GetTableName(), providerNumber.ToString(), memberNumber.ToString());
 
-                if (isCharged != -1)
+                if (isPaid != -1)
                 {
-                    sql += string.Format(" AND is_charged = {0}", isCharged.ToString());
+                    sql += string.Format(" AND is_paid = {0}", isPaid.ToString());
                 }
 
                 using (MySqlDataReader reader = connection.Read(sql))

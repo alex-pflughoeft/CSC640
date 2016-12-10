@@ -15,7 +15,7 @@ namespace BLUE.ChocAn.Library.Users.Operators
         public Operator()
         {
             // Default Constructor
-            this.UserRole = (int)Users.UserRole.Provider;
+            this.UserRole = (int)Users.UserRole.Operator;
         }
 
         public Operator(User user)

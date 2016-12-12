@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -416,6 +417,13 @@ namespace BLUE.ChocAn.Library.Commands
             return result + "\n";
         }
 
+        [Display(Description = "Command Name: deletemanager\nParameters: deletemanager <manager number>\nDescription: Deletes a manager from the system.")]
+        [RoleRequired(Role = UserRole.Operator)]
+        public string deletemanager(int managerNumber = -1)
+        {
+            return this.DeleteUser(UserRole.Manager, managerNumber);
+        }
+
         [Display(Description = "Command Name: deletemember\nParameters: deletemember <member number>\nDescription: Deletes a member from the system.")]
         [RoleRequired(Role = UserRole.Operator)]
         public string deletemember(int memberNumber = -1)
@@ -548,7 +556,25 @@ namespace BLUE.ChocAn.Library.Commands
 
             if (saveCopy)
             {
-                System.IO.File.WriteAllText(string.Format("{0}\\{1}", ConfigurationManager.AppSettings["DefaultSaveLocation"], "filename.txt"), returnMessage);
+                string path = string.Format("{0}\\{1}{2}{3}", ConfigurationManager.AppSettings["DefaultSaveLocation"], this._currentUser.UserName, string.Format("{0:yyyy-MM-dd}", DateTime.Now), ".txt");
+
+                if(!File.Exists(path))
+                {
+                    File.Create(path).Dispose();
+                    using (TextWriter tw = new StreamWriter(path))
+                    {
+                        tw.Write(returnMessage);
+                        tw.Close();
+                    }
+                }
+                else if (File.Exists(path))
+                {
+                    using (TextWriter tw = new StreamWriter(path))
+                    {
+                        tw.Write(returnMessage);
+                        tw.Close();
+                    }
+                }
             }
 
             return returnMessage;

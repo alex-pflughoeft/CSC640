@@ -1,33 +1,29 @@
-﻿using System;
+﻿using BLUE.ChocAn.Library.Users;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLUE.ChocAn.Library.Reports
 {
     public class EFTReport : Report
     {
+        private User _provider;
+        private List<UserServiceLinker> _listOfServices;
+
+
         #region Constructors
 
-        public EFTReport()
+        public EFTReport(User provider, List<UserServiceLinker> services)
         {
+            this._provider = provider;
+            this._listOfServices = services;
         }
 
         #endregion
 
         #region Public Properties
 
-        public override string ReportTitle
-        {
-            // TODO: Finish me
-            get { return "TODO: Finish me!"; }
-        }
-
         public override string ReportBody
         {
-            // TODO: Finish me
-            get { return "TODO: Finish me!"; }
+            get { return this.ToString(); }
         }
 
         public override ReportType TypeOfReport { get { return ReportType.EFTRecord; } }
@@ -38,13 +34,9 @@ namespace BLUE.ChocAn.Library.Reports
 
         public override string ToString()
         {
-            // TODO: Finish me
-            return "TODO: Finish me!";
-        }
-
-        public override string ReportHTML()
-        {
-            // TODO: Finish me
+            // Provider Name
+            // Provider Number
+            // Amount to be transferred
             return "TODO: Finish me!";
         }
 

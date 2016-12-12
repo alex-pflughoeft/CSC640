@@ -12,15 +12,17 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
     {
         #region Private Variables
 
-        private List<User> _listOfProviders;
+        private User _provider;
+        private List<UserServiceLinker> _listOfServices;
 
         #endregion
 
         #region Constructors
 
-        public ProviderReport(List<User> listOfProviders)
+        public ProviderReport(User provider, List<UserServiceLinker> services)
         {
-            this._listOfProviders = listOfProviders;
+            this._provider = provider;
+            this._listOfServices = services;
         }
 
         #endregion
@@ -29,16 +31,9 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
 
         public override ReportType TypeOfReport { get { return ReportType.Provider; } }
 
-        public override string ReportTitle
-        {
-            // TODO: Finish me
-            get { return "TODO: Finish me!"; }
-        }
-
         public override string ReportBody
         {
-            // TODO: Finish me
-            get { return "TODO: Finish me!"; }
+            get { return this.ToString(); }
         }
 
         #endregion
@@ -48,12 +43,25 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
         public override string ToString()
         {
             // TODO: Finish me
-            return "TODO: Finish me!";
-        }
+            /* Provider Name
+             * Provider Number
+             * Provider Street Address
+             * Provider City
+             * Provider State
+             * Provider zip
+             * 
+             * For each service provided (for this week)
+             * date of service
+             * date/time data created
+             * member name
+             * member number
+             * service code
+             * fee to be paid
+             * 
+             * total number of consultations
+             * total fee
+             */
 
-        public override string ReportHTML()
-        {
-            // TODO: Finish me
             return "TODO: Finish me!";
         }
 

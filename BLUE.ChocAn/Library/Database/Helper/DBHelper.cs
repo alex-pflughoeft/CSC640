@@ -120,6 +120,37 @@ namespace BLUE.ChocAn.Library.Database.Helper
             return null;
         }
 
+        public List<UserServiceLinker> GetRenderedServices(int isPaid = -1)
+        {
+            List<UserServiceLinker> renderedServices = new List<UserServiceLinker>();
+            DBHydrator hydrator = new DBHydrator();
+
+            using (DBConnection connection = new DBConnection(ConfigurationManager.AppSettings["DbServer"], ConfigurationManager.AppSettings["DbName"], ConfigurationManager.AppSettings["DbUserName"], ConfigurationManager.AppSettings["DbPassword"]))
+            {
+                string sql = string.Empty;
+
+                sql = string.Format("SELECT * FROM {0}", new UserServiceLinker().GetTableName());
+
+                if (isPaid != -1)
+                {
+                    sql += string.Format(" WHERE is_paid = {0}", isPaid.ToString());
+                }
+
+                using (MySqlDataReader reader = connection.Read(sql))
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            renderedServices.Add((UserServiceLinker)hydrator.Hydrate((BaseTable)(new UserServiceLinker()), reader));
+                        }
+                    }
+                }
+            }
+
+            return renderedServices;
+        }
+
         public List<UserServiceLinker> GetRenderedServicesByProvider(int providerNumber, int isPaid = -1)
         {
             List<UserServiceLinker> renderedServices = new List<UserServiceLinker>();

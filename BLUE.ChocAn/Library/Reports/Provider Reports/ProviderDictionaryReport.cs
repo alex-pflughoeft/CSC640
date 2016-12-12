@@ -7,17 +7,13 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
 {
     public class ProviderDictionaryReport : Report
     {
-        #region Private Variables
-
-        private List<User> _listOfProviders;
-
-        #endregion
+        private List<Service> _listOfServices;
 
         #region Constructors
 
-        public ProviderDictionaryReport(List<User> listOfProviders)
+        public ProviderDictionaryReport(List<Service> services)
         {
-            this._listOfProviders = listOfProviders;
+            this._listOfServices = services;
         }
 
         #endregion
@@ -26,16 +22,9 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
 
         public override ReportType TypeOfReport { get { return ReportType.ProviderDictionary; } }
 
-        public override string ReportTitle
-        {
-            // TODO: Finish me
-            get { return "TODO: Finish me!"; }
-        }
-
         public override string ReportBody
         {
-            // TODO: Finish me
-            get { return "TODO: Finish me!"; }
+            get { return this.ToString(); }
         }
 
         #endregion
@@ -44,14 +33,14 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
 
         public override string ToString()
         {
-            // TODO: Finish me
-            return "TODO: Finish me!";
-        }
+            string returnMessage = string.Empty;
 
-        public override string ReportHTML()
-        {
-            // TODO: Finish me
-            return "TODO: Finish me!";
+            foreach (Service service in this._listOfServices)
+            {
+                returnMessage += service.ToString() + Environment.NewLine;
+            }
+
+            return returnMessage;
         }
 
         #endregion

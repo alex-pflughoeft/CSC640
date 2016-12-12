@@ -11,14 +11,16 @@ namespace BLUE.ChocAn.Library.Reports.Member_Reports
     {
         #region Private Variables
 
+        private User _member;
         private List<UserServiceLinker> _memberServices;
 
         #endregion
 
         #region Public Constructors
 
-        public MemberReport(List<UserServiceLinker> memberServices)
+        public MemberReport(User member, List<UserServiceLinker> memberServices)
         {
+            this._member = member;
             this._memberServices = memberServices;
         }
 
@@ -28,16 +30,9 @@ namespace BLUE.ChocAn.Library.Reports.Member_Reports
 
         public override ReportType TypeOfReport { get { return ReportType.Member; } }
 
-        public override string ReportTitle
-        {
-            // TODO: Finish me
-            get { return "TODO: Finish me!"; }
-        }
-
         public override string ReportBody
         {
-            // TODO: Finish me
-            get { return "TODO: Finish me!"; }
+            get { return this.ToString(); }
         }
 
         #endregion
@@ -54,13 +49,6 @@ namespace BLUE.ChocAn.Library.Reports.Member_Reports
             }
 
             return returnString;
-        }
-
-        public override string ReportHTML()
-        {
-            // TODO: Finish me
-
-            return "TODO: Finish me!";
         }
 
         #endregion

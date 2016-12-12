@@ -10,10 +10,10 @@ namespace BLUE.ChocAn.Library.Users.Managers
 {
     internal interface IManager
     {
-        string GenerateMemberReport(int memberNumber, DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false);
-        string GenerateProviderReport(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false);
-        string GenerateEFTRecord(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false);
-        string GenerateManagersSummary(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false);
-        string GenerateAllReports(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false);
+        string GenerateMemberReport(User member, List<UserServiceLinker> services);
+        string GenerateProviderReport(User provider, List<UserServiceLinker> services);
+        string GenerateEFTRecord(User provider, List<UserServiceLinker> services);
+        string GenerateManagersSummary(List<User> providers, List<UserServiceLinker> allServices);
+        string GenerateAllReports(User provider, List<UserServiceLinker> providerServices, User member, List<UserServiceLinker> memberServices, List<User> providers, List<UserServiceLinker> allServices);
     }
 }

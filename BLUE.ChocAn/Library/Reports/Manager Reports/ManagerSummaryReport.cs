@@ -1,9 +1,5 @@
 ﻿using BLUE.ChocAn.Library.Users;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLUE.ChocAn.Library.Reports.Manager_Reports
 {
@@ -11,15 +7,17 @@ namespace BLUE.ChocAn.Library.Reports.Manager_Reports
     {
         #region Private Variables
 
-        private List<User> _listOfUsers;
+        private List<User> _listOfProviders;
+        private List<UserServiceLinker> _allServices;
 
         #endregion
 
         #region Constructors
 
-        public ManagerSummaryReport(List<User> listOfUsers)
+        public ManagerSummaryReport(List<User> listOfProviders, List<UserServiceLinker> allServices)
         {
-            this._listOfUsers = listOfUsers;
+            this._listOfProviders = listOfProviders;
+            this._allServices = allServices;
         }
 
         #endregion
@@ -28,16 +26,9 @@ namespace BLUE.ChocAn.Library.Reports.Manager_Reports
 
         public override ReportType TypeOfReport { get { return ReportType.ManagerSummary; } }
 
-        public override string ReportTitle
-        {
-            // TODO: Finish me
-            get { return "TODO: Finish me!"; }
-        }
-
         public override string ReportBody
         {
-            // TODO: Finish me
-            get { return "TODO: Finish me!"; }
+            get { return this.ToString(); }
         }
 
         #endregion
@@ -46,13 +37,15 @@ namespace BLUE.ChocAn.Library.Reports.Manager_Reports
 
         public override string ToString()
         {
-            // TODO: Finish me
-            return "TODO: Finish me!";
-        }
+            // Every Provider to be paid that week
+            // Total consultations
+            // Total fee
 
-        public override string ReportHTML()
-        {
-            // TODO: Finish me
+            // Total overall consultations
+            // Total overall fee
+            // Total number of providers
+
+
             return "TODO: Finish me!";
         }
 

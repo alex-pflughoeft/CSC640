@@ -15,7 +15,7 @@ namespace BLUE.ChocAn.Library.Database
         {
             try
             {
-                string connectionString = "SERVER=" + serverName + ";DATABASE=" + databaseName + ";UID=" + userName + ";PASSWORD=" + password + ";";
+                string connectionString = "SERVER=" + serverName + ";DATABASE=" + databaseName + ";UID=" + userName + ";PASSWORD=" + password + ";" + "Convert Zero Datetime=True;";
                 this.connection = new MySqlConnection(connectionString);
                 this.connection.Open();
             }

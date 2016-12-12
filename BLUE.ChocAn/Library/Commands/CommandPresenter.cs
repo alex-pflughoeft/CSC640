@@ -1,6 +1,7 @@
 ﻿using BLUE.ChocAn.Library.Communication;
 using BLUE.ChocAn.Library.Database.Helper;
 using BLUE.ChocAn.Library.Other;
+using BLUE.ChocAn.Library.Reports.Provider_Reports;
 using BLUE.ChocAn.Library.Users;
 using BLUE.ChocAn.Library.Users.Managers;
 using BLUE.ChocAn.Library.Users.Operators;
@@ -181,6 +182,13 @@ namespace BLUE.ChocAn.Library.Commands
 
         #region Public Console Commands
 
+        [Display(Description = "Command Name: addmanager\nDescription: Adds a manager to the system.")]
+        [RoleRequired(Role = UserRole.Super)]
+        public string addmanager()
+        {
+            return this.AddUser(new Manager());
+        }
+
         [Display(Description = "Command Name: addmember\nDescription: Adds a member to the system.")]
         [RoleRequired(Role = UserRole.Operator)]
         public string addmember()
@@ -349,44 +357,6 @@ namespace BLUE.ChocAn.Library.Commands
             return "Please validate the member card before performing this action.\n";
         }
 
-        [Display(Description = "Command Name: payservice\nDescription: Pays for a service that has been rendered.")]
-        [RoleRequired(Role = UserRole.Member)]
-        public string payservice()
-        {
-            List<UserServiceLinker> services = this._dbHelper.GetRenderedServicesByMember(this._currentUser.UserNumber, 0);
-
-            if (services.Count > 0)
-            {
-                string serviceList = string.Empty;
-                string serviceCode = string.Empty;
-
-                foreach (UserServiceLinker renderedService in services)
-                {
-                    serviceList += this._dbHelper.GetServiceByServiceCode(renderedService.ServiceCode).ServiceName;
-                    serviceList += renderedService.ToString() + "\n";
-                }
-
-                Console.WriteLine(serviceList);
-                Console.WriteLine("Enter the service code you would like to pay for:");
-                serviceCode = Console.ReadLine();
-
-                foreach (UserServiceLinker renderedService in services)
-                {
-                    if (renderedService.ServiceCode == serviceCode)
-                    {
-                        renderedService.IsPaid = true;
-                        this._dbHelper.Update(renderedService);
-                        return string.Format("Successfully paid for service '{0}'!", this._dbHelper.GetServiceByServiceCode(renderedService.ServiceCode).ServiceName);
-                    }
-                }
-
-                return "Service code not found!";
-            }
-
-            return "There are no outstanding services that need to be paid!";
-        }
-
-
         [Display(Description = "Command Name: changepassword\nParameters: changepassword <old password> <new password>\nDescription: Changes your password from the old password to the new password.")]
         [RoleRequired(Role = UserRole.AllLoggedIn)]
         public string changepassword(string oldPassword, string newPassword = "")
@@ -551,20 +521,34 @@ namespace BLUE.ChocAn.Library.Commands
             switch (reportName)
             {
                 case "1":
-                    returnMessage = ((IManager)this._currentUser).GenerateManagersSummary(this._dbHelper, emailSender, saveCopy);
+                    returnMessage = ((IManager)this._currentUser).GenerateManagersSummary(this._dbHelper.GetUsersByRole(UserRole.Provider), this._dbHelper.GetRenderedServices(0));
                     break;
                 case "2":
-                    returnMessage = ((IManager)this._currentUser).GenerateMemberReport(9876, this._dbHelper, emailSender, saveCopy);
+                    // TODO: Enter the member number
+                    returnMessage = ((IManager)this._currentUser).GenerateMemberReport(this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByMember(1));
                     break;
                 case "3":
-                    returnMessage = ((IManager)this._currentUser).GenerateProviderReport(this._dbHelper, emailSender, saveCopy);
+                    // TODO: Enter in the provider number
+                    returnMessage = ((IManager)this._currentUser).GenerateProviderReport(this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByProvider(1));
                     break;
                 case "4":
-                    returnMessage = ((IManager)this._currentUser).GenerateEFTRecord(this._dbHelper, emailSender, saveCopy);
+                    // TODO: Enter in the provider number
+                    returnMessage = ((IManager)this._currentUser).GenerateEFTRecord(this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByProvider(1));
                     break;
                 case "5":
-                    returnMessage = ((IManager)this._currentUser).GenerateAllReports(this._dbHelper, emailSender, saveCopy);
+                    // TODO: Enter in the provider number, enter the member number
+                    returnMessage = ((IManager)this._currentUser).GenerateAllReports(this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByProvider(1), this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByMember(1), this._dbHelper.GetUsersByRole(UserRole.Provider), this._dbHelper.GetRenderedServices(0));
                     break;
+            }
+
+            if (emailSender != null)
+            {
+                emailSender.SendEmail(this._currentUser.UserEmailAddress, this._currentUser.UserEmailAddress, string.Format("ChocAn Report - ", DateTime.Now.ToShortDateString()), returnMessage);
+            }
+
+            if (saveCopy)
+            {
+                System.IO.File.WriteAllText(string.Format("{0}\\{1}", ConfigurationManager.AppSettings["DefaultSaveLocation"], "filename.txt"), returnMessage);
             }
 
             return returnMessage;
@@ -824,6 +808,58 @@ namespace BLUE.ChocAn.Library.Commands
             return "Required parameter '<password>' missing.\n";
         }
 
+        [Display(Description = "Command Name: payservice\nDescription: Pays for a service that has been rendered.")]
+        [RoleRequired(Role = UserRole.Member)]
+        public string payservice()
+        {
+            string userNumber = string.Empty;
+
+            if (this._currentUser.UserRole == (int)UserRole.Super)
+            {
+                while (!System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,10}$"))
+                {
+                    Console.WriteLine("Enter the Member Number (<= 9 digits):");
+                    userNumber = Console.ReadLine();
+                }
+            }
+            else
+            {
+                userNumber = this._currentUser.UserNumber.ToString();
+            }
+
+            List<UserServiceLinker> services = this._dbHelper.GetRenderedServicesByMember(Convert.ToInt32(userNumber), 0);
+
+            if (services.Count > 0)
+            {
+                string serviceList = string.Empty;
+                string serviceCode = string.Empty;
+
+                foreach (UserServiceLinker renderedService in services)
+                {
+                    serviceList += this._dbHelper.GetServiceByServiceCode(renderedService.ServiceCode).ServiceName;
+                    serviceList += renderedService.ToString() + "\n";
+                }
+
+                Console.WriteLine(serviceList);
+                Console.WriteLine("Enter the service code you would like to pay for:");
+                serviceCode = Console.ReadLine();
+
+                foreach (UserServiceLinker renderedService in services)
+                {
+                    if (renderedService.ServiceCode == serviceCode)
+                    {
+                        renderedService.IsPaid = true;
+                        this._dbHelper.Update(renderedService);
+                        return string.Format("Successfully paid for service '{0}'!", this._dbHelper.GetServiceByServiceCode(renderedService.ServiceCode).ServiceName);
+                    }
+                }
+
+                return "Service code not found!";
+            }
+
+            return "There are no outstanding services that need to be paid!";
+        }
+
         [Display(Description = "Command Name: reboot\nDescription: Reboots the terminal.")]
         [RoleRequired(Role = UserRole.All)]
         public string reboot()
@@ -1024,20 +1060,23 @@ namespace BLUE.ChocAn.Library.Commands
         [RoleRequired(Role = UserRole.Provider)]
         public string viewpd()
         {
-            List<Service> listOfServices = this._dbHelper.GetAllServices();
-            string returnMessage = string.Empty;
-
-            if (listOfServices.Count > 0)
+            try
             {
-                foreach (Service service in listOfServices)
+                List<Service> listOfServices = this._dbHelper.GetAllServices();
+
+                if (listOfServices.Count > 0)
                 {
-                    returnMessage += service.ToString() + "\n";
+                    ProviderDictionaryReport pd = new ProviderDictionaryReport(listOfServices);
+
+                    return pd.ReportBody;
                 }
 
-                return returnMessage;
+                return "No services found!";
             }
-
-            return "No services found!";
+            catch
+            {
+                return "Failed to create the Provider Dictionary report!";
+            }
         }
 
         [Display(Description = "Command Name: whoami\nDescription: Displays the curent user.")]

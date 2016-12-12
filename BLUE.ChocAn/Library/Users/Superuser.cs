@@ -7,6 +7,8 @@ using BLUE.ChocAn.Library.Reports.Provider_Reports;
 using BLUE.ChocAn.Library.Users.Managers;
 using BLUE.ChocAn.Library.Users.Providers;
 using System;
+using System.Collections.Generic;
+using System.Configuration;
 
 namespace BLUE.ChocAn.Library.Users
 {
@@ -39,93 +41,47 @@ namespace BLUE.ChocAn.Library.Users
 
         #region Public Methods
 
-        public bool ValidateMemberCard(Member member)
-        {
-            //member.MemberStatus = (int)MemberStatusEnum.ACTIVE;
-            return true;
-        }
-
         public bool BillChocAn(int memberNumber, int serviceCode)
         {
-            // TODO: Finish me
+            // Theoretically this is where the system would actually bill the ChocAn system. We are just going to assume it works.
             return true;
         }
 
-        public string GenerateMemberReport(int memberNumber, DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
+        public string GenerateMemberReport(User member, List<UserServiceLinker> services)
         {
-            Report memberReport = new MemberReport(dbHelper.GetRenderedServicesByMember(memberNumber));
+            Report memberReport = new MemberReport(member, services);
 
-            if (emailSender != null)
-            {
-                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, memberReport.ReportTitle, memberReport.ReportHTML());
-            }
-
-            if (saveFile)
-            {
-                // TODO: Save the file
-            }
-
-            return memberReport.ToString();
+            return memberReport.ReportBody;
         }
 
-        public string GenerateProviderReport(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
+        public string GenerateProviderReport(User provider, List<UserServiceLinker> services)
         {
-            Report providerReport = new ProviderReport(dbHelper.GetUsersByRole(Users.UserRole.Provider));
+            Report providerReport = new ProviderReport(provider, services);
 
-            if (emailSender != null)
-            {
-                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, providerReport.ReportTitle, providerReport.ReportHTML());
-            }
-
-            if (saveFile)
-            {
-                // TODO: Save the file
-            }
-
-            return providerReport.ToString();
+            return providerReport.ReportBody;
         }
 
-        public string GenerateEFTRecord(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
+        public string GenerateEFTRecord(User provider, List<UserServiceLinker> services)
         {
-            Report eftReport = new EFTReport();
+            Report eftReport = new EFTReport(provider, services);
 
-            if (emailSender != null)
-            {
-                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, eftReport.ReportTitle, eftReport.ReportHTML());
-            }
-
-            if (saveFile)
-            {
-                // TODO: Save the file
-            }
-
-            return eftReport.ToString();
+            return eftReport.ReportBody;
         }
 
-        public string GenerateManagersSummary(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
+        public string GenerateManagersSummary(List<User> providers, List<UserServiceLinker> allServices)
         {
-            Report managerSummaryReport = new ManagerSummaryReport(dbHelper.GetUsersByRole(Users.UserRole.All));
-
-            if (emailSender != null)
-            {
-                emailSender.SendEmail(this.UserEmailAddress, this.UserEmailAddress, managerSummaryReport.ReportTitle, managerSummaryReport.ReportHTML());
-            }
-
-            if (saveFile)
-            {
-                // TODO: Save the file
-            }
+            Report managerSummaryReport = new ManagerSummaryReport(providers, allServices);
 
             return managerSummaryReport.ToString();
         }
 
-        public string GenerateAllReports(DBHelper dbHelper, EmailSender emailSender = null, bool saveFile = false)
+        public string GenerateAllReports(User provider, List<UserServiceLinker> providerServices, User member, List<UserServiceLinker> memberServices, List<User> providers, List<UserServiceLinker> allServices)
         {
             return string.Format("{0}\n{1}\n{2}\n{3}",
-                //this.GenerateMemberReport(dbHelper, emailSender, saveFile),
-                this.GenerateProviderReport(dbHelper, emailSender, saveFile),
-                this.GenerateEFTRecord(dbHelper, emailSender, saveFile),
-                this.GenerateManagersSummary(dbHelper, emailSender, saveFile));
+                this.GenerateMemberReport(member, memberServices),
+                this.GenerateProviderReport(provider, providerServices),
+                this.GenerateEFTRecord(provider, providerServices),
+                this.GenerateManagersSummary(providers, allServices));
         }
 
         #endregion

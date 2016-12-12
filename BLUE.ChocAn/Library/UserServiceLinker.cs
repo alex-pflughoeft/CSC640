@@ -12,13 +12,10 @@ namespace BLUE.ChocAn.Library
         }
 
         [PrimaryKey]
-        [StringLength(11, ErrorMessage = "Service Code must not be greater than 11 digits long.")]
         public string ServiceCode { get; set; }
 
-        [StringLength(11, ErrorMessage = "Provider Number must not be greater than 11 digits long.")]
         public int ProviderNumber { get; set; }
 
-        [StringLength(11, ErrorMessage = "Member Number must not be greater than 11 digits long.")]
         public int MemberNumber { get; set; }
 
         /// <summary>
@@ -29,7 +26,6 @@ namespace BLUE.ChocAn.Library
         /// <summary>
         /// The comments about the service rendered
         /// </summary>
-        [StringLength(255, ErrorMessage = "Provider Number must not be greater than 255 characters long.")]
         public string ServiceComments { get; set; }
 
         /// <summary>

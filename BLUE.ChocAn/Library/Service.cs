@@ -14,10 +14,8 @@ namespace BLUE.ChocAn.Library
         [PrimaryKey]
         public int ServiceId { get; set; }
 
-        [StringLength(11, ErrorMessage = "Provider Number must not be greater than 11 characters long.")]
         public string ServiceCode { get; set; }
 
-        [StringLength(45, ErrorMessage = "Provider Number must not be greater than 45 characters long.")]
         public string ServiceName { get; set; }
 
         public double ServiceFee { get; set; }

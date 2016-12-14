@@ -549,7 +549,7 @@ namespace BLUE.ChocAn.Library.Commands
                 case "5": // All reports
                     providerNumber = this.GetUserNumber("Provider");
                     memberNumber = this.GetUserNumber("Member");
-                    returnMessage = ((IManager)this._currentUser).GenerateAllReports(this._dbHelper.GetUserByNumber(Convert.ToInt32(providerNumber)), this._dbHelper.GetRenderedServicesByProvider(Convert.ToInt32(providerNumber)), this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByMember(1), this._dbHelper.GetRenderedServices(0));
+                    returnMessage = ((IManager)this._currentUser).GenerateAllReports(this._dbHelper.GetUserByNumber(Convert.ToInt32(providerNumber)), this._dbHelper.GetRenderedServicesByProvider(Convert.ToInt32(providerNumber)), this._dbHelper.GetUserByNumber(Convert.ToInt32(memberNumber)), this._dbHelper.GetRenderedServicesByMember(Convert.ToInt32(memberNumber)), this._dbHelper.GetRenderedServices(0));
                     break;
             }
 

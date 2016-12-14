@@ -44,6 +44,12 @@ namespace BLUE.ChocAn.Library.Reports.Manager_Reports
             var result = string.Empty;
             double totalFee = 0;
 
+            result += Environment.NewLine;
+            result += Environment.NewLine + "******************************************";
+            result += Environment.NewLine + "BEGIN MANAGERS SUMMARY";
+            result += Environment.NewLine + string.Format("Date: {0}", DateTime.Now.ToString());
+            result += Environment.NewLine + "******************************************";
+
             // Total number of providers for this week (Distinct Providers)
             var providers = this._allServices.GroupBy(p => p.ProviderNumber).Select(g => g.First()).ToList();
 
@@ -54,7 +60,7 @@ namespace BLUE.ChocAn.Library.Reports.Manager_Reports
                 double feeProvider = 0;
 
                 result += Environment.NewLine;
-                result += Environment.NewLine + "******************************************";
+                result += Environment.NewLine + "------------------------------------------";
                 result += string.Format(Environment.NewLine + "Provider Name: {0}", thisProvider.UserName);
                 result += string.Format(Environment.NewLine + "Total Consultations: {0}", thisProvidersServices.Count().ToString());
 
@@ -63,8 +69,8 @@ namespace BLUE.ChocAn.Library.Reports.Manager_Reports
                     feeProvider += helper.GetServiceByServiceCode(thisService.ServiceCode).ServiceFee;
                 }
 
-                result += string.Format(Environment.NewLine + "Total Fee: {0}", feeProvider.ToString());
-                result += Environment.NewLine + "******************************************";
+                result += string.Format(Environment.NewLine + "Total Fee: {0}", feeProvider.ToString("C0"));
+                result += Environment.NewLine + "------------------------------------------";
             }
          
             foreach (UserServiceLinker service in this._allServices)
@@ -73,10 +79,15 @@ namespace BLUE.ChocAn.Library.Reports.Manager_Reports
             }
 
             result += Environment.NewLine;
-            result += Environment.NewLine + "******************************************";
+            result += Environment.NewLine + "==========================================";
             result += string.Format(Environment.NewLine + "Total Overall Consultations: {0}", this._allServices.Count().ToString());
-            result += string.Format(Environment.NewLine + "Total Overall Fee: {0}", totalFee.ToString());
+            result += string.Format(Environment.NewLine + "Total Overall Fee: {0}", totalFee.ToString("C0"));
             result += string.Format(Environment.NewLine + "Total Overall Number of Providers: {0}", providers.Count().ToString());
+            result += Environment.NewLine + "==========================================";
+
+            result += Environment.NewLine;
+            result += Environment.NewLine + "******************************************";
+            result += Environment.NewLine + "END MANAGERS SUMMARY";
             result += Environment.NewLine + "******************************************";
 
             return result;

@@ -35,13 +35,24 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
         {
             string result = string.Empty;
 
+            result += Environment.NewLine;
+            result += Environment.NewLine + "******************************************";
+            result += Environment.NewLine + "BEGIN PROVIDER DICTIONARY";
+            result += Environment.NewLine + string.Format("Date: {0}", DateTime.Now.ToString());
+            result += Environment.NewLine + "******************************************";
+
             foreach (Service service in this._listOfServices)
             {
                 result += Environment.NewLine;
-                result += Environment.NewLine + "******************************************";
+                result += Environment.NewLine + "------------------------------------------";
                 result += service.ToString() + Environment.NewLine;
-                result += Environment.NewLine + "******************************************";
+                result += Environment.NewLine + "------------------------------------------";
             }
+
+            result += Environment.NewLine;
+            result += Environment.NewLine + "******************************************";
+            result += Environment.NewLine + "END PROVIDER DICTIONARY";
+            result += Environment.NewLine + "******************************************";
 
             return result;
         }

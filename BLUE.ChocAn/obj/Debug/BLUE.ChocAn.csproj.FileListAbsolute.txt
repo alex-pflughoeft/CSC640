@@ -27,4 +27,3 @@ C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.Cho
 C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.csproj.ResolveComReference.cache
 C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.ChocAn\obj\Debug\ChocAn Terminal.exe
 C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.ChocAn\obj\Debug\ChocAn Terminal.pdb
-C:\Users\alex.pflughoeft\Documents\Carroll_University\CSC640\Git\CSC640\BLUE.ChocAn\obj\Debug\BLUE.ChocAn.csprojResolveAssemblyReference.cache

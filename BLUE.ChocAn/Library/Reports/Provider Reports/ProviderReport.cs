@@ -1,11 +1,8 @@
 ﻿using BLUE.ChocAn.Library.Database.Helper;
 using BLUE.ChocAn.Library.Users;
-using BLUE.ChocAn.Library.Users.Providers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLUE.ChocAn.Library.Reports.Provider_Reports
 {

@@ -1248,6 +1248,7 @@ namespace BLUE.ChocAn.Library.Commands
                     user.UserNumber = Convert.ToInt32(userNumber);
                     user.UserState = userState;
                     user.UserCity = userCity;
+                    user.UserAddress = userStreetAddress;
                     user.UserZipCode = userZip;
                     user.UserEmailAddress = userEmail;
                     user.UserPassword = "password";

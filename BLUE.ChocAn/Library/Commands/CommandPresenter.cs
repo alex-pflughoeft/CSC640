@@ -526,26 +526,30 @@ namespace BLUE.ChocAn.Library.Commands
                 saveCopy = true;
             }
 
+            string providerNumber = "";
+            string memberNumber = "";
+
             switch (reportName)
             {
-                case "1":
-                    returnMessage = ((IManager)this._currentUser).GenerateManagersSummary(this._dbHelper.GetUsersByRole(UserRole.Provider), this._dbHelper.GetRenderedServices(0));
+                case "1": // Managers Summary
+                    returnMessage = ((IManager)this._currentUser).GenerateManagersSummary(this._dbHelper.GetRenderedServices(0));
                     break;
-                case "2":
-                    // TODO: Enter the member number
-                    returnMessage = ((IManager)this._currentUser).GenerateMemberReport(this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByMember(1));
+                case "2": // Member Report
+                    memberNumber = this.GetUserNumber("Member");
+                    returnMessage = ((IManager)this._currentUser).GenerateMemberReport(this._dbHelper.GetUserByNumber(Convert.ToInt32(memberNumber)), this._dbHelper.GetRenderedServicesByMember(Convert.ToInt32(memberNumber)));
                     break;
-                case "3":
-                    // TODO: Enter in the provider number
-                    returnMessage = ((IManager)this._currentUser).GenerateProviderReport(this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByProvider(1));
+                case "3": // Provider Report
+                    providerNumber = this.GetUserNumber("Provider");
+                    returnMessage = ((IManager)this._currentUser).GenerateProviderReport(this._dbHelper.GetUserByNumber(Convert.ToInt32(providerNumber)), this._dbHelper.GetRenderedServicesByProvider(Convert.ToInt32(providerNumber)));
                     break;
-                case "4":
-                    // TODO: Enter in the provider number
-                    returnMessage = ((IManager)this._currentUser).GenerateEFTRecord(this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByProvider(1));
+                case "4": // EFT Record
+                    providerNumber = this.GetUserNumber("Provider");
+                    returnMessage = ((IManager)this._currentUser).GenerateEFTRecord(this._dbHelper.GetUserByNumber(Convert.ToInt32(providerNumber)), this._dbHelper.GetRenderedServicesByProvider(Convert.ToInt32(providerNumber)));
                     break;
-                case "5":
-                    // TODO: Enter in the provider number, enter the member number
-                    returnMessage = ((IManager)this._currentUser).GenerateAllReports(this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByProvider(1), this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByMember(1), this._dbHelper.GetUsersByRole(UserRole.Provider), this._dbHelper.GetRenderedServices(0));
+                case "5": // All reports
+                    providerNumber = this.GetUserNumber("Provider");
+                    memberNumber = this.GetUserNumber("Member");
+                    returnMessage = ((IManager)this._currentUser).GenerateAllReports(this._dbHelper.GetUserByNumber(Convert.ToInt32(providerNumber)), this._dbHelper.GetRenderedServicesByProvider(Convert.ToInt32(providerNumber)), this._dbHelper.GetUserByNumber(1), this._dbHelper.GetRenderedServicesByMember(1), this._dbHelper.GetRenderedServices(0));
                     break;
             }
 
@@ -1550,6 +1554,19 @@ namespace BLUE.ChocAn.Library.Commands
                 // Add the dictionary of methods for the current class into a dictionary of command classes:
                 this.CommandLibraries.Add(commandClass.Name, methodDictionary);
             }
+        }
+
+        private string GetUserNumber(string role)
+        {
+            string userNumber = "";
+
+            while (!System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,10}$"))
+            {
+                Console.WriteLine("Enter the {0} Number (<= 9 digits):", role);
+                userNumber = Console.ReadLine();
+            }
+
+            return userNumber.Trim();
         }
 
         #endregion

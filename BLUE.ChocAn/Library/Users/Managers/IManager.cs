@@ -13,7 +13,7 @@ namespace BLUE.ChocAn.Library.Users.Managers
         string GenerateMemberReport(User member, List<UserServiceLinker> services);
         string GenerateProviderReport(User provider, List<UserServiceLinker> services);
         string GenerateEFTRecord(User provider, List<UserServiceLinker> services);
-        string GenerateManagersSummary(List<User> providers, List<UserServiceLinker> allServices);
-        string GenerateAllReports(User provider, List<UserServiceLinker> providerServices, User member, List<UserServiceLinker> memberServices, List<User> providers, List<UserServiceLinker> allServices);
+        string GenerateManagersSummary(List<UserServiceLinker> allServices);
+        string GenerateAllReports(User provider, List<UserServiceLinker> providerServices, User member, List<UserServiceLinker> memberServices, List<UserServiceLinker> allServices);
     }
 }

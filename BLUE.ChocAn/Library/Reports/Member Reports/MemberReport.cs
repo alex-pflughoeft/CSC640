@@ -1,9 +1,6 @@
 ﻿using BLUE.ChocAn.Library.Users;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLUE.ChocAn.Library.Reports.Member_Reports
 {
@@ -41,14 +38,18 @@ namespace BLUE.ChocAn.Library.Reports.Member_Reports
 
         public override string ToString()
         {
-            string returnString = string.Empty;
+            string result = string.Empty;
 
             foreach (UserServiceLinker serviceRendered in this._memberServices)
             {
-                returnString += string.Format("Service Provider: {0}\nService Code: {1}", serviceRendered.ProviderNumber, serviceRendered.ServiceCode) + "\n\n"; 
+                result += Environment.NewLine;
+                result += Environment.NewLine + "******************************************";
+                result += string.Format(Environment.NewLine + "Service Provider: {0}", serviceRendered.ProviderNumber);
+                result += string.Format(Environment.NewLine + "Service Code: {0}", serviceRendered.ServiceCode);
+                result += Environment.NewLine + "******************************************";
             }
 
-            return returnString;
+            return result;
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using BLUE.ChocAn.Library.Users;
+﻿using BLUE.ChocAn.Library.Database.Helper;
+using BLUE.ChocAn.Library.Users;
 using BLUE.ChocAn.Library.Users.Providers;
 using System;
 using System.Collections.Generic;
@@ -42,27 +43,46 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
 
         public override string ToString()
         {
-            // TODO: Finish me
-            /* Provider Name
-             * Provider Number
-             * Provider Street Address
-             * Provider City
-             * Provider State
-             * Provider zip
-             * 
-             * For each service provided (for this week)
-             * date of service
-             * date/time data created
-             * member name
-             * member number
-             * service code
-             * fee to be paid
-             * 
-             * total number of consultations
-             * total fee
-             */
+            // TODO: Filter by the current week?
 
-            return "TODO: Finish me!";
+            DBHelper helper = new DBHelper();
+            var result = string.Empty;
+            double fee = 0;
+
+            result += Environment.NewLine + "******************************************";
+            result += string.Format(Environment.NewLine + "Provider Name: {0}", this._provider.UserName);
+            result += string.Format(Environment.NewLine + "Provider Number: {0}", this._provider.UserNumber);
+            result += string.Format(Environment.NewLine + "Provider Street Address: {0}", this._provider.UserAddress);
+            result += string.Format(Environment.NewLine + "Provider City: {0}", this._provider.UserCity);
+            result += string.Format(Environment.NewLine + "Provider State: {0}", this._provider.UserState);
+            result += string.Format(Environment.NewLine + "Provider Zip: {0}", this._provider.UserZipCode);
+            result += Environment.NewLine + "******************************************";
+
+            foreach (UserServiceLinker service in this._listOfServices)
+            {
+                fee += helper.GetServiceByServiceCode(service.ServiceCode).ServiceFee;
+
+                User thisMember = helper.GetUserByNumber(service.MemberNumber);
+                Service thisService = helper.GetServiceByServiceCode(service.ServiceCode);
+
+                result += Environment.NewLine;
+                result += Environment.NewLine + "******************************************";
+                result += string.Format(Environment.NewLine + "Member Name: {0}", thisMember.UserName);
+                result += string.Format(Environment.NewLine + "Member Number: {0}", thisMember.UserNumber);
+                result += string.Format(Environment.NewLine + "Service Code: {0}", thisService.ServiceCode);
+                result += string.Format(Environment.NewLine + "Fee: {0}", thisService.ServiceFee);
+                result += string.Format(Environment.NewLine + "Date of Service: {0}", service.DateOfService.ToString("MM-dd-yyyy"));
+                result += string.Format(Environment.NewLine + "Date Created: {0}", service.DateCreated.ToString("MM-dd-yyyy"));
+                result += Environment.NewLine + "******************************************";
+            }
+
+            result += Environment.NewLine;
+            result += Environment.NewLine + "******************************************";
+            result += string.Format(Environment.NewLine + "Total Number of Consultations: {0}", this._listOfServices.Count().ToString());
+            result += string.Format(Environment.NewLine + "Total Fee: {0}", fee.ToString());
+            result += Environment.NewLine + "******************************************";
+
+            return result;
         }
 
         #endregion

@@ -94,6 +94,7 @@
     <Compile Include="Library\Users\Superuser.cs" />
     <Compile Include="Library\Users\User.cs" />
     <Compile Include="Library\Utils\EnumUtilities.cs" />
+    <Compile Include="Library\Utils\LinqExtensions.cs" />
     <Compile Include="Library\Utils\MySQLExtensions.cs" />
     <Compile Include="Library\Utils\PropertyInfoExtensions.cs" />
     <Compile Include="Library\Utils\StringExtensions.cs" />

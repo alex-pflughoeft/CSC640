@@ -33,14 +33,17 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
 
         public override string ToString()
         {
-            string returnMessage = string.Empty;
+            string result = string.Empty;
 
             foreach (Service service in this._listOfServices)
             {
-                returnMessage += service.ToString() + Environment.NewLine;
+                result += Environment.NewLine;
+                result += Environment.NewLine + "******************************************";
+                result += service.ToString() + Environment.NewLine;
+                result += Environment.NewLine + "******************************************";
             }
 
-            return returnMessage;
+            return result;
         }
 
         #endregion

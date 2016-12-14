@@ -8,7 +8,7 @@ namespace BLUE.ChocAn.Library
     {
         public override string ToString()
         {
-            return string.Format("Service Code:\t{0}\nProvider Number:\t\t{1}\nMember Number:\t{2}\nDate of Service:\t\t{3}\nService Comments:\t\t{4}", this.ServiceCode.ToString(), this.ProviderNumber.ToString(), this.MemberNumber.ToString(), this.DateOfService.Value.ToShortDateString(), this.ServiceComments);
+            return string.Format("Service Code:\t{0}\nProvider Number:\t\t{1}\nMember Number:\t{2}\nDate of Service:\t\t{3}\nService Comments:\t\t{4}", this.ServiceCode.ToString(), this.ProviderNumber.ToString(), this.MemberNumber.ToString(), this.DateOfService.ToShortDateString(), this.ServiceComments);
         }
 
         [PrimaryKey]
@@ -21,7 +21,7 @@ namespace BLUE.ChocAn.Library
         /// <summary>
         /// The date the service was rendered
         /// </summary>
-        public DateTime? DateOfService { get; set; }
+        public DateTime DateOfService { get; set; }
 
         /// <summary>
         /// The comments about the service rendered

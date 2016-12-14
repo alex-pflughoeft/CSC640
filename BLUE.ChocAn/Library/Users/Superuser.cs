@@ -68,20 +68,20 @@ namespace BLUE.ChocAn.Library.Users
             return eftReport.ReportBody;
         }
 
-        public string GenerateManagersSummary(List<User> providers, List<UserServiceLinker> allServices)
+        public string GenerateManagersSummary(List<UserServiceLinker> allServices)
         {
-            Report managerSummaryReport = new ManagerSummaryReport(providers, allServices);
+            Report managerSummaryReport = new ManagerSummaryReport(allServices);
 
             return managerSummaryReport.ToString();
         }
 
-        public string GenerateAllReports(User provider, List<UserServiceLinker> providerServices, User member, List<UserServiceLinker> memberServices, List<User> providers, List<UserServiceLinker> allServices)
+        public string GenerateAllReports(User provider, List<UserServiceLinker> providerServices, User member, List<UserServiceLinker> memberServices, List<UserServiceLinker> allServices)
         {
             return string.Format("{0}\n{1}\n{2}\n{3}",
                 this.GenerateMemberReport(member, memberServices),
                 this.GenerateProviderReport(provider, providerServices),
                 this.GenerateEFTRecord(provider, providerServices),
-                this.GenerateManagersSummary(providers, allServices));
+                this.GenerateManagersSummary(allServices));
         }
 
         #endregion

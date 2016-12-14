@@ -8,7 +8,7 @@ namespace BLUE.ChocAn.Library
     {
         public override string ToString()
         {
-            return string.Format("Service Code:\t{0}\nProvider Number:\t\t{1}\nMember Number:\t{2}\nDate of Service:\t\t{3}\nService Comments:\t\t{4}", this.ServiceCode.ToString(), this.ProviderNumber.ToString(), this.MemberNumber.ToString(), this.DateOfService.ToShortDateString(), this.ServiceComments);
+            return string.Format("Service Code:\t\t{0}\nProvider Number:\t{1}\nMember Number:\t\t{2}\nDate of Service:\t{3}\nService Comments:\t{4}", this.ServiceCode.ToString(), this.ProviderNumber.ToString(), this.MemberNumber.ToString(), this.DateOfService.ToShortDateString(), this.ServiceComments);
         }
 
         public string ServiceCode { get; set; }

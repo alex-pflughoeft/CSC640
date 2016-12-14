@@ -867,8 +867,10 @@ namespace BLUE.ChocAn.Library.Commands
 
                 foreach (UserServiceLinker renderedService in services)
                 {
-                    serviceList += this._dbHelper.GetServiceByServiceCode(renderedService.ServiceCode).ServiceName;
-                    serviceList += renderedService.ToString() + "\n";
+                    serviceList += Environment.NewLine;
+                    serviceList += Environment.NewLine + "Service Name: \t\t" + this._dbHelper.GetServiceByServiceCode(renderedService.ServiceCode).ServiceName;
+                    serviceList += Environment.NewLine + renderedService.ToString();
+                    serviceList += Environment.NewLine;
                 }
 
                 Console.WriteLine(serviceList);
@@ -1071,14 +1073,17 @@ namespace BLUE.ChocAn.Library.Commands
                 userNumber = this._currentUser.UserNumber.ToString();
             }
 
-            List<UserServiceLinker> listOfRenderedServices = this._dbHelper.GetRenderedServicesByProvider(Convert.ToInt32(userNumber));
+            List<UserServiceLinker> listOfRenderedServices = this._dbHelper.GetRenderedServicesByMember(Convert.ToInt32(userNumber));
             string returnMessage = string.Empty;
 
             if (listOfRenderedServices.Count > 0)
             {
                 foreach (UserServiceLinker renderedService in listOfRenderedServices)
                 {
-                    returnMessage += renderedService.ToString() + "\n";
+                    returnMessage += Environment.NewLine;
+                    returnMessage += Environment.NewLine + "Service Name: \t\t" + this._dbHelper.GetServiceByServiceCode(renderedService.ServiceCode).ServiceName;
+                    returnMessage += Environment.NewLine + renderedService.ToString();
+                    returnMessage += Environment.NewLine;
                 }
 
                 return returnMessage;

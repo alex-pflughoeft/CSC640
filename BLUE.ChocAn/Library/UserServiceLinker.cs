@@ -11,7 +11,6 @@ namespace BLUE.ChocAn.Library
             return string.Format("Service Code:\t{0}\nProvider Number:\t\t{1}\nMember Number:\t{2}\nDate of Service:\t\t{3}\nService Comments:\t\t{4}", this.ServiceCode.ToString(), this.ProviderNumber.ToString(), this.MemberNumber.ToString(), this.DateOfService.ToShortDateString(), this.ServiceComments);
         }
 
-        [PrimaryKey]
         public string ServiceCode { get; set; }
 
         public int ProviderNumber { get; set; }

@@ -45,7 +45,7 @@ namespace BLUE.ChocAn.Library.Reports.Provider_Reports
             {
                 result += Environment.NewLine;
                 result += Environment.NewLine + "------------------------------------------";
-                result += service.ToString() + Environment.NewLine;
+                result += Environment.NewLine + service.ToString();
                 result += Environment.NewLine + "------------------------------------------";
             }
 

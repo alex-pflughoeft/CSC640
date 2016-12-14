@@ -297,9 +297,9 @@ namespace BLUE.ChocAn.Library.Commands
 
                 if (this._currentUser.UserRole == (int)UserRole.Super)
                 {
-                    while (!System.Text.RegularExpressions.Regex.IsMatch(providerNumber, "^[0-11]{1,10}$"))
+                    while (!System.Text.RegularExpressions.Regex.IsMatch(providerNumber, "^[0-9]{1,9}$"))
                     {
-                        Console.WriteLine("Enter the Provider Number (<= 11 digits):");
+                        Console.WriteLine("Enter the Provider Number (<= 9 digits):");
                         providerNumber = Console.ReadLine();
                     }
                 }
@@ -318,7 +318,7 @@ namespace BLUE.ChocAn.Library.Commands
 
                     if (serviceCode.ToLower() == "d")
                     {
-                        Console.Write(this.viewpd());
+                        Console.WriteLine(this.viewpd());
                     }
 
                     service = this._dbHelper.GetServiceByServiceCode(serviceCode);
@@ -344,15 +344,16 @@ namespace BLUE.ChocAn.Library.Commands
                     serviceComments = Console.ReadLine();
                 } while (serviceComments.Length > 100);
 
+                linker.ProviderNumber = Convert.ToInt32(providerNumber);
                 linker.DateOfService = serviceDate;
                 linker.MemberNumber = _validatedMember.UserNumber;
                 linker.ServiceCode = service.ServiceCode;
                 linker.DateCreated = DateTime.Now;
-                linker.ServiceComments = "Test";
+                linker.ServiceComments = serviceComments;
 
+                // TODO: Make this bool work correctly
                 this._dbHelper.Create(linker);
-
-                return string.Format("Service '{0}' has been successfully charged to member '{1}'.\n", linker.ServiceCode, linker.MemberNumber);
+                return string.Format("Service '{0}' has been successfully charged to member '{1}'.\n", linker.ServiceCode, linker.MemberNumber);                
             }
 
             return "Please validate the member card before performing this action.\n";
@@ -1190,7 +1191,7 @@ namespace BLUE.ChocAn.Library.Commands
                     userName = Console.ReadLine();
                 }
                 // Validate number
-                while (!System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,10}$"))
+                while (!System.Text.RegularExpressions.Regex.IsMatch(userNumber, "^[0-9]{1,9}$"))
                 {
                     Console.WriteLine("Enter the {0} Number (<= 9 digits):", user.GetUserRole().ToString());
                     userNumber = Console.ReadLine();
